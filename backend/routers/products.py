@@ -5,8 +5,15 @@ import logging
 import os
 
 from services.fourthchki_client import get_fourthchki_client
+from services.mock_data import (
+    generate_mock_tires, 
+    generate_mock_disks, 
+    MOCK_WAREHOUSES
+)
 
 logger = logging.getLogger(__name__)
+
+USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', 'false').lower() == 'true'
 
 router = APIRouter(prefix="/products", tags=["products"])
 
