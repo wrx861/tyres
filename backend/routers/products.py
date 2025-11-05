@@ -49,7 +49,6 @@ async def search_tires(
     try:
         markup = await get_markup_percentage(db)
         
-        # Преобразуем сезон в формат API
         season_map = {
             'summer': 's',
             'winter': 'w',
@@ -60,7 +59,6 @@ async def search_tires(
         if season and season in season_map:
             season_list = [season_map[season]]
         
-        # MOCK MODE или REAL API
         if USE_MOCK_DATA:
             logger.info("Using MOCK data for tires search")
             response = generate_mock_tires(
@@ -89,12 +87,10 @@ async def search_tires(
                 page_size=page_size
             )
         
-        # Проверяем на ошибки (для реального API)
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
         
-        # Применяем наценку к ценам
         if response.get('price_rest_list'):
             for item in response['price_rest_list']:
                 if item.get('price'):
@@ -131,28 +127,35 @@ async def search_disks(
     Поиск дисков по параметрам
     """
     try:
-        client = get_fourthchki_client()
         markup = await get_markup_percentage(db)
         
-        brand_list = [brand] if brand else None
+        if USE_MOCK_DATA:
+            logger.info("Using MOCK data for disks search")
+            response = generate_mock_disks(
+                diameter=diameter,
+                width=width,
+                brand=brand,
+                page=page,
+                page_size=page_size
+            )
+        else:
+            client = get_fourthchki_client()
+            brand_list = [brand] if brand else None
+            
+            response = client.search_disks(
+                diameter_min=diameter,
+                diameter_max=diameter,
+                width_min=width,
+                width_max=width,
+                brand_list=brand_list,
+                page=page,
+                page_size=page_size
+            )
         
-        # Выполняем поиск
-        response = client.search_disks(
-            diameter_min=diameter,
-            diameter_max=diameter,
-            width_min=width,
-            width_max=width,
-            brand_list=brand_list,
-            page=page,
-            page_size=page_size
-        )
-        
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
         
-        # Применяем наценку к ценам
         if response.get('price_rest_list'):
             for item in response['price_rest_list']:
                 if item.get('price'):
@@ -166,7 +169,8 @@ async def search_disks(
             "total_pages": response.get('totalPages', 0),
             "warehouses": response.get('warehouseLogistics', []),
             "currency": response.get('currencyRate', {}),
-            "markup_percentage": markup
+            "markup_percentage": markup,
+            "mock_mode": USE_MOCK_DATA
         }
         
     except HTTPException:
@@ -184,17 +188,31 @@ async def get_product_info(
     Получить подробную информацию о товаре по коду
     """
     try:
-        client = get_fourthchki_client()
         markup = await get_markup_percentage(db)
         
+        if USE_MOCK_DATA:
+            # В mock режиме возвращаем фейковую информацию
+            return {
+                "success": True,
+                "data": {
+                    "code": code,
+                    "brand": "Michelin",
+                    "model": "X-Ice North 4",
+                    "price": apply_markup(8500, markup),
+                    "price_original": 8500,
+                    "rest": 12,
+                },
+                "markup_percentage": markup,
+                "mock_mode": True
+            }
+        
+        client = get_fourthchki_client()
         response = client.get_goods_info(code)
         
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
         
-        # Применяем наценку к цене
         if response.get('price'):
             original_price = float(response['price'])
             response['price_original'] = original_price
@@ -203,7 +221,8 @@ async def get_product_info(
         return {
             "success": True,
             "data": response,
-            "markup_percentage": markup
+            "markup_percentage": markup,
+            "mock_mode": False
         }
         
     except HTTPException:
@@ -218,17 +237,24 @@ async def get_warehouses():
     Получить список доступных складов
     """
     try:
+        if USE_MOCK_DATA:
+            return {
+                "success": True,
+                "data": MOCK_WAREHOUSES,
+                "mock_mode": True
+            }
+        
         client = get_fourthchki_client()
         response = client.get_warehouses()
         
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
         
         return {
             "success": True,
-            "data": response.get('warehouses', [])
+            "data": response.get('warehouses', []),
+            "mock_mode": False
         }
         
     except HTTPException:
