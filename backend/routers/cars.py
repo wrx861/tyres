@@ -2,10 +2,20 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
+import os
 
 from services.fourthchki_client import get_fourthchki_client
+from services.mock_data import (
+    MOCK_CAR_BRANDS,
+    MOCK_CAR_MODELS,
+    MOCK_YEARS,
+    MOCK_MODIFICATIONS,
+    generate_mock_goods_by_car
+)
 
 logger = logging.getLogger(__name__)
+
+USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', 'false').lower() == 'true'
 
 router = APIRouter(prefix="/cars", tags=["cars"])
 
