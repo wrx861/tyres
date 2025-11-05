@@ -101,13 +101,13 @@ class FourthchkiClient:
         try:
             filter_data = {}
             
-            if diameter_min:
+            if diameter_min is not None:
                 filter_data['diameter_min'] = diameter_min
-            if diameter_max:
+            if diameter_max is not None:
                 filter_data['diameter_max'] = diameter_max
-            if width_min:
+            if width_min is not None:
                 filter_data['width_min'] = width_min
-            if width_max:
+            if width_max is not None:
                 filter_data['width_max'] = width_max
             if brand_list:
                 filter_data['brand_list'] = brand_list
@@ -115,7 +115,7 @@ class FourthchkiClient:
             response = self.client.service.GetFindDisk(
                 login=self.login,
                 password=self.password,
-                filter=filter_data,
+                filter=filter_data if filter_data else None,
                 page=page,
                 pageSize=page_size
             )
