@@ -15,7 +15,9 @@ from services.mock_data import (
 
 logger = logging.getLogger(__name__)
 
-USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', 'false').lower() == 'true'
+def use_mock_data() -> bool:
+    """Проверяем, используем ли mock данные"""
+    return os.environ.get('USE_MOCK_DATA', 'false').lower() == 'true'
 
 router = APIRouter(prefix="/cars", tags=["cars"])
 
