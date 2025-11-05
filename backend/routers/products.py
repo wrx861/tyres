@@ -47,37 +47,49 @@ async def search_tires(
     Поиск шин по параметрам
     """
     try:
-        client = get_fourthchki_client()
         markup = await get_markup_percentage(db)
         
         # Преобразуем сезон в формат API
         season_map = {
             'summer': 's',
             'winter': 'w',
-            'all-season': 'ws'
+            'all-season': 'u'
         }
         
         season_list = None
         if season and season in season_map:
             season_list = [season_map[season]]
         
-        brand_list = [brand] if brand else None
+        # MOCK MODE или REAL API
+        if USE_MOCK_DATA:
+            logger.info("Using MOCK data for tires search")
+            response = generate_mock_tires(
+                season=season_list,
+                width=width,
+                height=height,
+                diameter=diameter,
+                brand=brand,
+                page=page,
+                page_size=page_size
+            )
+        else:
+            client = get_fourthchki_client()
+            brand_list = [brand] if brand else None
+            
+            response = client.search_tires(
+                season_list=season_list,
+                width_min=width,
+                width_max=width,
+                height_min=height,
+                height_max=height,
+                diameter_min=diameter,
+                diameter_max=diameter,
+                brand_list=brand_list,
+                page=page,
+                page_size=page_size
+            )
         
-        # Выполняем поиск
-        response = client.search_tires(
-            season_list=season_list,
-            width_min=width,
-            width_max=width,
-            height_min=height,
-            height_max=height,
-            diameter_min=diameter,
-            diameter_max=diameter,
-            brand_list=brand_list,
-            page=page,
-            page_size=page_size
-        )
-        
-        # Проверяем на ошибки
+        # Проверяем на ошибки (для реального API)
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
@@ -96,7 +108,8 @@ async def search_tires(
             "total_pages": response.get('totalPages', 0),
             "warehouses": response.get('warehouseLogistics', []),
             "currency": response.get('currencyRate', {}),
-            "markup_percentage": markup
+            "markup_percentage": markup,
+            "mock_mode": USE_MOCK_DATA
         }
         
     except HTTPException:
