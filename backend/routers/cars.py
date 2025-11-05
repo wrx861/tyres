@@ -218,7 +218,7 @@ async def get_goods_by_car(
             "warehouses": response.get('warehouseLogistics', []),
             "currency": response.get('currencyRate', {}),
             "markup_percentage": markup,
-            "mock_mode": USE_MOCK_DATA
+            "mock_mode": use_mock_data()
         }
         
     except HTTPException:
