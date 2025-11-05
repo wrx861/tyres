@@ -24,11 +24,9 @@ def get_db():
     return db
 
 def apply_markup(price: float, markup_percentage: float) -> float:
-    """Применить наценку к цене"""
     return round(price * (1 + markup_percentage / 100), 2)
 
 async def get_markup_percentage(db: AsyncIOMotorDatabase) -> float:
-    """Получить текущий процент наценки"""
     settings = await db.settings.find_one({}, {"_id": 0})
     if settings:
         return settings.get('markup_percentage', 15.0)
@@ -36,14 +34,18 @@ async def get_markup_percentage(db: AsyncIOMotorDatabase) -> float:
 
 @router.get("/brands")
 async def get_car_brands():
-    """
-    Получить список марок автомобилей
-    """
     try:
+        if USE_MOCK_DATA:
+            logger.info("Using MOCK data for car brands")
+            return {
+                "success": True,
+                "data": MOCK_CAR_BRANDS,
+                "mock_mode": True
+            }
+        
         client = get_fourthchki_client()
         response = client.get_car_brands()
         
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
@@ -52,7 +54,8 @@ async def get_car_brands():
         
         return {
             "success": True,
-            "data": brands
+            "data": brands,
+            "mock_mode": False
         }
         
     except HTTPException:
@@ -65,14 +68,19 @@ async def get_car_brands():
 async def get_car_models(
     brand: str = Query(..., description="Марка автомобиля")
 ):
-    """
-    Получить список моделей автомобиля
-    """
     try:
+        if USE_MOCK_DATA:
+            logger.info(f"Using MOCK data for car models: {brand}")
+            models = MOCK_CAR_MODELS.get(brand, ["Model 1", "Model 2", "Model 3"])
+            return {
+                "success": True,
+                "data": models,
+                "mock_mode": True
+            }
+        
         client = get_fourthchki_client()
         response = client.get_car_models(brand)
         
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
@@ -81,7 +89,8 @@ async def get_car_models(
         
         return {
             "success": True,
-            "data": models
+            "data": models,
+            "mock_mode": False
         }
         
     except HTTPException:
@@ -95,14 +104,18 @@ async def get_car_years(
     brand: str = Query(..., description="Марка автомобиля"),
     model: str = Query(..., description="Модель автомобиля")
 ):
-    """
-    Получить список годов выпуска автомобиля
-    """
     try:
+        if USE_MOCK_DATA:
+            logger.info(f"Using MOCK data for car years")
+            return {
+                "success": True,
+                "data": MOCK_YEARS,
+                "mock_mode": True
+            }
+        
         client = get_fourthchki_client()
         response = client.get_car_years(brand, model)
         
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
@@ -111,7 +124,8 @@ async def get_car_years(
         
         return {
             "success": True,
-            "data": years
+            "data": years,
+            "mock_mode": False
         }
         
     except HTTPException:
@@ -127,14 +141,18 @@ async def get_car_modifications(
     year_begin: str = Query(..., description="Год начала выпуска"),
     year_end: str = Query(..., description="Год окончания выпуска")
 ):
-    """
-    Получить список модификаций автомобиля
-    """
     try:
+        if USE_MOCK_DATA:
+            logger.info(f"Using MOCK data for modifications")
+            return {
+                "success": True,
+                "data": MOCK_MODIFICATIONS,
+                "mock_mode": True
+            }
+        
         client = get_fourthchki_client()
         response = client.get_car_modifications(brand, model, year_begin, year_end)
         
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
@@ -143,7 +161,8 @@ async def get_car_modifications(
         
         return {
             "success": True,
-            "data": modifications
+            "data": modifications,
+            "mock_mode": False
         }
         
     except HTTPException:
@@ -162,32 +181,30 @@ async def get_goods_by_car(
     product_type: str = Query("tyre", description="Тип товара: tyre, disk"),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    """
-    Подобрать товары по автомобилю
-    """
     try:
-        client = get_fourthchki_client()
         markup = await get_markup_percentage(db)
         
-        # Преобразуем тип товара в список
-        type_list = [product_type] if product_type else ['tyre', 'disk']
+        if USE_MOCK_DATA:
+            logger.info(f"Using MOCK data for goods by car")
+            response = generate_mock_goods_by_car(brand, model, product_type)
+        else:
+            client = get_fourthchki_client()
+            type_list = [product_type] if product_type else ['tyre', 'disk']
+            
+            response = client.get_goods_by_car(
+                brand=brand,
+                model=model,
+                year_begin=year_begin,
+                year_end=year_end,
+                modification=modification,
+                product_type=type_list,
+                podbor_type=[1]
+            )
         
-        response = client.get_goods_by_car(
-            brand=brand,
-            model=model,
-            year_begin=year_begin,
-            year_end=year_end,
-            modification=modification,
-            product_type=type_list,
-            podbor_type=[1]  # 1 - оригинал
-        )
-        
-        # Проверяем на ошибки
         if response.get('error'):
             error_msg = response['error'].get('Message', 'Unknown error')
             raise HTTPException(status_code=400, detail=error_msg)
         
-        # Применяем наценку к ценам
         if response.get('price_rest_list'):
             for item in response['price_rest_list']:
                 if item.get('price'):
@@ -200,7 +217,8 @@ async def get_goods_by_car(
             "data": response.get('price_rest_list', []),
             "warehouses": response.get('warehouseLogistics', []),
             "currency": response.get('currencyRate', {}),
-            "markup_percentage": markup
+            "markup_percentage": markup,
+            "mock_mode": USE_MOCK_DATA
         }
         
     except HTTPException:
