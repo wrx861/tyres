@@ -61,7 +61,7 @@ async def search_tires(
         if season and season in season_map:
             season_list = [season_map[season]]
         
-        if USE_MOCK_DATA:
+        if use_mock_data():
             logger.info("Using MOCK data for tires search")
             response = generate_mock_tires(
                 season=season_list,
@@ -131,7 +131,7 @@ async def search_disks(
     try:
         markup = await get_markup_percentage(db)
         
-        if USE_MOCK_DATA:
+        if use_mock_data():
             logger.info("Using MOCK data for disks search")
             response = generate_mock_disks(
                 diameter=diameter,
@@ -192,7 +192,7 @@ async def get_product_info(
     try:
         markup = await get_markup_percentage(db)
         
-        if USE_MOCK_DATA:
+        if use_mock_data():
             # В mock режиме возвращаем фейковую информацию
             return {
                 "success": True,
@@ -239,7 +239,7 @@ async def get_warehouses():
     Получить список доступных складов
     """
     try:
-        if USE_MOCK_DATA:
+        if use_mock_data():
             return {
                 "success": True,
                 "data": MOCK_WAREHOUSES,

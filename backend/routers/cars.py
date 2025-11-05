@@ -35,7 +35,7 @@ async def get_markup_percentage(db: AsyncIOMotorDatabase) -> float:
 @router.get("/brands")
 async def get_car_brands():
     try:
-        if USE_MOCK_DATA:
+        if use_mock_data():
             logger.info("Using MOCK data for car brands")
             return {
                 "success": True,
@@ -69,7 +69,7 @@ async def get_car_models(
     brand: str = Query(..., description="Марка автомобиля")
 ):
     try:
-        if USE_MOCK_DATA:
+        if use_mock_data():
             logger.info(f"Using MOCK data for car models: {brand}")
             models = MOCK_CAR_MODELS.get(brand, ["Model 1", "Model 2", "Model 3"])
             return {
@@ -105,7 +105,7 @@ async def get_car_years(
     model: str = Query(..., description="Модель автомобиля")
 ):
     try:
-        if USE_MOCK_DATA:
+        if use_mock_data():
             logger.info(f"Using MOCK data for car years")
             return {
                 "success": True,
@@ -142,7 +142,7 @@ async def get_car_modifications(
     year_end: str = Query(..., description="Год окончания выпуска")
 ):
     try:
-        if USE_MOCK_DATA:
+        if use_mock_data():
             logger.info(f"Using MOCK data for modifications")
             return {
                 "success": True,
@@ -184,7 +184,7 @@ async def get_goods_by_car(
     try:
         markup = await get_markup_percentage(db)
         
-        if USE_MOCK_DATA:
+        if use_mock_data():
             logger.info(f"Using MOCK data for goods by car")
             response = generate_mock_goods_by_car(brand, model, product_type)
         else:
