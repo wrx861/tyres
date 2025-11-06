@@ -257,7 +257,11 @@ async def get_goods_by_car(
             goods_data = price_rest_list
         
         # Apply markup to prices and normalize data structure
-        TYUMEN_WAREHOUSE_ID = 42  # ID склада Тюмень
+        # Приоритизируем Тюмень по умолчанию (ID 42)
+        TYUMEN_WAREHOUSE_ID = 42
+        priority_warehouses = [TYUMEN_WAREHOUSE_ID]
+        
+        filtered_goods_data = []
         
         for item in goods_data:
             # Parse size from name
@@ -285,9 +289,9 @@ async def get_goods_by_car(
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
                 if warehouses:
-                    # Приоритизируем склад Тюмень (ID 42)
-                    tyumen_warehouse = next((w for w in warehouses if w.get('wrh') == TYUMEN_WAREHOUSE_ID), None)
-                    best_warehouse = tyumen_warehouse if tyumen_warehouse else warehouses[0]
+                    # Приоритизируем склады Тюмени
+                    tyumen_warehouses = [w for w in warehouses if w.get('wrh') in priority_warehouses]
+                    best_warehouse = tyumen_warehouses[0] if tyumen_warehouses else warehouses[0]
                     
                     best_price = float(best_warehouse.get('price', 0))
                     item['price_original'] = best_price
@@ -301,6 +305,11 @@ async def get_goods_by_car(
                     
                     # Сохраняем все склады для отображения (опционально)
                     item['all_warehouses'] = warehouses
+                    
+                    filtered_goods_data.append(item)
+        
+        # Заменяем goods_data на отфильтрованный список
+        goods_data = filtered_goods_data
         
         # Extract warehouse data
         warehouses = []
