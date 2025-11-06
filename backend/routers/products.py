@@ -139,9 +139,9 @@ async def search_tires(
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
                 if warehouses:
-                    # Приоритизируем склад Тюмень (ID 42)
-                    tyumen_warehouse = next((w for w in warehouses if w.get('wrh') == TYUMEN_WAREHOUSE_ID), None)
-                    best_warehouse = tyumen_warehouse if tyumen_warehouse else warehouses[0]
+                    # Приоритизируем склады из выбранного города
+                    priority_warehouse = next((w for w in warehouses if w.get('wrh') in priority_warehouses), None)
+                    best_warehouse = priority_warehouse if priority_warehouse else warehouses[0]
                     
                     best_price = float(best_warehouse.get('price', 0))
                     item['price_original'] = best_price
