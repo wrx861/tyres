@@ -10,11 +10,24 @@ const SearchPage = ({ onAddToCart, onBack }) => {
     height: '',
     diameter: '',
     season: '',
-    brand: ''
+    brand: '',
+    city: 'Тюмень' // По умолчанию Тюмень
   });
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+
+  const cities = [
+    'Тюмень',
+    'Сургут',
+    'Лянтор',
+    'Нефтеюганск',
+    'Белый Яр',
+    'Екатеринбург',
+    'Челябинск',
+    'Москва',
+    'Санкт-Петербург'
+  ];
 
   const handleSearch = async () => {
     setLoading(true);
