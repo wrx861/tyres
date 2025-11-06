@@ -436,8 +436,8 @@ class APITester:
             self.log_result("Car Selection Flow", False, f"Error: {str(e)}")
             return False
     
-    def test_markup_management(self):
-        """Test markup management for admin"""
+    def test_markup_management_still_works(self):
+        """Test markup management still works after UI changes"""
         try:
             # First, create admin user
             self.create_test_admin()
@@ -448,50 +448,74 @@ class APITester:
             })
             
             if response.status_code != 200:
-                self.log_result("Markup Management - Get", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_result("Markup Management - Get Current", False, f"HTTP {response.status_code}: {response.text}")
                 return False
             
             current_markup = response.json()
             original_markup = current_markup.get('markup_percentage', 15)
             
-            self.log_result("Markup Management - Get", True, f"Current markup: {original_markup}%")
+            self.log_result("Markup Management - Get Current", True, f"Current markup: {original_markup}%")
             
-            # Test updating markup
-            new_markup = 20.0
+            # Test updating markup to 25% as specified in review request
+            new_markup = 25.0
             response = self.session.put(f"{BACKEND_URL}/admin/markup", 
                 params={'telegram_id': ADMIN_TELEGRAM_ID},
                 json={'markup_percentage': new_markup}
             )
             
             if response.status_code != 200:
-                self.log_result("Markup Management - Update", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_result("Markup Management - Update to 25%", False, f"HTTP {response.status_code}: {response.text}")
                 return False
             
             updated_markup = response.json()
             if updated_markup.get('markup_percentage') != new_markup:
-                self.log_result("Markup Management - Update", False, f"Markup not updated correctly: {updated_markup}")
+                self.log_result("Markup Management - Update to 25%", False, f"Markup not updated correctly: {updated_markup}")
                 return False
             
-            self.log_result("Markup Management - Update", True, f"Markup updated to {new_markup}%")
+            self.log_result("Markup Management - Update to 25%", True, f"Markup updated to {new_markup}%")
             
-            # Test that new markup is applied to products
+            # Test that new markup is applied to tire search
             response = self.session.get(f"{BACKEND_URL}/products/tires/search", params={
-                'width': 185, 'height': 60, 'diameter': 15
+                'width': 185, 'height': 60, 'diameter': 15, 'page_size': 1
             })
             
-            if response.status_code == 200:
-                data = response.json()
-                applied_markup = data.get('markup_percentage')
-                if applied_markup == new_markup:
-                    self.log_result("Markup Management - Applied", True, f"New markup {new_markup}% applied to products")
-                else:
-                    self.log_result("Markup Management - Applied", False, f"Expected {new_markup}%, got {applied_markup}%")
+            if response.status_code != 200:
+                self.log_result("Markup Management - Applied to Tires", False, f"Tire search failed: {response.status_code}")
+                return False
+            
+            data = response.json()
+            applied_markup = data.get('markup_percentage')
+            
+            if applied_markup != new_markup:
+                self.log_result("Markup Management - Applied to Tires", False, 
+                              f"Expected {new_markup}%, got {applied_markup}%")
+                return False
+            
+            # Verify price calculation with new markup
+            tires = data.get('data', [])
+            if tires and tires[0].get('price') and tires[0].get('price_original'):
+                original_price = float(tires[0]['price_original'])
+                final_price = float(tires[0]['price'])
+                expected_price = round(original_price * (1 + new_markup / 100), 2)
+                
+                if abs(final_price - expected_price) > 0.01:
+                    self.log_result("Markup Management - Price Calculation", False, 
+                                  f"Price calculation error: {original_price} * 1.{new_markup} = {expected_price}, got {final_price}")
+                    return False
+                
+                self.log_result("Markup Management - Price Calculation", True, 
+                              f"✅ Price correctly calculated: {original_price} → {final_price} (25% markup)")
+            
+            self.log_result("Markup Management - Applied to Tires", True, f"New markup {new_markup}% applied to tire search")
             
             # Restore original markup
-            self.session.put(f"{BACKEND_URL}/admin/markup", 
+            restore_response = self.session.put(f"{BACKEND_URL}/admin/markup", 
                 params={'telegram_id': ADMIN_TELEGRAM_ID},
                 json={'markup_percentage': original_markup}
             )
+            
+            if restore_response.status_code == 200:
+                self.log_result("Markup Management - Restore Original", True, f"Restored original markup: {original_markup}%")
             
             return True
             
