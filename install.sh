@@ -108,7 +108,7 @@ else
 fi
 
 # 6. Установка MongoDB
-echo -e "${YELLOW}[6/10] Установка MongoDB...${NC}"
+echo -e "${YELLOW}[6/12] Установка MongoDB...${NC}"
 if ! command -v mongod &> /dev/null; then
     # Определяем версию Ubuntu
     UBUNTU_VERSION=$(lsb_release -cs)
