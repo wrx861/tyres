@@ -63,16 +63,17 @@ function App() {
   };
 
   const addToCart = (item) => {
+    const qtyToAdd = item.quantity || 1;
     setCart(prev => {
       const existing = prev.find(i => i.code === item.code);
       if (existing) {
         return prev.map(i => 
           i.code === item.code 
-            ? { ...i, quantity: i.quantity + 1 }
+            ? { ...i, quantity: i.quantity + qtyToAdd }
             : i
         );
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, quantity: qtyToAdd }];
     });
   };
 
