@@ -92,11 +92,11 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
         <div className="flex items-center space-x-4 text-sm text-gray-600">
           <div className="flex items-center">
             <Package size={16} className="mr-1" />
-            <span>{product.rest} шт</span>
+            <span>{warehouseInfo.rest} шт</span>
           </div>
           <div className="flex items-center">
             <MapPin size={16} className="mr-1" />
-            <span>{product.warehouse_name}</span>
+            <span>{warehouseInfo.warehouse_name}</span>
           </div>
         </div>
         <button
