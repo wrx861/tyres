@@ -17,10 +17,19 @@ sudo bash install.sh
 
 **Автоматический режим с параметрами:**
 ```bash
-# С доменом и SSL сертификатом
+# Полная автоматическая установка (все параметры)
+sudo bash install.sh \
+  -d tires.yourdomain.com \
+  -e admin@yourdomain.com \
+  --api-login sa56026 \
+  --api-password ваш_пароль \
+  --bot-token 123456:ABC-DEF \
+  --admin-id 508352361
+
+# С доменом и SSL (учетные данные в интерактивном режиме)
 sudo bash install.sh -d tires.yourdomain.com -e admin@yourdomain.com
 
-# С доменом, но без SSL (можно установить позже)
+# С доменом, но без SSL
 sudo bash install.sh -d tires.yourdomain.com --no-ssl
 
 # Просмотр всех опций
