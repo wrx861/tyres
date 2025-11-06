@@ -183,7 +183,7 @@ fi
 deactivate
 
 # 9. Настройка frontend
-echo -e "${YELLOW}[9/10] Настройка frontend...${NC}"
+echo -e "${YELLOW}[9/12] Настройка frontend...${NC}"
 cd $APP_DIR/frontend
 
 # Установка зависимостей
