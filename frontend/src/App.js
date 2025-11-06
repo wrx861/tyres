@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import './App.css';
-import { getTelegramUser, authenticateUser } from './api/api';
+import { getTelegramUser, authenticateUser, getWarehouses } from './api/api';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import CarSelectionPage from './pages/CarSelectionPage';
@@ -8,11 +8,15 @@ import CartPage from './pages/CartPage';
 import OrdersPage from './pages/OrdersPage';
 import AdminPage from './pages/AdminPage';
 
+// Контекст для складов
+export const WarehousesContext = createContext({});
+
 function App() {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState('home');
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [warehouses, setWarehouses] = useState({});
 
   useEffect(() => {
     initializeApp();
@@ -27,6 +31,25 @@ function App() {
         // Аутентифицируем пользователя
         const authenticatedUser = await authenticateUser(telegramUser);
         setUser(authenticatedUser);
+      }
+
+      // Загружаем список складов для маппинга ID -> название города
+      try {
+        const warehousesData = await getWarehouses();
+        const warehouseMap = {};
+        
+        if (warehousesData.data && warehousesData.data.WarehouseInfo) {
+          warehousesData.data.WarehouseInfo.forEach(wh => {
+            // Извлекаем город из названия (например, "ОХ г. Сургут..." -> "Сургут")
+            const match = wh.name.match(/г\.\s*([А-Яа-яёЁ\s-]+)/);
+            const city = match ? match[1].trim() : wh.shortName || `Склад ${wh.id}`;
+            warehouseMap[wh.id] = city;
+          });
+        }
+        
+        setWarehouses(warehouseMap);
+      } catch (error) {
+        console.error('Ошибка загрузки складов:', error);
       }
     } catch (error) {
       console.error('Ошибка инициализации:', error);
