@@ -6,6 +6,8 @@ import ProductImageModal from './ProductImageModal';
 const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
   const warehouses = useContext(WarehousesContext);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [quantity, setQuantity] = useState(4); // По умолчанию 4 шт (комплект)
+  const [showAddedNotification, setShowAddedNotification] = useState(false);
   
   // Извлекаем данные о складе и остатках
   const getWarehouseInfo = () => {
