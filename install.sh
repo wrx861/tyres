@@ -113,15 +113,15 @@ fi
 echo ""
 
 # Запрос учетных данных для настройки
+echo ""
 echo -e "${BLUE}Настройка учетных данных${NC}"
 echo ""
 echo "Для работы приложения необходимы учетные данные:"
 echo "  1. API 4tochki (https://b2b.4tochki.ru)"
 echo "  2. Telegram бот"
 echo ""
-
-# Перенаправляем ввод с терминала
-exec < /dev/tty
+echo -e "${YELLOW}Подсказка:${NC} Нажмите Enter чтобы пропустить (можно настроить позже)"
+echo ""
 
 read -p "Логин 4tochki API: " FOURTHCHKI_LOGIN
 read -p "Пароль 4tochki API: " FOURTHCHKI_PASSWORD
