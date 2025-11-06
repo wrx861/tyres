@@ -341,17 +341,50 @@ echo -e "${GREEN}================================${NC}"
 echo -e "${GREEN}  Установка завершена!${NC}"
 echo -e "${GREEN}================================${NC}"
 echo ""
-echo -e "Backend доступен по адресу: ${YELLOW}http://localhost:8001${NC}"
-echo -e "Frontend доступен по адресу: ${YELLOW}http://localhost:3000${NC}"
+
+if [ -n "$DOMAIN_NAME" ]; then
+    if [ "$USE_HTTPS" = true ]; then
+        echo -e "🌐 Приложение доступно по адресу: ${GREEN}https://$DOMAIN_NAME${NC}"
+        echo -e "📱 Используйте этот URL в настройках Telegram Mini App"
+    else
+        echo -e "🌐 Приложение доступно по адресу: ${GREEN}http://$DOMAIN_NAME${NC}"
+        echo -e "📱 ${YELLOW}Внимание:${NC} Для Telegram Mini App требуется HTTPS"
+    fi
+    echo ""
+    echo -e "Backend API: ${YELLOW}https://$DOMAIN_NAME/api${NC}" 
+    echo -e "Frontend: ${YELLOW}https://$DOMAIN_NAME${NC}"
+else
+    echo -e "Backend доступен по адресу: ${YELLOW}http://localhost:8001${NC}"
+    echo -e "Frontend доступен по адресу: ${YELLOW}http://localhost:3000${NC}"
+fi
+
 echo ""
-echo -e "${YELLOW}ВАЖНО:${NC} Отредактируйте файлы .env:"
-echo -e "  - ${YELLOW}$APP_DIR/backend/.env${NC} - добавьте учетные данные 4tochki API и Telegram"
-echo -e "  - ${YELLOW}$APP_DIR/frontend/.env${NC} - укажите корректный REACT_APP_BACKEND_URL"
+echo -e "${YELLOW}ВАЖНО:${NC} Отредактируйте файл .env:"
+echo -e "  ${YELLOW}$APP_DIR/backend/.env${NC}"
+echo ""
+echo "Добавьте учетные данные:"
+echo "  - FOURTHCHKI_LOGIN=ваш_логин"
+echo "  - FOURTHCHKI_PASSWORD=ваш_пароль"
+echo "  - TELEGRAM_BOT_TOKEN=токен_вашего_бота"
+echo "  - ADMIN_TELEGRAM_ID=ваш_telegram_id"
 echo ""
 echo "После редактирования перезапустите сервисы:"
 echo -e "  ${YELLOW}sudo supervisorctl restart all${NC}"
 echo ""
-echo "Проверка статуса:"
-echo -e "  ${YELLOW}sudo supervisorctl status${NC}"
+echo "Полезные команды:"
+echo -e "  Проверка статуса: ${YELLOW}sudo supervisorctl status${NC}"
+echo -e "  Просмотр логов backend: ${YELLOW}tail -f /var/log/tyres-backend.out.log${NC}"
+echo -e "  Просмотр логов frontend: ${YELLOW}tail -f /var/log/tyres-frontend.out.log${NC}"
+echo -e "  Просмотр логов nginx: ${YELLOW}tail -f /var/log/nginx/error.log${NC}"
 echo ""
-echo -e "${GREEN}Готово к работе!${NC}"
+
+if [ "$USE_HTTPS" = true ]; then
+    echo -e "${GREEN}✓ SSL сертификат установлен и будет обновляться автоматически${NC}"
+    echo ""
+fi
+
+echo -e "${GREEN}🎉 Готово к работе!${NC}"
+echo ""
+echo -e "${BLUE}Документация по API 4tochki:${NC}"
+echo -e "  https://b2b.4tochki.ru/Help/Page?url=index.html"
+echo ""
