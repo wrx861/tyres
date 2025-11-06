@@ -95,18 +95,38 @@ async def search_tires(
             error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
-        if response.get('price_rest_list'):
-            for item in response['price_rest_list']:
-                if item.get('price'):
-                    original_price = float(item['price'])
-                    item['price_original'] = original_price
-                    item['price'] = apply_markup(original_price, markup)
+        # Extract tire data from nested structure
+        tire_data = []
+        price_rest_list = response.get('price_rest_list', {})
+        if isinstance(price_rest_list, dict) and 'TyrePriceRest' in price_rest_list:
+            tire_data = price_rest_list['TyrePriceRest']
+        elif isinstance(price_rest_list, list):
+            tire_data = price_rest_list
+        
+        # Apply markup to prices
+        for item in tire_data:
+            # Find the best price from warehouse data
+            if item.get('whpr') and item['whpr'].get('wh_price_rest'):
+                warehouses = item['whpr']['wh_price_rest']
+                if warehouses:
+                    # Use the first warehouse price as base price
+                    best_price = min(float(wh['price']) for wh in warehouses)
+                    item['price_original'] = best_price
+                    item['price'] = apply_markup(best_price, markup)
+        
+        # Extract warehouse data
+        warehouses = []
+        warehouse_logistics = response.get('warehouseLogistics', {})
+        if isinstance(warehouse_logistics, dict) and 'WarehouseLogistic' in warehouse_logistics:
+            warehouses = warehouse_logistics['WarehouseLogistic']
+        elif isinstance(warehouse_logistics, list):
+            warehouses = warehouse_logistics
         
         return {
             "success": True,
-            "data": response.get('price_rest_list', []),
+            "data": tire_data,
             "total_pages": response.get('totalPages', 0),
-            "warehouses": response.get('warehouseLogistics', []),
+            "warehouses": warehouses,
             "currency": response.get('currencyRate', {}),
             "markup_percentage": markup,
             "mock_mode": use_mock_data()
@@ -162,18 +182,41 @@ async def search_disks(
             error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
-        if response.get('price_rest_list'):
-            for item in response['price_rest_list']:
-                if item.get('price'):
-                    original_price = float(item['price'])
-                    item['price_original'] = original_price
-                    item['price'] = apply_markup(original_price, markup)
+        # Extract disk data from nested structure
+        disk_data = []
+        price_rest_list = response.get('price_rest_list', {})
+        if isinstance(price_rest_list, dict) and 'DiskPriceRest' in price_rest_list:
+            disk_data = price_rest_list['DiskPriceRest']
+        elif isinstance(price_rest_list, dict) and 'TyrePriceRest' in price_rest_list:
+            # Sometimes disks might use the same structure as tires
+            disk_data = price_rest_list['TyrePriceRest']
+        elif isinstance(price_rest_list, list):
+            disk_data = price_rest_list
+        
+        # Apply markup to prices
+        for item in disk_data:
+            # Find the best price from warehouse data
+            if item.get('whpr') and item['whpr'].get('wh_price_rest'):
+                warehouses = item['whpr']['wh_price_rest']
+                if warehouses:
+                    # Use the first warehouse price as base price
+                    best_price = min(float(wh['price']) for wh in warehouses)
+                    item['price_original'] = best_price
+                    item['price'] = apply_markup(best_price, markup)
+        
+        # Extract warehouse data
+        warehouses = []
+        warehouse_logistics = response.get('warehouseLogistics', {})
+        if isinstance(warehouse_logistics, dict) and 'WarehouseLogistic' in warehouse_logistics:
+            warehouses = warehouse_logistics['WarehouseLogistic']
+        elif isinstance(warehouse_logistics, list):
+            warehouses = warehouse_logistics
         
         return {
             "success": True,
-            "data": response.get('price_rest_list', []),
+            "data": disk_data,
             "total_pages": response.get('totalPages', 0),
-            "warehouses": response.get('warehouseLogistics', []),
+            "warehouses": warehouses,
             "currency": response.get('currencyRate', {}),
             "markup_percentage": markup,
             "mock_mode": use_mock_data()
