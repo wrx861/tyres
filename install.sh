@@ -391,8 +391,8 @@ stdout_logfile=/var/log/tyres-backend.out.log
 command=yarn start
 directory=/opt/tyres-app/frontend
 user=root
-autostart=true
-autorestart=true
+autostart=false
+autorestart=false
 stderr_logfile=/var/log/tyres-frontend.err.log
 stdout_logfile=/var/log/tyres-frontend.out.log
 environment=PORT="3000"
@@ -400,7 +400,7 @@ EOF
 
 supervisorctl reread
 supervisorctl update
-supervisorctl restart all
+supervisorctl start tyres-backend
 check_status "Supervisor настроен и запущен"
 
 # 11. Настройка Nginx
