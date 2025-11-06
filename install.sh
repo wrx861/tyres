@@ -77,7 +77,7 @@ apt-get install -y $PACKAGES -qq
 check_status "Базовые зависимости установлены"
 
 # 3. Установка Python 3.11
-echo -e "${YELLOW}[3/10] Установка Python 3.11...${NC}"
+echo -e "${YELLOW}[3/12] Установка Python 3.11...${NC}"
 if ! command -v python3.11 &> /dev/null; then
     apt-get install -y software-properties-common -qq
     add-apt-repository ppa:deadsnakes/ppa -y
