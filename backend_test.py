@@ -249,8 +249,8 @@ class APITester:
             self.log_result("Disk Search - Size Parsing", False, f"Error: {str(e)}")
             return False
     
-    def test_car_selection_flow(self):
-        """Test complete car selection flow"""
+    def test_car_selection_flow_with_fields(self):
+        """Test complete car selection flow with field verification"""
         try:
             # Step 1: Get car brands
             response = self.session.get(f"{BACKEND_URL}/cars/brands")
@@ -372,7 +372,7 @@ class APITester:
             
             self.log_result("Car Selection - Modifications", True, f"Found {len(modifications)} modifications")
             
-            # Step 5: Get goods by car
+            # Step 5: Get goods by car with field verification
             first_mod = modifications[0] if isinstance(modifications[0], str) else (modifications[0].get('name', str(modifications[0])) if modifications[0] else 'default')
             response = self.session.get(f"{BACKEND_URL}/cars/goods", params={
                 'brand': first_brand,
@@ -384,18 +384,52 @@ class APITester:
             })
             
             if response.status_code != 200:
-                self.log_result("Car Selection - Goods", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_result("Car Selection - Goods Fields", False, f"HTTP {response.status_code}: {response.text}")
                 return False
             
             goods_data = response.json()
             if goods_data.get('mock_mode') == True:
-                self.log_result("Car Selection - Goods", False, "Still using MOCK data")
+                self.log_result("Car Selection - Goods Fields", False, "Still using MOCK data")
                 return False
             
             goods = goods_data.get('data', [])
             markup = goods_data.get('markup_percentage')
             
-            self.log_result("Car Selection - Goods", True, f"Found {len(goods)} products, markup: {markup}%")
+            if len(goods) == 0:
+                self.log_result("Car Selection - Goods Fields", False, "No goods returned")
+                return False
+            
+            # Verify each product has all required fields
+            field_errors = []
+            
+            for i, item in enumerate(goods):
+                # Check size fields
+                if not item.get('width'):
+                    field_errors.append(f"Item {i}: missing width")
+                if not item.get('height'):
+                    field_errors.append(f"Item {i}: missing height")
+                if not item.get('diameter'):
+                    field_errors.append(f"Item {i}: missing diameter")
+                
+                # Check warehouse fields
+                if not item.get('rest') and item.get('rest') != 0:
+                    field_errors.append(f"Item {i}: missing rest")
+                if not item.get('warehouse_name'):
+                    field_errors.append(f"Item {i}: missing warehouse_name")
+                
+                # Check price
+                if not item.get('price') or item.get('price') <= 0:
+                    field_errors.append(f"Item {i}: missing or invalid price")
+            
+            if field_errors:
+                error_summary = "; ".join(field_errors[:5])
+                if len(field_errors) > 5:
+                    error_summary += f" (and {len(field_errors) - 5} more)"
+                self.log_result("Car Selection - Goods Fields", False, error_summary)
+                return False
+            
+            self.log_result("Car Selection - Goods Fields", True, 
+                          f"✅ All {len(goods)} products have required fields: width, height, diameter, rest, warehouse_name, price")
             return True
             
         except Exception as e:
