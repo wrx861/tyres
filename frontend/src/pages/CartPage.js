@@ -110,19 +110,33 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
         <div className="space-y-4 mb-6">
           {cart.map((item) => (
             <div key={item.code} className="bg-white rounded-xl p-4 shadow-sm">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{item.brand}</h3>
-                  <p className="text-sm text-gray-600">{item.model}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {item.width && item.height && item.diameter
-                      ? `${item.width}/${item.height} R${item.diameter}`
-                      : `${item.width}x${item.diameter}`}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-blue-600">{(item.price * item.quantity).toLocaleString()} ₽</p>
-                  <p className="text-xs text-gray-500">{item.price.toLocaleString()} ₽ / шт</p>
+              <div className="flex items-start space-x-4 mb-3">
+                {/* Product Image */}
+                {item.img_small && (
+                  <img 
+                    src={item.img_small} 
+                    alt={`${item.brand} ${item.model}`}
+                    className="w-16 h-16 object-contain flex-shrink-0"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                )}
+                
+                <div className="flex-1 flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{item.brand}</h3>
+                    <p className="text-sm text-gray-600">{item.model}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {item.width && item.height && item.diameter
+                        ? `${item.width}/${item.height} R${item.diameter}`
+                        : `${item.width}x${item.diameter}`}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-blue-600">{(item.price * item.quantity).toLocaleString()} ₽</p>
+                    <p className="text-xs text-gray-500">{item.price.toLocaleString()} ₽ / шт</p>
+                  </div>
                 </div>
               </div>
 
