@@ -111,6 +111,38 @@ fi
 
 echo ""
 
+# Запрос учетных данных для настройки
+echo -e "${BLUE}Настройка учетных данных${NC}"
+echo ""
+echo "Для работы приложения необходимы учетные данные:"
+echo "  1. API 4tochki (https://b2b.4tochki.ru)"
+echo "  2. Telegram бот"
+echo ""
+
+# Перенаправляем ввод с терминала
+exec < /dev/tty
+
+read -p "Логин 4tochki API: " FOURTHCHKI_LOGIN
+read -p "Пароль 4tochki API: " FOURTHCHKI_PASSWORD
+read -p "Telegram Bot Token (от @BotFather): " TELEGRAM_BOT_TOKEN
+read -p "Admin Telegram ID (от @userinfobot): " ADMIN_TELEGRAM_ID
+
+# Проверка что все данные введены
+if [ -z "$FOURTHCHKI_LOGIN" ] || [ -z "$FOURTHCHKI_PASSWORD" ] || [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$ADMIN_TELEGRAM_ID" ]; then
+    echo -e "${YELLOW}Внимание: Не все учетные данные были введены${NC}"
+    echo "Вы сможете добавить их позже в файле /opt/tyres-app/backend/.env"
+    
+    # Установка значений по умолчанию
+    FOURTHCHKI_LOGIN=${FOURTHCHKI_LOGIN:-"your_login_here"}
+    FOURTHCHKI_PASSWORD=${FOURTHCHKI_PASSWORD:-"your_password_here"}
+    TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-"your_bot_token_here"}
+    ADMIN_TELEGRAM_ID=${ADMIN_TELEGRAM_ID:-"your_admin_id_here"}
+else
+    echo -e "${GREEN}✓ Учетные данные введены${NC}"
+fi
+
+echo ""
+
 # Функция для проверки успешности команды
 check_status() {
     if [ $? -eq 0 ]; then
