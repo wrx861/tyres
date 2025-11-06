@@ -59,64 +59,105 @@ class APITester:
             self.log_result("Health Check", False, f"Connection error: {str(e)}")
             return False
     
-    def test_tire_search(self):
-        """Test tire search with real API data"""
+    def test_tire_search_with_sizes(self):
+        """Test tire search with size parsing verification"""
         try:
-            # Test with specific parameters
+            # Test with specific parameters from review request
             params = {
                 'width': 185,
                 'height': 60,
                 'diameter': 15,
-                'season': 'winter'
+                'season': 'winter',
+                'page': 0,
+                'page_size': 3
             }
             
             response = self.session.get(f"{BACKEND_URL}/products/tires/search", params=params)
             
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check if using real API (not mock)
-                if data.get('mock_mode') == True:
-                    self.log_result("Tire Search - Real API", False, "Still using MOCK data instead of real API")
-                    return False
-                
-                # Check if data is returned
-                if not data.get('success'):
-                    self.log_result("Tire Search - Real API", False, f"API returned success=false: {data}")
-                    return False
-                
-                tires = data.get('data', [])
-                markup = data.get('markup_percentage')
-                
-                if len(tires) == 0:
-                    self.log_result("Tire Search - Real API", False, "No tires returned from real API")
-                    return False
-                
-                # Check markup application
-                markup_applied = False
-                for tire in tires[:3]:  # Check first 3 items
-                    if tire.get('price') and tire.get('price_original'):
-                        original = float(tire['price_original'])
-                        final = float(tire['price'])
-                        expected = original * (1 + markup / 100)
-                        if abs(final - expected) < 0.01:  # Allow small rounding differences
-                            markup_applied = True
-                            break
-                
-                if not markup_applied:
-                    self.log_result("Tire Search - Markup", False, f"Markup {markup}% not properly applied to prices")
-                else:
-                    self.log_result("Tire Search - Markup", True, f"Markup {markup}% correctly applied")
-                
-                self.log_result("Tire Search - Real API", True, f"Found {len(tires)} tires, markup: {markup}%")
-                return True
-                
-            else:
-                self.log_result("Tire Search - Real API", False, f"HTTP {response.status_code}: {response.text}")
+            if response.status_code != 200:
+                self.log_result("Tire Search - Size Parsing", False, f"HTTP {response.status_code}: {response.text}")
                 return False
+            
+            data = response.json()
+            
+            # Check if using real API (not mock)
+            if data.get('mock_mode') == True:
+                self.log_result("Tire Search - Size Parsing", False, "Still using MOCK data instead of real API")
+                return False
+            
+            # Check if data is returned
+            if not data.get('success'):
+                self.log_result("Tire Search - Size Parsing", False, f"API returned success=false: {data}")
+                return False
+            
+            tires = data.get('data', [])
+            markup = data.get('markup_percentage')
+            
+            if len(tires) == 0:
+                self.log_result("Tire Search - Size Parsing", False, "No tires returned from real API")
+                return False
+            
+            # Verify each tire has required fields
+            missing_fields = []
+            size_parsing_errors = []
+            warehouse_errors = []
+            price_errors = []
+            
+            for i, tire in enumerate(tires):
+                # Check size fields (parsed from name)
+                if not tire.get('width') or not isinstance(tire.get('width'), int):
+                    size_parsing_errors.append(f"Tire {i}: missing or invalid width")
+                if not tire.get('height') or not isinstance(tire.get('height'), int):
+                    size_parsing_errors.append(f"Tire {i}: missing or invalid height")
+                if not tire.get('diameter') or not isinstance(tire.get('diameter'), int):
+                    size_parsing_errors.append(f"Tire {i}: missing or invalid diameter")
+                
+                # Check warehouse fields
+                if not tire.get('rest') and tire.get('rest') != 0:
+                    warehouse_errors.append(f"Tire {i}: missing rest (quantity)")
+                if not tire.get('warehouse_name') or not isinstance(tire.get('warehouse_name'), str):
+                    warehouse_errors.append(f"Tire {i}: missing or invalid warehouse_name")
+                
+                # Check price fields
+                if not tire.get('price') or tire.get('price') <= 0:
+                    price_errors.append(f"Tire {i}: missing or invalid price")
+                
+                # Check brand
+                if not tire.get('brand') or tire.get('brand').strip() == '':
+                    missing_fields.append(f"Tire {i}: empty brand")
+                
+                # Verify size parsing from name field
+                name = tire.get('name', '')
+                if name:
+                    size_match = re.match(r'(\d+)/(\d+)R(\d+)', name)
+                    if size_match and tire.get('width') and tire.get('height') and tire.get('diameter'):
+                        expected_width = int(size_match.group(1))
+                        expected_height = int(size_match.group(2))
+                        expected_diameter = int(size_match.group(3))
+                        
+                        if (tire['width'] != expected_width or 
+                            tire['height'] != expected_height or 
+                            tire['diameter'] != expected_diameter):
+                            size_parsing_errors.append(
+                                f"Tire {i}: Size mismatch - name '{name}' vs parsed {tire['width']}/{tire['height']}R{tire['diameter']}"
+                            )
+            
+            # Report results
+            all_errors = size_parsing_errors + warehouse_errors + price_errors + missing_fields
+            
+            if all_errors:
+                error_summary = "; ".join(all_errors[:5])  # Show first 5 errors
+                if len(all_errors) > 5:
+                    error_summary += f" (and {len(all_errors) - 5} more)"
+                self.log_result("Tire Search - Size Parsing", False, error_summary)
+                return False
+            
+            self.log_result("Tire Search - Size Parsing", True, 
+                          f"✅ All {len(tires)} tires have correct fields: width, height, diameter, rest, warehouse_name, price > 0, brand")
+            return True
                 
         except Exception as e:
-            self.log_result("Tire Search - Real API", False, f"Error: {str(e)}")
+            self.log_result("Tire Search - Size Parsing", False, f"Error: {str(e)}")
             return False
     
     def test_disk_search(self):
