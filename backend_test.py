@@ -241,7 +241,7 @@ class APITester:
             
             modifications = mods_data.get('data', [])
             if len(modifications) == 0:
-                # Try with BMW 3 Series which we know has modifications
+                # Try with BMW 3 Series which we know has modifications for recent years
                 try:
                     response = self.session.get(f"{BACKEND_URL}/cars/models", params={'brand': 'BMW'})
                     if response.status_code == 200:
@@ -254,8 +254,10 @@ class APITester:
                             })
                             if response.status_code == 200:
                                 bmw_years = response.json().get('data', [])
-                                if bmw_years:
-                                    bmw_year = str(bmw_years[0])
+                                # Use a recent year (2015 or later)
+                                recent_years = [y for y in bmw_years if y >= 2015]
+                                if recent_years:
+                                    bmw_year = str(recent_years[0])
                                     response = self.session.get(f"{BACKEND_URL}/cars/modifications", params={
                                         'brand': 'BMW',
                                         'model': '3 Series',
