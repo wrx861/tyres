@@ -146,21 +146,34 @@ fi
 
 echo ""
 
-# Запрос учетных данных для настройки
-echo ""
-echo -e "${BLUE}Настройка учетных данных${NC}"
-echo ""
-echo "Для работы приложения необходимы учетные данные:"
-echo "  1. API 4tochki (https://b2b.4tochki.ru)"
-echo "  2. Telegram бот"
-echo ""
-echo -e "${YELLOW}Подсказка:${NC} Нажмите Enter чтобы пропустить (можно настроить позже)"
-echo ""
+# Запрос учетных данных для настройки (если не указаны через аргументы)
+if [ -z "$FOURTHCHKI_LOGIN" ] || [ -z "$FOURTHCHKI_PASSWORD" ] || [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$ADMIN_TELEGRAM_ID" ]; then
+    echo ""
+    echo -e "${BLUE}Настройка учетных данных${NC}"
+    echo ""
+    echo "Для работы приложения необходимы учетные данные:"
+    echo "  1. API 4tochki (https://b2b.4tochki.ru)"
+    echo "  2. Telegram бот"
+    echo ""
+    echo -e "${YELLOW}Подсказка:${NC} Нажмите Enter чтобы пропустить (можно настроить позже)"
+    echo ""
 
-read -p "Логин 4tochki API: " FOURTHCHKI_LOGIN
-read -p "Пароль 4tochki API: " FOURTHCHKI_PASSWORD
-read -p "Telegram Bot Token (от @BotFather): " TELEGRAM_BOT_TOKEN
-read -p "Admin Telegram ID (от @userinfobot): " ADMIN_TELEGRAM_ID
+    if [ -z "$FOURTHCHKI_LOGIN" ]; then
+        read -p "Логин 4tochki API: " FOURTHCHKI_LOGIN
+    fi
+    if [ -z "$FOURTHCHKI_PASSWORD" ]; then
+        read -p "Пароль 4tochki API: " FOURTHCHKI_PASSWORD
+    fi
+    if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
+        read -p "Telegram Bot Token (от @BotFather): " TELEGRAM_BOT_TOKEN
+    fi
+    if [ -z "$ADMIN_TELEGRAM_ID" ]; then
+        read -p "Admin Telegram ID (от @userinfobot): " ADMIN_TELEGRAM_ID
+    fi
+else
+    echo ""
+    echo -e "${GREEN}✓ Учетные данные переданы через аргументы${NC}"
+fi
 
 # Проверка что все данные введены
 if [ -z "$FOURTHCHKI_LOGIN" ] || [ -z "$FOURTHCHKI_PASSWORD" ] || [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$ADMIN_TELEGRAM_ID" ]; then
