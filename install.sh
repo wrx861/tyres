@@ -73,16 +73,35 @@ fi
 # 6. Установка MongoDB
 echo -e "${YELLOW}[6/10] Установка MongoDB...${NC}"
 if ! command -v mongod &> /dev/null; then
-    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add -
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+    # Определяем версию Ubuntu
+    UBUNTU_VERSION=$(lsb_release -cs)
+    
+    if [ "$UBUNTU_VERSION" = "noble" ] || [ "$UBUNTU_VERSION" = "mantic" ]; then
+        # Для Ubuntu 24.04+ используем MongoDB 7.0
+        curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+        echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+    else
+        # Для старых версий Ubuntu используем MongoDB 6.0
+        curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg --dearmor
+        echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+    fi
+    
     apt-get update -qq
     apt-get install -y mongodb-org -qq
     systemctl enable mongod
     systemctl start mongod
-    check_status "MongoDB установлен и запущен"
+    
+    # Проверка что MongoDB запустился
+    sleep 3
+    if systemctl is-active --quiet mongod; then
+        check_status "MongoDB установлен и запущен"
+    else
+        echo -e "${RED}✗ MongoDB установлен, но не запущен. Попробуйте: sudo systemctl start mongod${NC}"
+        exit 1
+    fi
 else
     echo -e "${GREEN}✓ MongoDB уже установлен${NC}"
-    systemctl start mongod 2>/dev/null
+    systemctl start mongod 2>/dev/null || true
 fi
 
 # 7. Клонирование репозитория
