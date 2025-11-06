@@ -88,11 +88,16 @@ async def get_car_models(
         client = get_fourthchki_client()
         response = client.get_car_models(brand)
         
-        if response.get('error'):
-            error_msg = response['error'].get('Message', 'Unknown error')
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
         models = response.get('model_list', [])
+        # Handle the case where models is wrapped in a 'string' key
+        if isinstance(models, dict) and 'string' in models:
+            models = models['string']
         
         return {
             "success": True,
