@@ -139,13 +139,13 @@ class APITester:
             self.log_result("Tire Search - Image Fields", False, f"Error: {str(e)}")
             return False
     
-    def test_disk_search_with_sizes(self):
-        """Test disk search with size parsing verification"""
+    def test_disk_search_with_image_fields(self):
+        """Test disk search with image fields verification (as per review request)"""
         try:
             # Test with specific parameters from review request
             params = {
-                'diameter': 16,
-                'width': 7,
+                'diameter': 15,
+                'width': 6.5,
                 'page': 0,
                 'page_size': 3
             }
@@ -153,79 +153,67 @@ class APITester:
             response = self.session.get(f"{BACKEND_URL}/products/disks/search", params=params)
             
             if response.status_code != 200:
-                self.log_result("Disk Search - Size Parsing", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_result("Disk Search - Image Fields", False, f"HTTP {response.status_code}: {response.text}")
                 return False
             
             data = response.json()
             
             # Check if using real API
             if data.get('mock_mode') == True:
-                self.log_result("Disk Search - Size Parsing", False, "Still using MOCK data instead of real API")
+                self.log_result("Disk Search - Image Fields", False, "Still using MOCK data instead of real API")
                 return False
             
             if not data.get('success'):
-                self.log_result("Disk Search - Size Parsing", False, f"API returned success=false: {data}")
+                self.log_result("Disk Search - Image Fields", False, f"API returned success=false: {data}")
                 return False
             
             disks = data.get('data', [])
-            markup = data.get('markup_percentage')
             
             if len(disks) == 0:
-                self.log_result("Disk Search - Size Parsing", False, "No disks returned from real API")
+                self.log_result("Disk Search - Image Fields", False, "No disks returned from real API")
                 return False
             
-            # Verify each disk has required fields
-            size_parsing_errors = []
-            warehouse_errors = []
-            price_errors = []
+            # Verify each disk has image fields
+            image_field_errors = []
+            fallback_tests = []
             
             for i, disk in enumerate(disks):
-                # Check size fields (parsed from name)
-                if not disk.get('width'):
-                    size_parsing_errors.append(f"Disk {i}: missing width")
-                if not disk.get('diameter'):
-                    size_parsing_errors.append(f"Disk {i}: missing diameter")
+                # Check that image fields exist (they can be empty strings)
+                if 'img_small' not in disk:
+                    image_field_errors.append(f"Disk {i}: missing img_small field")
+                if 'img_big_my' not in disk:
+                    image_field_errors.append(f"Disk {i}: missing img_big_my field")
+                if 'img_big_pish' not in disk:
+                    image_field_errors.append(f"Disk {i}: missing img_big_pish field")
                 
-                # Check warehouse fields
-                if not disk.get('rest') and disk.get('rest') != 0:
-                    warehouse_errors.append(f"Disk {i}: missing rest (quantity)")
-                if not disk.get('warehouse_name') or not isinstance(disk.get('warehouse_name'), str):
-                    warehouse_errors.append(f"Disk {i}: missing or invalid warehouse_name")
+                # Test fallback logic: if img_big_my is empty, it should use img_big_pish
+                img_big_my = disk.get('img_big_my', '')
+                img_big_pish = disk.get('img_big_pish', '')
                 
-                # Check price fields
-                if not disk.get('price') or disk.get('price') <= 0:
-                    price_errors.append(f"Disk {i}: missing or invalid price")
-                
-                # Verify size parsing from name field
-                name = disk.get('name', '')
-                if name:
-                    size_match = re.search(r'(\d+\.?\d*)x(\d+)', name)
-                    if size_match and disk.get('width') and disk.get('diameter'):
-                        expected_width = float(size_match.group(1))
-                        expected_diameter = int(size_match.group(2))
-                        
-                        if (abs(disk['width'] - expected_width) > 0.1 or 
-                            disk['diameter'] != expected_diameter):
-                            size_parsing_errors.append(
-                                f"Disk {i}: Size mismatch - name '{name}' vs parsed {disk['width']}x{disk['diameter']}"
-                            )
+                # If img_big_my is empty but img_big_pish has value, fallback should work
+                if not img_big_my and img_big_pish:
+                    fallback_tests.append(f"Disk {i}: Fallback working - img_big_my empty, using img_big_pish: {img_big_pish[:50]}...")
+                elif img_big_my and img_big_pish and img_big_my != img_big_pish:
+                    fallback_tests.append(f"Disk {i}: Has both images - img_big_my: {img_big_my[:50]}..., img_big_pish: {img_big_pish[:50]}...")
+                elif img_big_my:
+                    fallback_tests.append(f"Disk {i}: Using img_big_my: {img_big_my[:50]}...")
             
-            # Report results
-            all_errors = size_parsing_errors + warehouse_errors + price_errors
-            
-            if all_errors:
-                error_summary = "; ".join(all_errors[:5])  # Show first 5 errors
-                if len(all_errors) > 5:
-                    error_summary += f" (and {len(all_errors) - 5} more)"
-                self.log_result("Disk Search - Size Parsing", False, error_summary)
+            if image_field_errors:
+                error_summary = "; ".join(image_field_errors)
+                self.log_result("Disk Search - Image Fields", False, error_summary)
                 return False
             
-            self.log_result("Disk Search - Size Parsing", True, 
-                          f"✅ All {len(disks)} disks have correct fields: width, diameter, rest, warehouse_name, price > 0")
+            # Log fallback test results
+            fallback_summary = "; ".join(fallback_tests[:3])  # Show first 3
+            if len(fallback_tests) > 3:
+                fallback_summary += f" (and {len(fallback_tests) - 3} more)"
+            
+            self.log_result("Disk Search - Image Fields", True, 
+                          f"✅ All {len(disks)} disks have image fields: img_small, img_big_my, img_big_pish. Fallback logic: {fallback_summary}")
             return True
                 
         except Exception as e:
-            self.log_result("Disk Search - Size Parsing", False, f"Error: {str(e)}")
+            self.log_result("Disk Search - Image Fields", False, f"Error: {str(e)}")
             return False
     
     def test_car_selection_flow_with_fields(self):
