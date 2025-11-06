@@ -126,24 +126,64 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <div className="flex items-center space-x-4 text-sm text-gray-600">
-          <div className="flex items-center">
-            <Package size={16} className="mr-1" />
-            <span>{warehouseInfo.rest} шт</span>
-          </div>
-          <div className="flex items-center">
-            <MapPin size={16} className="mr-1" />
-            <span>{warehouseInfo.warehouse_name}</span>
+      <div className="pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center">
+              <Package size={16} className="mr-1" />
+              <span>{warehouseInfo.rest} шт</span>
+            </div>
+            <div className="flex items-center">
+              <MapPin size={16} className="mr-1" />
+              <span>{warehouseInfo.warehouse_name}</span>
+            </div>
           </div>
         </div>
+        
+        {/* Quantity Selector */}
+        <div className="flex items-center space-x-3 mb-3">
+          <span className="text-sm font-medium text-gray-700">Количество:</span>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              -
+            </button>
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              className="w-16 text-center border border-gray-300 rounded-lg py-1"
+              min="1"
+            />
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
         <button
-          onClick={() => onAddToCart(product)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+          onClick={() => {
+            onAddToCart({ ...product, quantity });
+            setShowAddedNotification(true);
+            setTimeout(() => setShowAddedNotification(false), 2000);
+          }}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors"
         >
           <Plus size={18} />
-          <span>В корзину</span>
+          <span>Добавить в корзину</span>
         </button>
+
+        {/* Added Notification */}
+        {showAddedNotification && (
+          <div className="mt-2 bg-green-100 text-green-800 text-sm py-2 px-3 rounded-lg text-center">
+            ✓ Добавлено {quantity} шт в корзину
+          </div>
+        )}
       </div>
       </div>
       
