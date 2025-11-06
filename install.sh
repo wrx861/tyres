@@ -99,7 +99,7 @@ else
 fi
 
 # 5. Установка Yarn
-echo -e "${YELLOW}[5/10] Установка Yarn...${NC}"
+echo -e "${YELLOW}[5/12] Установка Yarn...${NC}"
 if ! command -v yarn &> /dev/null; then
     npm install -g yarn --silent
     check_status "Yarn установлен"
