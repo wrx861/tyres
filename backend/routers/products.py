@@ -89,8 +89,10 @@ async def search_tires(
                 page_size=page_size
             )
         
-        if response.get('error'):
-            error_msg = response['error'].get('Message', 'Unknown error')
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
         if response.get('price_rest_list'):
@@ -154,8 +156,10 @@ async def search_disks(
                 page_size=page_size
             )
         
-        if response.get('error'):
-            error_msg = response['error'].get('Message', 'Unknown error')
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
         if response.get('price_rest_list'):
@@ -211,8 +215,10 @@ async def get_product_info(
         client = get_fourthchki_client()
         response = client.get_goods_info(code)
         
-        if response.get('error'):
-            error_msg = response['error'].get('Message', 'Unknown error')
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
         if response.get('price'):
@@ -249,8 +255,10 @@ async def get_warehouses():
         client = get_fourthchki_client()
         response = client.get_warehouses()
         
-        if response.get('error'):
-            error_msg = response['error'].get('Message', 'Unknown error')
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
         return {
