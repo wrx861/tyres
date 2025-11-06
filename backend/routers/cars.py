@@ -242,12 +242,47 @@ async def get_goods_by_car(
             )
         
         # Check if there's a meaningful error (not just empty error structure)
+        # Some error codes like 52 are warnings and still return data
         error = response.get('error')
-        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+        if error and error.get('code') and error.get('code') not in [52]:
             error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
-        if response.get('price_rest_list'):
+        # Extract goods data from nested structure
+        goods_data = []
+        price_rest_list = response.get('price_rest_list', {})
+        if isinstance(price_rest_list, dict) and 'TyrePriceRest' in price_rest_list:
+            goods_data = price_rest_list['TyrePriceRest']
+        elif isinstance(price_rest_list, list):
+            goods_data = price_rest_list
+        
+        # Apply markup to prices
+        for item in goods_data:
+            # Find the best price from warehouse data
+            if item.get('whpr') and item['whpr'].get('wh_price_rest'):
+                warehouses = item['whpr']['wh_price_rest']
+                if warehouses:
+                    # Use the first warehouse price as base price
+                    best_price = min(float(wh['price']) for wh in warehouses)
+                    item['price_original'] = best_price
+                    item['price'] = apply_markup(best_price, markup)
+        
+        # Extract warehouse data
+        warehouses = []
+        warehouse_logistics = response.get('warehouseLogistics', {})
+        if isinstance(warehouse_logistics, dict) and 'WarehouseLogistic' in warehouse_logistics:
+            warehouses = warehouse_logistics['WarehouseLogistic']
+        elif isinstance(warehouse_logistics, list):
+            warehouses = warehouse_logistics
+        
+        return {
+            "success": True,
+            "data": goods_data,
+            "warehouses": warehouses,
+            "currency": response.get('currencyRate', {}),
+            "markup_percentage": markup,
+            "mock_mode": use_mock_data()
+        }
             for item in response['price_rest_list']:
                 if item.get('price'):
                     original_price = float(item['price'])
