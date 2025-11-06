@@ -283,20 +283,6 @@ async def get_goods_by_car(
             "markup_percentage": markup,
             "mock_mode": use_mock_data()
         }
-            for item in response['price_rest_list']:
-                if item.get('price'):
-                    original_price = float(item['price'])
-                    item['price_original'] = original_price
-                    item['price'] = apply_markup(original_price, markup)
-        
-        return {
-            "success": True,
-            "data": response.get('price_rest_list', []),
-            "warehouses": response.get('warehouseLogistics', []),
-            "currency": response.get('currencyRate', {}),
-            "markup_percentage": markup,
-            "mock_mode": use_mock_data()
-        }
         
     except HTTPException:
         raise
