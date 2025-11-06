@@ -258,6 +258,27 @@ async def get_goods_by_car(
         
         # Apply markup to prices and normalize data structure
         for item in goods_data:
+            # Parse size from name
+            import re
+            name = item.get('name', '')
+            
+            # Try tire pattern first (185/60R15)
+            tire_match = re.match(r'(\d+)/(\d+)R(\d+)', name)
+            if tire_match:
+                item['width'] = int(tire_match.group(1))
+                item['height'] = int(tire_match.group(2))
+                item['diameter'] = int(tire_match.group(3))
+            else:
+                # Try disk pattern (7x16)
+                disk_match = re.search(r'(\d+\.?\d*)x(\d+)', name)
+                if disk_match:
+                    item['width'] = float(disk_match.group(1))
+                    item['diameter'] = int(disk_match.group(2))
+            
+            # Extract brand and model if not present
+            if not item.get('brand'):
+                item['brand'] = item.get('marka', 'Неизвестно')
+            
             # Find the best price from warehouse data
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
@@ -270,8 +291,9 @@ async def get_goods_by_car(
                     
                     # Extract warehouse info for display
                     item['rest'] = best_warehouse.get('rest', 0)
-                    item['warehouse_name'] = best_warehouse.get('wrh', 'Склад')
-                    item['warehouse_id'] = best_warehouse.get('id_wrh', 0)
+                    wrh_id = best_warehouse.get('wrh', 0)
+                    item['warehouse_name'] = f'Склад {wrh_id}'
+                    item['warehouse_id'] = wrh_id
         
         # Extract warehouse data
         warehouses = []
