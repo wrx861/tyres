@@ -7,6 +7,11 @@ import sys
 import os
 sys.path.append('/app/backend')
 
+# Load environment variables
+from dotenv import load_dotenv
+from pathlib import Path
+load_dotenv('/app/backend/.env')
+
 from services.fourthchki_client import get_fourthchki_client
 import logging
 
