@@ -204,8 +204,15 @@ async def search_tires(
 @router.get("/disks/search")
 async def search_disks(
     diameter: Optional[int] = Query(None, description="Диаметр (например, 15)"),
-    width: Optional[float] = Query(None, description="Ширина (например, 6.5)"),
+    width: Optional[float] = Query(None, description="Ширина обода (например, 6.5)"),
     brand: Optional[str] = Query(None, description="Бренд"),
+    pcd: Optional[str] = Query(None, description="PCD - количество отверстий и диаметр (например, 5x114.3)"),
+    et_min: Optional[float] = Query(None, description="Вылет минимальный (например, 35)"),
+    et_max: Optional[float] = Query(None, description="Вылет максимальный (например, 45)"),
+    dia_min: Optional[float] = Query(None, description="Диаметр ступичного отверстия мин (например, 60.1)"),
+    dia_max: Optional[float] = Query(None, description="Диаметр ступичного отверстия макс (например, 73.1)"),
+    color: Optional[str] = Query(None, description="Цвет диска"),
+    disk_type: Optional[int] = Query(None, description="Тип диска: 0-Литой, 1-Штампованный, 2-Кованный"),
     city: Optional[str] = Query(None, description="Город (для фильтрации по складам)"),
     page: int = Query(0, ge=0, description="Номер страницы"),
     page_size: int = Query(50, ge=1, le=200, description="Размер страницы"),
