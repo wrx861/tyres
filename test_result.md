@@ -101,3 +101,239 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  Telegram Mini App для поставщика шин 4tochki.ru. 
+  Переход с mock данных на реальный API 4tochki после успешного тестирования API.
+  Основная функциональность: поиск шин/дисков по параметрам и автомобилю, просмотр цен и остатков, 
+  размещение заказов с подтверждением админа, настройка наценки админом.
+
+backend:
+  - task: "Поиск шин по параметрам через API 4tochki"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/products.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Переключен с mock данных на реальный API (USE_MOCK_DATA=false). Требуется тестирование поиска шин по параметрам: ширина, высота, диаметр, сезон, бренд."
+  
+  - task: "Поиск дисков по параметрам через API 4tochki"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/products.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Переключен на реальный API. Требуется тестирование поиска дисков по диаметру, ширине, бренду."
+  
+  - task: "Получение списка марок автомобилей (GetMarkaAvto)"
+    implemented: true
+    working: true
+    file: "backend/routers/cars.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "API метод GetMarkaAvto успешно протестирован и работает. Переключен на реальный API."
+  
+  - task: "Получение моделей автомобилей (GetModelAvto)"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/cars.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Переключен на реальный API. Требуется тестирование получения моделей для выбранной марки."
+  
+  - task: "Получение годов выпуска (GetYearAvto)"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/cars.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Переключен на реальный API. Требуется тестирование получения годов для марки и модели."
+  
+  - task: "Получение модификаций (GetModificationAvto)"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/cars.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Переключен на реальный API. Требуется тестирование получения модификаций."
+  
+  - task: "Подбор товаров по автомобилю (GetGoodsByCar)"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/cars.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Переключен на реальный API. Требуется тестирование подбора шин/дисков по полным данным автомобиля."
+  
+  - task: "Создание заказа и отправка поставщику"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/orders.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Использует реальный API для создания заказа у поставщика через client.create_order(). Требуется тестирование полного цикла: создание -> подтверждение админом -> отправка поставщику."
+  
+  - task: "Управление наценкой админом"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Админ может изменять процент наценки, который применяется ко всем ценам. Требуется тестирование изменения наценки и применения к товарам."
+  
+  - task: "Аутентификация пользователей через Telegram"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/auth.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Регистрация и авторизация пользователей по Telegram ID. Требуется тестирование."
+  
+  - task: "Уведомления через Telegram бота"
+    implemented: true
+    working: "NA"
+    file: "backend/services/telegram_bot.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Бот отправляет уведомления админу о новых заказах и клиентам о статусе. Требуется тестирование."
+
+frontend:
+  - task: "Страница поиска шин/дисков"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/SearchPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Интерфейс поиска шин и дисков по параметрам. Требуется проверка отображения реальных данных из API."
+  
+  - task: "Страница подбора по автомобилю"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/CarSelectionPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Выбор автомобиля и подбор товаров. Требуется проверка работы с реальными данными API."
+  
+  - task: "Корзина и оформление заказа"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/CartPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Корзина с товарами и форма адреса доставки. Требуется проверка создания заказа."
+  
+  - task: "Админ панель - управление наценкой"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/AdminPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Админ может изменять процент наценки. Требуется проверка изменения и применения."
+  
+  - task: "Список заказов пользователя"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/OrdersPage.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Отображение истории заказов пользователя. Требуется проверка."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Поиск шин по параметрам через API 4tochki"
+    - "Поиск дисков по параметрам через API 4tochki"
+    - "Получение списка марок автомобилей (GetMarkaAvto)"
+    - "Получение моделей автомобилей (GetModelAvto)"
+    - "Подбор товаров по автомобилю (GetGoodsByCar)"
+    - "Создание заказа и отправка поставщику"
+    - "Управление наценкой админом"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Переключил приложение с mock данных на реальный API 4tochki.
+      USE_MOCK_DATA установлен в false в /app/backend/.env.
+      Все роутеры готовы к работе с реальным API через FourthchkiClient (Zeep SOAP).
+      
+      Критически важно протестировать:
+      1. Поиск шин и дисков - проверить что API возвращает данные и применяется наценка
+      2. Подбор по автомобилю - полный цикл от марки до товаров
+      3. Создание заказа - проверить что заказ отправляется поставщику после подтверждения админом
+      4. Наценка - проверить что изменение наценки применяется к ценам товаров
+      
+      Учетные данные API: FOURTHCHKI_LOGIN=sa56026, FOURTHCHKI_PASSWORD=F8Aeg3Cnkq
+      Telegram бот: TELEGRAM_BOT_TOKEN=8290483601:AAFqXwpx1_paoekO0dt3kR46z471zlDKChI
+      Admin Telegram ID: 508352361
