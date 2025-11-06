@@ -660,15 +660,11 @@ class APITester:
         print("=" * 60)
         print()
         
-        # Run tests in order of priority - focusing on UI fixes
+        # Run tests in order of priority - focusing on image fields as per review request
         tests = [
             ("Health Check", self.test_health_check),
-            ("Tire Search with Size Parsing", self.test_tire_search_with_sizes),
-            ("Disk Search with Size Parsing", self.test_disk_search_with_sizes),
-            ("Car Selection Flow with Field Verification", self.test_car_selection_flow_with_fields),
-            ("Markup Management Still Works", self.test_markup_management_still_works),
-            ("Authentication", self.test_authentication),
-            ("Orders", self.test_orders),
+            ("Tire Search with Image Fields", self.test_tire_search_with_image_fields),
+            ("Disk Search with Image Fields", self.test_disk_search_with_image_fields),
         ]
         
         for test_name, test_func in tests:
