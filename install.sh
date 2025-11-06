@@ -260,13 +260,15 @@ check_status "Backend зависимости установлены"
 if [ ! -f .env ]; then
     cat > .env << EOF
 MONGO_URL=mongodb://localhost:27017/tyres_db
-FOURTHCHKI_LOGIN=your_login_here
-FOURTHCHKI_PASSWORD=your_password_here
-TELEGRAM_BOT_TOKEN=your_bot_token_here
-TELEGRAM_ADMIN_ID=your_admin_id_here
+FOURTHCHKI_LOGIN=$FOURTHCHKI_LOGIN
+FOURTHCHKI_PASSWORD=$FOURTHCHKI_PASSWORD
+FOURTHCHKI_API_URL=http://api-b2b.4tochki.ru/WCF/ClientService.svc?wsdl
+TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN
+ADMIN_TELEGRAM_ID=$ADMIN_TELEGRAM_ID
+DEFAULT_MARKUP_PERCENTAGE=15
 USE_MOCK_DATA=false
 EOF
-    check_status "Backend .env создан"
+    check_status "Backend .env создан с учетными данными"
 else
     echo -e "${GREEN}✓ Backend .env уже существует${NC}"
 fi
