@@ -41,8 +41,12 @@ function App() {
         if (warehousesData.data && warehousesData.data.WarehouseInfo) {
           warehousesData.data.WarehouseInfo.forEach(wh => {
             // Извлекаем город из названия (например, "ОХ г. Сургут..." -> "Сургут")
-            const match = wh.name.match(/г\.\s*([А-Яа-яёЁ\s-]+)/);
-            const city = match ? match[1].trim() : wh.shortName || `Склад ${wh.id}`;
+            const match = wh.name.match(/г\.\s*([А-Яа-яёЁ\s-]+?)(?:\s|$|,|\(|И|О)/);
+            let city = match ? match[1].trim() : wh.shortName || `Склад ${wh.id}`;
+            
+            // Убираем лишние слова после города
+            city = city.split(/\s+/).slice(0, 2).join(' '); // Максимум 2 слова
+            
             warehouseMap[wh.id] = city;
           });
         }
