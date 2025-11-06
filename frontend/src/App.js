@@ -130,9 +130,11 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {renderPage()}
-    </div>
+    <WarehousesContext.Provider value={warehouses}>
+      <div className="min-h-screen bg-gray-50">
+        {renderPage()}
+      </div>
+    </WarehousesContext.Provider>
   );
 }
 
