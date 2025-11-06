@@ -160,44 +160,93 @@ class APITester:
             self.log_result("Tire Search - Size Parsing", False, f"Error: {str(e)}")
             return False
     
-    def test_disk_search(self):
-        """Test disk search with real API data"""
+    def test_disk_search_with_sizes(self):
+        """Test disk search with size parsing verification"""
         try:
+            # Test with specific parameters from review request
             params = {
-                'diameter': 15,
-                'width': 6.5
+                'diameter': 16,
+                'width': 7,
+                'page': 0,
+                'page_size': 3
             }
             
             response = self.session.get(f"{BACKEND_URL}/products/disks/search", params=params)
             
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check if using real API
-                if data.get('mock_mode') == True:
-                    self.log_result("Disk Search - Real API", False, "Still using MOCK data instead of real API")
-                    return False
-                
-                if not data.get('success'):
-                    self.log_result("Disk Search - Real API", False, f"API returned success=false: {data}")
-                    return False
-                
-                disks = data.get('data', [])
-                markup = data.get('markup_percentage')
-                
-                if len(disks) == 0:
-                    self.log_result("Disk Search - Real API", False, "No disks returned from real API")
-                    return False
-                
-                self.log_result("Disk Search - Real API", True, f"Found {len(disks)} disks, markup: {markup}%")
-                return True
-                
-            else:
-                self.log_result("Disk Search - Real API", False, f"HTTP {response.status_code}: {response.text}")
+            if response.status_code != 200:
+                self.log_result("Disk Search - Size Parsing", False, f"HTTP {response.status_code}: {response.text}")
                 return False
+            
+            data = response.json()
+            
+            # Check if using real API
+            if data.get('mock_mode') == True:
+                self.log_result("Disk Search - Size Parsing", False, "Still using MOCK data instead of real API")
+                return False
+            
+            if not data.get('success'):
+                self.log_result("Disk Search - Size Parsing", False, f"API returned success=false: {data}")
+                return False
+            
+            disks = data.get('data', [])
+            markup = data.get('markup_percentage')
+            
+            if len(disks) == 0:
+                self.log_result("Disk Search - Size Parsing", False, "No disks returned from real API")
+                return False
+            
+            # Verify each disk has required fields
+            size_parsing_errors = []
+            warehouse_errors = []
+            price_errors = []
+            
+            for i, disk in enumerate(disks):
+                # Check size fields (parsed from name)
+                if not disk.get('width'):
+                    size_parsing_errors.append(f"Disk {i}: missing width")
+                if not disk.get('diameter'):
+                    size_parsing_errors.append(f"Disk {i}: missing diameter")
+                
+                # Check warehouse fields
+                if not disk.get('rest') and disk.get('rest') != 0:
+                    warehouse_errors.append(f"Disk {i}: missing rest (quantity)")
+                if not disk.get('warehouse_name') or not isinstance(disk.get('warehouse_name'), str):
+                    warehouse_errors.append(f"Disk {i}: missing or invalid warehouse_name")
+                
+                # Check price fields
+                if not disk.get('price') or disk.get('price') <= 0:
+                    price_errors.append(f"Disk {i}: missing or invalid price")
+                
+                # Verify size parsing from name field
+                name = disk.get('name', '')
+                if name:
+                    size_match = re.search(r'(\d+\.?\d*)x(\d+)', name)
+                    if size_match and disk.get('width') and disk.get('diameter'):
+                        expected_width = float(size_match.group(1))
+                        expected_diameter = int(size_match.group(2))
+                        
+                        if (abs(disk['width'] - expected_width) > 0.1 or 
+                            disk['diameter'] != expected_diameter):
+                            size_parsing_errors.append(
+                                f"Disk {i}: Size mismatch - name '{name}' vs parsed {disk['width']}x{disk['diameter']}"
+                            )
+            
+            # Report results
+            all_errors = size_parsing_errors + warehouse_errors + price_errors
+            
+            if all_errors:
+                error_summary = "; ".join(all_errors[:5])  # Show first 5 errors
+                if len(all_errors) > 5:
+                    error_summary += f" (and {len(all_errors) - 5} more)"
+                self.log_result("Disk Search - Size Parsing", False, error_summary)
+                return False
+            
+            self.log_result("Disk Search - Size Parsing", True, 
+                          f"✅ All {len(disks)} disks have correct fields: width, diameter, rest, warehouse_name, price > 0")
+            return True
                 
         except Exception as e:
-            self.log_result("Disk Search - Real API", False, f"Error: {str(e)}")
+            self.log_result("Disk Search - Size Parsing", False, f"Error: {str(e)}")
             return False
     
     def test_car_selection_flow(self):
