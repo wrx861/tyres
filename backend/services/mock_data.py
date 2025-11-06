@@ -105,6 +105,9 @@ def generate_mock_tires(season=None, width=None, height=None, diameter=None, bra
             'speed_index': random.choice(['H', 'T', 'V', 'W']),
             'runflat': random.choice([True, False]),
             'thorn': tire_season == 'w' and random.choice([True, False]),
+            'img_small': 'https://via.placeholder.com/120x120/4299e1/ffffff?text=Tire',
+            'img_big_my': 'https://via.placeholder.com/400x400/4299e1/ffffff?text=Tire+Detail',
+            'img_big_pish': 'https://via.placeholder.com/400x400/4299e1/ffffff?text=Tire+4tochki',
         }
         
         tires.append(tire)
