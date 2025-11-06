@@ -75,32 +75,17 @@ const CarSelectionPage = ({ onAddToCart, onBack }) => {
       const mods = response.data || [];
       setModifications(mods);
       
-      // Если модификаций нет, пропускаем шаг и сразу получаем товары
+      // Если модификаций нет, показываем сообщение
       if (mods.length === 0) {
-        console.log('Нет модификаций, получаем товары напрямую');
-        try {
-          const goodsResponse = await getGoodsByCar(updatedSelection);
-          setResults(goodsResponse.data || []);
-          setStep(5);
-        } catch (goodsError) {
-          console.error('Ошибка загрузки товаров:', goodsError);
-          setResults([]);
-          setStep(4); // Показываем пустую страницу модификаций
-        }
+        console.log('Нет модификаций для выбранного автомобиля');
+        setStep(4); // Показываем шаг с сообщением
       } else {
         setStep(4);
       }
     } catch (error) {
       console.error('Ошибка загрузки модификаций:', error);
-      // Попробуем получить товары без модификации
-      try {
-        const goodsResponse = await getGoodsByCar(updatedSelection);
-        setResults(goodsResponse.data || []);
-        setStep(5);
-      } catch (goodsError) {
-        console.error('Ошибка загрузки товаров:', goodsError);
-        setResults([]);
-      }
+      setModifications([]);
+      setStep(4);
     } finally {
       setLoading(false);
     }
