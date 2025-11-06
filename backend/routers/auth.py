@@ -58,6 +58,19 @@ async def authenticate_telegram_user(
         
         logger.info(f"New user created: {user_data.telegram_id}, admin: {is_admin}")
         
+        # Уведомляем админа о новом посетителе (только если это не сам админ)
+        if not is_admin:
+            try:
+                notifier = get_telegram_notifier()
+                await notifier.notify_admin_new_visitor(
+                    telegram_id=user_data.telegram_id,
+                    username=user_data.username,
+                    first_name=user_data.first_name,
+                    last_name=user_data.last_name
+                )
+            except Exception as e:
+                logger.error(f"Failed to notify admin about new visitor: {e}")
+        
         return new_user
         
     except Exception as e:
