@@ -342,17 +342,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Поиск шин по параметрам через API 4tochki"
-    - "Поиск дисков по параметрам через API 4tochki"
-    - "Получение списка марок автомобилей (GetMarkaAvto)"
-    - "Получение моделей автомобилей (GetModelAvto)"
-    - "Подбор товаров по автомобилю (GetGoodsByCar)"
-    - "Создание заказа и отправка поставщику"
-    - "Управление наценкой админом"
+  current_focus: []
   stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+  test_all: false
+  test_priority: "completed"
+  completion_status: "all_backend_tests_passed"
 
 agent_communication:
   - agent: "main"
