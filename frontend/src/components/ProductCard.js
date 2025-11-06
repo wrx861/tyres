@@ -39,20 +39,22 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
   const warehouseInfo = getWarehouseInfo();
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-      {/* Product Image */}
-      {product.img_small && (
-        <div className="flex justify-center mb-3">
-          <img 
-            src={product.img_small} 
-            alt={`${product.brand} ${product.model}`}
-            className="w-24 h-24 object-contain"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
-        </div>
-      )}
+    <>
+      <div className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+        {/* Product Image */}
+        {product.img_small && (
+          <div className="flex justify-center mb-3">
+            <img 
+              src={product.img_small} 
+              alt={`${product.brand} ${product.model}`}
+              className="w-24 h-24 object-contain cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => setShowImageModal(true)}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+          </div>
+        )}
       
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
