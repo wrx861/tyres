@@ -41,6 +41,7 @@ async def search_tires(
     diameter: Optional[int] = Query(None, description="Диаметр (например, 15)"),
     season: Optional[str] = Query(None, description="Сезон: summer, winter, all-season"),
     brand: Optional[str] = Query(None, description="Бренд"),
+    city: Optional[str] = Query(None, description="Город (для фильтрации по складам)"),
     page: int = Query(0, ge=0, description="Номер страницы"),
     page_size: int = Query(50, ge=1, le=200, description="Размер страницы"),
     db: AsyncIOMotorDatabase = Depends(get_db)
