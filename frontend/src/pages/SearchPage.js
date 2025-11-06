@@ -212,6 +212,107 @@ const SearchPage = ({ onAddToCart, onBack }) => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+
+            {/* Дополнительные фильтры для дисков */}
+            {searchType === 'disks' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    PCD (сверловка)
+                  </label>
+                  <input
+                    type="text"
+                    value={filters.pcd}
+                    onChange={(e) => setFilters({ ...filters, pcd: e.target.value })}
+                    placeholder="5x114.3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Вылет ET (мин)
+                  </label>
+                  <input
+                    type="number"
+                    value={filters.et_min}
+                    onChange={(e) => setFilters({ ...filters, et_min: e.target.value })}
+                    placeholder="35"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Вылет ET (макс)
+                  </label>
+                  <input
+                    type="number"
+                    value={filters.et_max}
+                    onChange={(e) => setFilters({ ...filters, et_max: e.target.value })}
+                    placeholder="45"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    DIA (мин)
+                  </label>
+                  <input
+                    type="number"
+                    value={filters.dia_min}
+                    onChange={(e) => setFilters({ ...filters, dia_min: e.target.value })}
+                    placeholder="60.1"
+                    step="0.1"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    DIA (макс)
+                  </label>
+                  <input
+                    type="number"
+                    value={filters.dia_max}
+                    onChange={(e) => setFilters({ ...filters, dia_max: e.target.value })}
+                    placeholder="73.1"
+                    step="0.1"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Цвет
+                  </label>
+                  <input
+                    type="text"
+                    value={filters.color}
+                    onChange={(e) => setFilters({ ...filters, color: e.target.value })}
+                    placeholder="Серебристый"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Тип диска
+                  </label>
+                  <select
+                    value={filters.disk_type}
+                    onChange={(e) => setFilters({ ...filters, disk_type: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Все</option>
+                    <option value="0">Литой</option>
+                    <option value="1">Штампованный</option>
+                    <option value="2">Кованный</option>
+                  </select>
+                </div>
+              </>
+            )}
           </div>
 
           <button
