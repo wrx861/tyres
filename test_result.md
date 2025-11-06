@@ -325,6 +325,18 @@ backend:
         agent: "testing"
         comment: "✅ ПОДТВЕРЖДЕНО: Backend использует price_original для расчетов наценки, но клиент получает только финальную цену с наценкой. Зачеркнутая цена закупа больше не отображается клиенту."
 
+  - task: "Поля изображений товаров (img_small, img_big_my, img_big_pish)"
+    implemented: true
+    working: true
+    file: "backend/routers/products.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: API теперь возвращает поля изображений для товаров. Шины (185/60R15): все 3 товара имеют img_small, img_big_my, img_big_pish с валидными URL. Диски (15x6.5): все 3 товара имеют поля изображений. Fallback логика работает: если img_big_my пустой, используется img_big_pish. Все URL валидные и ведут на сервера 4tochki (api-b2b.pwrs.ru и www.4tochki.ru)."
+
 frontend:
   - task: "Страница поиска шин/дисков"
     implemented: true
