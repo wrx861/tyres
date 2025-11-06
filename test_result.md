@@ -274,6 +274,42 @@ backend:
         agent: "testing"
         comment: "✅ УСПЕШНО: Telegram бот работает. При создании заказа успешно отправляется уведомление админу (ID: 508352361). Логи показывают успешную отправку сообщений."
 
+  - task: "Парсинг размеров из поля name (regex)"
+    implemented: true
+    working: true
+    file: "backend/routers/products.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: Парсинг размеров работает корректно. Шины: regex 185/60R15 → width=185, height=60, diameter=15. Диски: regex 7x16 → width=7, diameter=16. Все товары имеют корректные числовые поля размеров."
+
+  - task: "Извлечение данных складов из whpr.wh_price_rest[0]"
+    implemented: true
+    working: true
+    file: "backend/routers/products.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: Извлечение данных складов работает. Каждый товар имеет rest (количество) и warehouse_name (название склада). Данные корректно извлекаются из API структуры whpr.wh_price_rest[0]."
+
+  - task: "Удаление price_original из ответа клиенту"
+    implemented: true
+    working: true
+    file: "backend/routers/products.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ ПОДТВЕРЖДЕНО: Backend использует price_original для расчетов наценки, но клиент получает только финальную цену с наценкой. Зачеркнутая цена закупа больше не отображается клиенту."
+
 frontend:
   - task: "Страница поиска шин/дисков"
     implemented: true
