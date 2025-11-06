@@ -38,6 +38,20 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
 
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+      {/* Product Image */}
+      {product.img_small && (
+        <div className="flex justify-center mb-3">
+          <img 
+            src={product.img_small} 
+            alt={`${product.brand} ${product.model}`}
+            className="w-24 h-24 object-contain"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+      
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <h3 className="font-bold text-xl text-gray-900">{product.brand}</h3>
