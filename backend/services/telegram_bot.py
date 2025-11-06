@@ -114,6 +114,37 @@ class TelegramNotifier:
             f"Благодарим за покупку! 🙏"
         )
         return await self.send_message(user_telegram_id, message)
+    
+    async def notify_admin_new_visitor(
+        self,
+        telegram_id: str,
+        username: Optional[str] = None,
+        first_name: Optional[str] = None,
+        last_name: Optional[str] = None
+    ) -> bool:
+        """Уведомить админа о новом посетителе магазина"""
+        # Формируем имя пользователя
+        user_display = ""
+        if first_name or last_name:
+            name_parts = []
+            if first_name:
+                name_parts.append(first_name)
+            if last_name:
+                name_parts.append(last_name)
+            user_display = " ".join(name_parts)
+        
+        message = (
+            f"👋 <b>Новый посетитель в магазине!</b>\n\n"
+            f"🆔 ID: <code>{telegram_id}</code>\n"
+        )
+        
+        if username:
+            message += f"👤 Username: @{username}\n"
+        
+        if user_display:
+            message += f"📝 Имя: {user_display}\n"
+        
+        return await self.send_message(self.admin_id, message)
 
 # Singleton instance
 telegram_notifier = None
