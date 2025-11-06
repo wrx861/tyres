@@ -4,6 +4,7 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${GREEN}================================${NC}"
@@ -18,6 +19,38 @@ if [[ $EUID -ne 0 ]]; then
    echo "Используйте: sudo bash install.sh"
    exit 1
 fi
+
+# Запрос домена для Telegram Mini App
+echo -e "${BLUE}Настройка домена для Telegram Mini App${NC}"
+echo ""
+read -p "Введите домен для приложения (например: tires.yourdomain.com): " DOMAIN_NAME
+
+if [ -z "$DOMAIN_NAME" ]; then
+    echo -e "${YELLOW}Домен не указан. Установка продолжится в режиме разработки (без HTTPS)${NC}"
+    USE_HTTPS=false
+else
+    echo ""
+    echo -e "${BLUE}Установка SSL сертификата (Let's Encrypt)${NC}"
+    echo "Для получения SSL сертификата необходимо:"
+    echo "  1. Домен $DOMAIN_NAME должен указывать на IP этого сервера"
+    echo "  2. Порты 80 и 443 должны быть открыты"
+    echo ""
+    read -p "Установить SSL сертификат? (y/n): " INSTALL_SSL
+    
+    if [[ "$INSTALL_SSL" == "y" || "$INSTALL_SSL" == "Y" ]]; then
+        USE_HTTPS=true
+        read -p "Введите email для уведомлений Let's Encrypt: " LETSENCRYPT_EMAIL
+        
+        if [ -z "$LETSENCRYPT_EMAIL" ]; then
+            echo -e "${RED}Email обязателен для получения SSL сертификата${NC}"
+            exit 1
+        fi
+    else
+        USE_HTTPS=false
+    fi
+fi
+
+echo ""
 
 # Функция для проверки успешности команды
 check_status() {
