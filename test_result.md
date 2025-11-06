@@ -273,6 +273,18 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ УСПЕШНО: Telegram бот работает. При создании заказа успешно отправляется уведомление админу (ID: 508352361). Логи показывают успешную отправку сообщений."
+  
+  - task: "Уведомления админа о новых посетителях"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/auth.py, backend/services/telegram_bot.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Добавлен функционал: при первом входе пользователя в магазин (команда /start), админ получает уведомление в Telegram с ID, username (если есть) и именем пользователя. Требуется тестирование."
 
   - task: "Парсинг размеров из поля name (regex)"
     implemented: true
