@@ -1,9 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Plus, MapPin, Package } from 'lucide-react';
 import { WarehousesContext } from '../App';
+import ProductImageModal from './ProductImageModal';
 
 const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
   const warehouses = useContext(WarehousesContext);
+  const [showImageModal, setShowImageModal] = useState(false);
   
   // Извлекаем данные о складе и остатках
   const getWarehouseInfo = () => {
