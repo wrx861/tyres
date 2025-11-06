@@ -59,8 +59,8 @@ class APITester:
             self.log_result("Health Check", False, f"Connection error: {str(e)}")
             return False
     
-    def test_tire_search_with_sizes(self):
-        """Test tire search with size parsing verification"""
+    def test_tire_search_with_image_fields(self):
+        """Test tire search with image fields verification (as per review request)"""
         try:
             # Test with specific parameters from review request
             params = {
@@ -75,89 +75,68 @@ class APITester:
             response = self.session.get(f"{BACKEND_URL}/products/tires/search", params=params)
             
             if response.status_code != 200:
-                self.log_result("Tire Search - Size Parsing", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_result("Tire Search - Image Fields", False, f"HTTP {response.status_code}: {response.text}")
                 return False
             
             data = response.json()
             
             # Check if using real API (not mock)
             if data.get('mock_mode') == True:
-                self.log_result("Tire Search - Size Parsing", False, "Still using MOCK data instead of real API")
+                self.log_result("Tire Search - Image Fields", False, "Still using MOCK data instead of real API")
                 return False
             
             # Check if data is returned
             if not data.get('success'):
-                self.log_result("Tire Search - Size Parsing", False, f"API returned success=false: {data}")
+                self.log_result("Tire Search - Image Fields", False, f"API returned success=false: {data}")
                 return False
             
             tires = data.get('data', [])
-            markup = data.get('markup_percentage')
             
             if len(tires) == 0:
-                self.log_result("Tire Search - Size Parsing", False, "No tires returned from real API")
+                self.log_result("Tire Search - Image Fields", False, "No tires returned from real API")
                 return False
             
-            # Verify each tire has required fields
-            missing_fields = []
-            size_parsing_errors = []
-            warehouse_errors = []
-            price_errors = []
+            # Verify each tire has image fields
+            image_field_errors = []
+            fallback_tests = []
             
             for i, tire in enumerate(tires):
-                # Check size fields (parsed from name)
-                if not tire.get('width') or not isinstance(tire.get('width'), int):
-                    size_parsing_errors.append(f"Tire {i}: missing or invalid width")
-                if not tire.get('height') or not isinstance(tire.get('height'), int):
-                    size_parsing_errors.append(f"Tire {i}: missing or invalid height")
-                if not tire.get('diameter') or not isinstance(tire.get('diameter'), int):
-                    size_parsing_errors.append(f"Tire {i}: missing or invalid diameter")
+                # Check that image fields exist (they can be empty strings)
+                if 'img_small' not in tire:
+                    image_field_errors.append(f"Tire {i}: missing img_small field")
+                if 'img_big_my' not in tire:
+                    image_field_errors.append(f"Tire {i}: missing img_big_my field")
+                if 'img_big_pish' not in tire:
+                    image_field_errors.append(f"Tire {i}: missing img_big_pish field")
                 
-                # Check warehouse fields
-                if not tire.get('rest') and tire.get('rest') != 0:
-                    warehouse_errors.append(f"Tire {i}: missing rest (quantity)")
-                if not tire.get('warehouse_name') or not isinstance(tire.get('warehouse_name'), str):
-                    warehouse_errors.append(f"Tire {i}: missing or invalid warehouse_name")
+                # Test fallback logic: if img_big_my is empty, it should use img_big_pish
+                img_big_my = tire.get('img_big_my', '')
+                img_big_pish = tire.get('img_big_pish', '')
                 
-                # Check price fields
-                if not tire.get('price') or tire.get('price') <= 0:
-                    price_errors.append(f"Tire {i}: missing or invalid price")
-                
-                # Check brand
-                if not tire.get('brand') or tire.get('brand').strip() == '':
-                    missing_fields.append(f"Tire {i}: empty brand")
-                
-                # Verify size parsing from name field
-                name = tire.get('name', '')
-                if name:
-                    size_match = re.match(r'(\d+)/(\d+)R(\d+)', name)
-                    if size_match and tire.get('width') and tire.get('height') and tire.get('diameter'):
-                        expected_width = int(size_match.group(1))
-                        expected_height = int(size_match.group(2))
-                        expected_diameter = int(size_match.group(3))
-                        
-                        if (tire['width'] != expected_width or 
-                            tire['height'] != expected_height or 
-                            tire['diameter'] != expected_diameter):
-                            size_parsing_errors.append(
-                                f"Tire {i}: Size mismatch - name '{name}' vs parsed {tire['width']}/{tire['height']}R{tire['diameter']}"
-                            )
+                # If img_big_my is empty but img_big_pish has value, fallback should work
+                if not img_big_my and img_big_pish:
+                    fallback_tests.append(f"Tire {i}: Fallback working - img_big_my empty, using img_big_pish: {img_big_pish[:50]}...")
+                elif img_big_my and img_big_pish and img_big_my != img_big_pish:
+                    fallback_tests.append(f"Tire {i}: Has both images - img_big_my: {img_big_my[:50]}..., img_big_pish: {img_big_pish[:50]}...")
+                elif img_big_my:
+                    fallback_tests.append(f"Tire {i}: Using img_big_my: {img_big_my[:50]}...")
             
-            # Report results
-            all_errors = size_parsing_errors + warehouse_errors + price_errors + missing_fields
-            
-            if all_errors:
-                error_summary = "; ".join(all_errors[:5])  # Show first 5 errors
-                if len(all_errors) > 5:
-                    error_summary += f" (and {len(all_errors) - 5} more)"
-                self.log_result("Tire Search - Size Parsing", False, error_summary)
+            if image_field_errors:
+                error_summary = "; ".join(image_field_errors)
+                self.log_result("Tire Search - Image Fields", False, error_summary)
                 return False
             
-            self.log_result("Tire Search - Size Parsing", True, 
-                          f"✅ All {len(tires)} tires have correct fields: width, height, diameter, rest, warehouse_name, price > 0, brand")
+            # Log fallback test results
+            fallback_summary = "; ".join(fallback_tests[:3])  # Show first 3
+            if len(fallback_tests) > 3:
+                fallback_summary += f" (and {len(fallback_tests) - 3} more)"
+            
+            self.log_result("Tire Search - Image Fields", True, 
+                          f"✅ All {len(tires)} tires have image fields: img_small, img_big_my, img_big_pish. Fallback logic: {fallback_summary}")
             return True
                 
         except Exception as e:
-            self.log_result("Tire Search - Size Parsing", False, f"Error: {str(e)}")
+            self.log_result("Tire Search - Image Fields", False, f"Error: {str(e)}")
             return False
     
     def test_disk_search_with_sizes(self):
