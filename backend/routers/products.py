@@ -236,6 +236,18 @@ async def search_disks(
         else:
             client = get_fourthchki_client()
             brand_list = [brand] if brand else None
+            color_list = [color] if color else None
+            type_list = [disk_type] if disk_type is not None else None
+            
+            # Parse PCD (e.g., "5x114.3" -> bolts_count=5, bolts_spacing=114.3)
+            bolts_count = None
+            bolts_spacing = None
+            if pcd:
+                import re
+                pcd_match = re.match(r'(\d+)x([\d.]+)', pcd)
+                if pcd_match:
+                    bolts_count = int(pcd_match.group(1))
+                    bolts_spacing = float(pcd_match.group(2))
             
             response = client.search_disks(
                 diameter_min=diameter,
@@ -243,6 +255,16 @@ async def search_disks(
                 width_min=width,
                 width_max=width,
                 brand_list=brand_list,
+                bolts_count_min=bolts_count,
+                bolts_count_max=bolts_count,
+                bolts_spacing_min=bolts_spacing,
+                bolts_spacing_max=bolts_spacing,
+                et_min=et_min,
+                et_max=et_max,
+                dia_min=dia_min,
+                dia_max=dia_max,
+                color_list=color_list,
+                type_list=type_list,
                 page=page,
                 page_size=page_size
             )
