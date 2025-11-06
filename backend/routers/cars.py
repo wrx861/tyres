@@ -217,7 +217,7 @@ async def get_goods_by_car(
     model: str = Query(..., description="Модель автомобиля"),
     year_begin: str = Query(..., description="Год начала выпуска"),
     year_end: str = Query(..., description="Год окончания выпуска"),
-    modification: str = Query(..., description="Модификация"),
+    modification: Optional[str] = Query(None, description="Модификация (опционально)"),
     product_type: str = Query("tyre", description="Тип товара: tyre, disk"),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
@@ -236,7 +236,7 @@ async def get_goods_by_car(
                 model=model,
                 year_begin=year_begin,
                 year_end=year_end,
-                modification=modification,
+                modification=modification if modification else "",
                 product_type=type_list,
                 podbor_type=[1]
             )
