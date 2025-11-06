@@ -51,14 +51,14 @@ else
     echo -e "${GREEN}✓ Python 3.11 уже установлен${NC}"
 fi
 
-# 4. Установка Node.js 18
-echo -e "${YELLOW}[4/10] Установка Node.js 18...${NC}"
-if ! command -v node &> /dev/null; then
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+# 4. Установка Node.js 20
+echo -e "${YELLOW}[4/10] Установка Node.js 20...${NC}"
+if ! command -v node &> /dev/null || [[ "$(node -v)" < "v20" ]]; then
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
     apt-get install -y nodejs -qq
-    check_status "Node.js установлен"
+    check_status "Node.js 20+ установлен"
 else
-    echo -e "${GREEN}✓ Node.js уже установлен${NC}"
+    echo -e "${GREEN}✓ Node.js уже установлен и актуален${NC}"
 fi
 
 # 5. Установка Yarn
