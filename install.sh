@@ -307,13 +307,23 @@ check_status "Backend зависимости установлены"
 # Настройка .env файла
 if [ ! -f .env ]; then
     cat > .env << EOF
-MONGO_URL=mongodb://localhost:27017/tyres_db
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=tires_shop
+CORS_ORIGINS=*
+
+# 4tochki API Credentials
 FOURTHCHKI_LOGIN=$FOURTHCHKI_LOGIN
 FOURTHCHKI_PASSWORD=$FOURTHCHKI_PASSWORD
 FOURTHCHKI_API_URL=http://api-b2b.4tochki.ru/WCF/ClientService.svc?wsdl
+
+# Telegram Bot
 TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN
 ADMIN_TELEGRAM_ID=$ADMIN_TELEGRAM_ID
+
+# Pricing
 DEFAULT_MARKUP_PERCENTAGE=15
+
+# Mock Mode
 USE_MOCK_DATA=false
 EOF
     check_status "Backend .env создан с учетными данными"
