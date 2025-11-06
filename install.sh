@@ -215,6 +215,14 @@ fi
 apt-get install -y $PACKAGES -qq
 check_status "Базовые зависимости установлены"
 
+# Отключение IPv6 для nginx
+echo -e "${YELLOW}Отключение IPv6...${NC}"
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
+echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
+echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
+check_status "IPv6 отключен"
+
 # 3. Установка Python 3.11
 echo -e "${YELLOW}[3/12] Установка Python 3.11...${NC}"
 if ! command -v python3.11 &> /dev/null; then
