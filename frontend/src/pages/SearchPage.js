@@ -44,6 +44,7 @@ const SearchPage = ({ onAddToCart, onBack }) => {
         if (filters.diameter) params.diameter = parseInt(filters.diameter);
         if (filters.season) params.season = filters.season;
         if (filters.brand) params.brand = filters.brand;
+        if (filters.city) params.city = filters.city;
         
         const response = await searchTires(params);
         setResults(response.data || []);
@@ -51,6 +52,7 @@ const SearchPage = ({ onAddToCart, onBack }) => {
         if (filters.diameter) params.diameter = parseInt(filters.diameter);
         if (filters.width) params.width = parseFloat(filters.width);
         if (filters.brand) params.brand = filters.brand;
+        if (filters.city) params.city = filters.city;
         
         const response = await searchDisks(params);
         setResults(response.data || []);
