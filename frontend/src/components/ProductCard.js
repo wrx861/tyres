@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Plus, MapPin, Package } from 'lucide-react';
+import { WarehousesContext } from '../App';
 
 const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
+  const warehouses = useContext(WarehousesContext);
+  
   // Извлекаем данные о складе и остатках
   const getWarehouseInfo = () => {
     if (product.whpr && product.whpr.wh_price_rest && product.whpr.wh_price_rest.length > 0) {
       const warehouse = product.whpr.wh_price_rest[0];
+      const warehouseId = warehouse.wrh || 0;
       return {
         rest: warehouse.rest || 0,
-        warehouse_name: warehouse.wrh || 'Склад'
+        warehouse_name: warehouses[warehouseId] || product.warehouse_name || `Склад ${warehouseId}`
       };
     }
+    
+    // Если данные уже обработаны backend
+    const warehouseId = product.warehouse_id || 0;
     return {
       rest: product.rest || 0,
-      warehouse_name: product.warehouse_name || 'Склад'
+      warehouse_name: warehouses[warehouseId] || product.warehouse_name || `Склад ${warehouseId}`
     };
   };
 
