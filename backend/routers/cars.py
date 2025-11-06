@@ -256,16 +256,22 @@ async def get_goods_by_car(
         elif isinstance(price_rest_list, list):
             goods_data = price_rest_list
         
-        # Apply markup to prices
+        # Apply markup to prices and normalize data structure
         for item in goods_data:
             # Find the best price from warehouse data
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
                 if warehouses:
                     # Use the first warehouse price as base price
-                    best_price = min(float(wh['price']) for wh in warehouses)
+                    best_warehouse = warehouses[0]
+                    best_price = float(best_warehouse.get('price', 0))
                     item['price_original'] = best_price
                     item['price'] = apply_markup(best_price, markup)
+                    
+                    # Extract warehouse info for display
+                    item['rest'] = best_warehouse.get('rest', 0)
+                    item['warehouse_name'] = best_warehouse.get('wrh', 'Склад')
+                    item['warehouse_id'] = best_warehouse.get('id_wrh', 0)
         
         # Extract warehouse data
         warehouses = []
