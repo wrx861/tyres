@@ -15,10 +15,27 @@ Telegram Mini приложение для продажи шин и дисков 
   - Уведомления о новых посетителях магазина (ID, username, имя)
   - Обновления статуса заказов
 
-## 🚀 Установка одной командой
+## 🚀 Установка
+
+### Вариант 1: Интерактивная установка (рекомендуется)
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/wrx861/tyres/main/install.sh | sudo bash
+wget https://raw.githubusercontent.com/wrx861/tyres/main/install.sh
+sudo bash install.sh
+```
+
+### Вариант 2: Автоматическая установка с параметрами
+
+```bash
+# С доменом и SSL
+wget https://raw.githubusercontent.com/wrx861/tyres/main/install.sh
+sudo bash install.sh -d tires.yourdomain.com -e your@email.com
+
+# Только с доменом (без SSL)
+sudo bash install.sh -d tires.yourdomain.com --no-ssl
+
+# Режим разработки (localhost)
+sudo bash install.sh
 ```
 
 ## ⚙️ После установки
