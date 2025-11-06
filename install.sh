@@ -89,7 +89,7 @@ else
 fi
 
 # 4. Установка Node.js 20
-echo -e "${YELLOW}[4/10] Установка Node.js 20...${NC}"
+echo -e "${YELLOW}[4/12] Установка Node.js 20...${NC}"
 if ! command -v node &> /dev/null || [[ "$(node -v)" < "v20" ]]; then
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
     apt-get install -y nodejs -qq
