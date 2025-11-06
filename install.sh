@@ -192,8 +192,17 @@ check_status "Frontend зависимости установлены"
 
 # Настройка .env файла
 if [ ! -f .env ]; then
+    # Определяем URL backend
+    if [ "$USE_HTTPS" = true ]; then
+        BACKEND_URL="https://$DOMAIN_NAME"
+    elif [ -n "$DOMAIN_NAME" ]; then
+        BACKEND_URL="http://$DOMAIN_NAME"
+    else
+        BACKEND_URL="http://localhost:8001"
+    fi
+    
     cat > .env << EOF
-REACT_APP_BACKEND_URL=http://localhost:8001
+REACT_APP_BACKEND_URL=$BACKEND_URL
 PORT=3000
 REACT_APP_ENABLE_VISUAL_EDITS=false
 ENABLE_HEALTH_CHECK=false
