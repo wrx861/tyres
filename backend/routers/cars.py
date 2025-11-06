@@ -134,10 +134,25 @@ async def get_car_years(
             error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
-        years = response.get('year_list', [])
-        # Handle the case where years is wrapped in a 'string' key
-        if isinstance(years, dict) and 'string' in years:
-            years = years['string']
+        # Extract years from the correct structure
+        years = []
+        year_list = response.get('yearAvto_list', {})
+        if isinstance(year_list, dict) and 'yearAvto' in year_list:
+            year_data = year_list['yearAvto']
+            # Convert year ranges to simple year list
+            for year_range in year_data:
+                if isinstance(year_range, dict):
+                    begin = year_range.get('year_begin')
+                    end = year_range.get('year_end')
+                    if begin and end:
+                        years.extend(range(begin, end + 1))
+                else:
+                    years.append(year_range)
+        elif isinstance(year_list, list):
+            years = year_list
+        
+        # Remove duplicates and sort
+        years = sorted(list(set(years)))
         
         return {
             "success": True,
