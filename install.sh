@@ -24,6 +24,10 @@ fi
 DOMAIN_NAME=""
 LETSENCRYPT_EMAIL=""
 USE_HTTPS=false
+FOURTHCHKI_LOGIN=""
+FOURTHCHKI_PASSWORD=""
+TELEGRAM_BOT_TOKEN=""
+ADMIN_TELEGRAM_ID=""
 
 # Парсинг аргументов
 while [[ $# -gt 0 ]]; do
@@ -41,19 +45,49 @@ while [[ $# -gt 0 ]]; do
             USE_HTTPS=false
             shift
             ;;
+        --api-login)
+            FOURTHCHKI_LOGIN="$2"
+            shift 2
+            ;;
+        --api-password)
+            FOURTHCHKI_PASSWORD="$2"
+            shift 2
+            ;;
+        --bot-token)
+            TELEGRAM_BOT_TOKEN="$2"
+            shift 2
+            ;;
+        --admin-id)
+            ADMIN_TELEGRAM_ID="$2"
+            shift 2
+            ;;
         -h|--help)
             echo "Использование: sudo bash install.sh [ОПЦИИ]"
             echo ""
-            echo "Опции:"
-            echo "  -d, --domain DOMAIN    Домен для приложения (например: tires.yourdomain.com)"
-            echo "  -e, --email EMAIL      Email для Let's Encrypt (автоматически включает SSL)"
-            echo "  --no-ssl               Не устанавливать SSL даже если указан домен"
-            echo "  -h, --help             Показать эту справку"
+            echo "Опции домена:"
+            echo "  -d, --domain DOMAIN      Домен для приложения (например: tires.yourdomain.com)"
+            echo "  -e, --email EMAIL        Email для Let's Encrypt (автоматически включает SSL)"
+            echo "  --no-ssl                 Не устанавливать SSL даже если указан домен"
+            echo ""
+            echo "Опции учетных данных:"
+            echo "  --api-login LOGIN        Логин 4tochki API"
+            echo "  --api-password PASS      Пароль 4tochki API"
+            echo "  --bot-token TOKEN        Telegram Bot Token"
+            echo "  --admin-id ID            Admin Telegram ID"
+            echo ""
+            echo "  -h, --help               Показать эту справку"
             echo ""
             echo "Примеры:"
+            echo "  # Полная автоматическая установка"
+            echo "  sudo bash install.sh -d tires.example.com -e admin@example.com \\"
+            echo "    --api-login sa56026 --api-password mypass \\"
+            echo "    --bot-token 123456:ABC --admin-id 508352361"
+            echo ""
+            echo "  # Только домен (учетные данные в интерактивном режиме)"
             echo "  sudo bash install.sh -d tires.example.com -e admin@example.com"
-            echo "  sudo bash install.sh -d tires.example.com --no-ssl"
-            echo "  sudo bash install.sh  # Интерактивный режим"
+            echo ""
+            echo "  # Полностью интерактивный режим"
+            echo "  sudo bash install.sh"
             exit 0
             ;;
         *)
