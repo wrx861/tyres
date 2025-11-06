@@ -215,6 +215,19 @@ async def search_disks(
         
         # Apply markup to prices and normalize data structure
         for item in disk_data:
+            # Parse disk size from name (e.g., "7x16 5x114.3 ET45")
+            import re
+            name = item.get('name', '')
+            # Pattern for disk size: WidthxDiameter
+            size_match = re.search(r'(\d+\.?\d*)x(\d+)', name)
+            if size_match:
+                item['width'] = float(size_match.group(1))
+                item['diameter'] = int(size_match.group(2))
+            
+            # Extract brand and model if not present
+            if not item.get('brand'):
+                item['brand'] = item.get('marka', 'Неизвестно')
+            
             # Find the best price from warehouse data
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
@@ -227,8 +240,9 @@ async def search_disks(
                     
                     # Extract warehouse info for display
                     item['rest'] = best_warehouse.get('rest', 0)
-                    item['warehouse_name'] = best_warehouse.get('wrh', 'Склад')
-                    item['warehouse_id'] = best_warehouse.get('id_wrh', 0)
+                    wrh_id = best_warehouse.get('wrh', 0)
+                    item['warehouse_name'] = f'Склад {wrh_id}'
+                    item['warehouse_id'] = wrh_id
         
         # Extract warehouse data
         warehouses = []
