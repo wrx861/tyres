@@ -5,6 +5,7 @@ import os
 import logging
 
 from models.user import User, UserCreate
+from services.telegram_bot import get_telegram_notifier
 
 logger = logging.getLogger(__name__)
 
