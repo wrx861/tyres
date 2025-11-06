@@ -425,13 +425,13 @@ class APITester:
                 'items': [
                     {
                         'code': 'TEST123',
+                        'name': 'Michelin X-Ice North 4 185/60R15',
                         'brand': 'Michelin',
-                        'model': 'X-Ice North 4',
-                        'size': '185/60R15',
-                        'price_original': 8500.0,
-                        'price_final': 9775.0,  # With 15% markup
                         'quantity': 4,
-                        'warehouse_id': 'MSK'
+                        'price_base': 8500.0,
+                        'price_final': 9775.0,  # With 15% markup
+                        'warehouse_id': 1,  # Integer, not string
+                        'warehouse_name': 'Moscow'
                     }
                 ],
                 'delivery_address': {
