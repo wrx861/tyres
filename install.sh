@@ -20,33 +20,92 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# Запрос домена для Telegram Mini App
-echo -e "${BLUE}Настройка домена для Telegram Mini App${NC}"
-echo ""
-read -p "Введите домен для приложения (например: tires.yourdomain.com): " DOMAIN_NAME
+# Поддержка аргументов командной строки
+DOMAIN_NAME=""
+LETSENCRYPT_EMAIL=""
+USE_HTTPS=false
 
-if [ -z "$DOMAIN_NAME" ]; then
-    echo -e "${YELLOW}Домен не указан. Установка продолжится в режиме разработки (без HTTPS)${NC}"
-    USE_HTTPS=false
-else
-    echo ""
-    echo -e "${BLUE}Установка SSL сертификата (Let's Encrypt)${NC}"
-    echo "Для получения SSL сертификата необходимо:"
-    echo "  1. Домен $DOMAIN_NAME должен указывать на IP этого сервера"
-    echo "  2. Порты 80 и 443 должны быть открыты"
-    echo ""
-    read -p "Установить SSL сертификат? (y/n): " INSTALL_SSL
-    
-    if [[ "$INSTALL_SSL" == "y" || "$INSTALL_SSL" == "Y" ]]; then
-        USE_HTTPS=true
-        read -p "Введите email для уведомлений Let's Encrypt: " LETSENCRYPT_EMAIL
-        
-        if [ -z "$LETSENCRYPT_EMAIL" ]; then
-            echo -e "${RED}Email обязателен для получения SSL сертификата${NC}"
+# Парсинг аргументов
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -d|--domain)
+            DOMAIN_NAME="$2"
+            shift 2
+            ;;
+        -e|--email)
+            LETSENCRYPT_EMAIL="$2"
+            USE_HTTPS=true
+            shift 2
+            ;;
+        --no-ssl)
+            USE_HTTPS=false
+            shift
+            ;;
+        -h|--help)
+            echo "Использование: sudo bash install.sh [ОПЦИИ]"
+            echo ""
+            echo "Опции:"
+            echo "  -d, --domain DOMAIN    Домен для приложения (например: tires.yourdomain.com)"
+            echo "  -e, --email EMAIL      Email для Let's Encrypt (автоматически включает SSL)"
+            echo "  --no-ssl               Не устанавливать SSL даже если указан домен"
+            echo "  -h, --help             Показать эту справку"
+            echo ""
+            echo "Примеры:"
+            echo "  sudo bash install.sh -d tires.example.com -e admin@example.com"
+            echo "  sudo bash install.sh -d tires.example.com --no-ssl"
+            echo "  sudo bash install.sh  # Интерактивный режим"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Неизвестная опция: $1${NC}"
+            echo "Используйте --help для справки"
             exit 1
-        fi
-    else
+            ;;
+    esac
+done
+
+# Если домен не указан через аргументы, запрашиваем интерактивно
+if [ -z "$DOMAIN_NAME" ]; then
+    echo -e "${BLUE}Настройка домена для Telegram Mini App${NC}"
+    echo ""
+    echo "Вы можете:"
+    echo "  1. Ввести домен для продакшн установки"
+    echo "  2. Нажать Enter для режима разработки (localhost)"
+    echo ""
+    
+    # Перенаправляем ввод с терминала
+    exec < /dev/tty
+    read -p "Введите домен для приложения (например: tires.yourdomain.com): " DOMAIN_NAME
+    
+    if [ -z "$DOMAIN_NAME" ]; then
+        echo -e "${YELLOW}Домен не указан. Установка продолжится в режиме разработки (без HTTPS)${NC}"
         USE_HTTPS=false
+    else
+        echo ""
+        echo -e "${BLUE}Установка SSL сертификата (Let's Encrypt)${NC}"
+        echo "Для получения SSL сертификата необходимо:"
+        echo "  1. Домен $DOMAIN_NAME должен указывать на IP этого сервера"
+        echo "  2. Порты 80 и 443 должны быть открыты"
+        echo ""
+        read -p "Установить SSL сертификат? (y/n): " INSTALL_SSL
+        
+        if [[ "$INSTALL_SSL" == "y" || "$INSTALL_SSL" == "Y" ]]; then
+            USE_HTTPS=true
+            read -p "Введите email для уведомлений Let's Encrypt: " LETSENCRYPT_EMAIL
+            
+            if [ -z "$LETSENCRYPT_EMAIL" ]; then
+                echo -e "${RED}Email обязателен для получения SSL сертификата${NC}"
+                exit 1
+            fi
+        else
+            USE_HTTPS=false
+        fi
+    fi
+else
+    # Домен указан через аргументы
+    echo -e "${GREEN}✓ Домен: $DOMAIN_NAME${NC}"
+    if [ "$USE_HTTPS" = true ] && [ -n "$LETSENCRYPT_EMAIL" ]; then
+        echo -e "${GREEN}✓ SSL будет установлен (Email: $LETSENCRYPT_EMAIL)${NC}"
     fi
 fi
 
