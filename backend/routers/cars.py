@@ -223,8 +223,10 @@ async def get_goods_by_car(
                 podbor_type=[1]
             )
         
-        if response.get('error'):
-            error_msg = response['error'].get('Message', 'Unknown error')
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
             raise HTTPException(status_code=400, detail=error_msg)
         
         if response.get('price_rest_list'):
