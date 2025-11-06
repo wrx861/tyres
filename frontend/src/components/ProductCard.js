@@ -142,7 +142,15 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
           <span>В корзину</span>
         </button>
       </div>
-    </div>
+      </div>
+      
+      {/* Image Modal */}
+      <ProductImageModal 
+        product={product}
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+      />
+    </>
   );
 };
 
