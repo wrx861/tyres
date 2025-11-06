@@ -67,14 +67,40 @@ const CarSelectionPage = ({ onAddToCart, onBack }) => {
   };
 
   const handleYearSelect = async (year) => {
-    setSelected({ ...selected, year_begin: year, year_end: year });
+    const updatedSelection = { ...selected, year_begin: year, year_end: year };
+    setSelected(updatedSelection);
     setLoading(true);
     try {
       const response = await getCarModifications(selected.brand, selected.model, year, year);
-      setModifications(response.data || []);
-      setStep(4);
+      const mods = response.data || [];
+      setModifications(mods);
+      
+      // Если модификаций нет, пропускаем шаг и сразу получаем товары
+      if (mods.length === 0) {
+        console.log('Нет модификаций, получаем товары напрямую');
+        try {
+          const goodsResponse = await getGoodsByCar(updatedSelection);
+          setResults(goodsResponse.data || []);
+          setStep(5);
+        } catch (goodsError) {
+          console.error('Ошибка загрузки товаров:', goodsError);
+          setResults([]);
+          setStep(4); // Показываем пустую страницу модификаций
+        }
+      } else {
+        setStep(4);
+      }
     } catch (error) {
       console.error('Ошибка загрузки модификаций:', error);
+      // Попробуем получить товары без модификации
+      try {
+        const goodsResponse = await getGoodsByCar(updatedSelection);
+        setResults(goodsResponse.data || []);
+        setStep(5);
+      } catch (goodsError) {
+        console.error('Ошибка загрузки товаров:', goodsError);
+        setResults([]);
+      }
     } finally {
       setLoading(false);
     }
