@@ -452,17 +452,34 @@ else
 fi
 
 echo ""
-echo -e "${YELLOW}ВАЖНО:${NC} Отредактируйте файл .env:"
-echo -e "  ${YELLOW}$APP_DIR/backend/.env${NC}"
-echo ""
-echo "Добавьте учетные данные:"
-echo "  - FOURTHCHKI_LOGIN=ваш_логин"
-echo "  - FOURTHCHKI_PASSWORD=ваш_пароль"
-echo "  - TELEGRAM_BOT_TOKEN=токен_вашего_бота"
-echo "  - ADMIN_TELEGRAM_ID=ваш_telegram_id"
-echo ""
-echo "После редактирования перезапустите сервисы:"
-echo -e "  ${YELLOW}sudo supervisorctl restart all${NC}"
+
+# Проверяем были ли введены учетные данные
+if [ "$FOURTHCHKI_LOGIN" != "your_login_here" ] && [ -n "$FOURTHCHKI_LOGIN" ]; then
+    echo -e "${GREEN}✅ Учетные данные настроены${NC}"
+    echo ""
+    echo "Учетные данные сохранены в:"
+    echo -e "  ${YELLOW}$APP_DIR/backend/.env${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  ВАЖНО: Необходимо добавить учетные данные${NC}"
+    echo ""
+    echo "Отредактируйте файл:"
+    echo -e "  ${YELLOW}$APP_DIR/backend/.env${NC}"
+    echo ""
+    echo "Добавьте учетные данные:"
+    echo "  - FOURTHCHKI_LOGIN=ваш_логин"
+    echo "  - FOURTHCHKI_PASSWORD=ваш_пароль"
+    echo "  - TELEGRAM_BOT_TOKEN=токен_вашего_бота"
+    echo "  - ADMIN_TELEGRAM_ID=ваш_telegram_id"
+    echo ""
+    echo "После редактирования перезапустите сервисы:"
+    echo -e "  ${YELLOW}sudo supervisorctl restart all${NC}"
+    echo ""
+fi
+
+echo "Для изменения учетных данных в любой момент:"
+echo -e "  ${YELLOW}nano $APP_DIR/backend/.env${NC}"
+echo "  Затем: ${YELLOW}sudo supervisorctl restart all${NC}"
 echo ""
 echo "Полезные команды:"
 echo -e "  Проверка статуса: ${YELLOW}sudo supervisorctl status${NC}"
