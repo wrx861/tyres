@@ -61,6 +61,13 @@ const SearchPage = ({ onAddToCart, onBack }) => {
         if (filters.width) params.width = parseFloat(filters.width);
         if (filters.brand) params.brand = filters.brand;
         if (filters.city) params.city = filters.city;
+        if (filters.pcd) params.pcd = filters.pcd;
+        if (filters.et_min) params.et_min = parseFloat(filters.et_min);
+        if (filters.et_max) params.et_max = parseFloat(filters.et_max);
+        if (filters.dia_min) params.dia_min = parseFloat(filters.dia_min);
+        if (filters.dia_max) params.dia_max = parseFloat(filters.dia_max);
+        if (filters.color) params.color = filters.color;
+        if (filters.disk_type !== '') params.disk_type = parseInt(filters.disk_type);
         
         const response = await searchDisks(params);
         setResults(response.data || []);
