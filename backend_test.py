@@ -678,13 +678,13 @@ class APITester:
         print("=" * 60)
         print()
         
-        # Run tests in order of priority
+        # Run tests in order of priority - focusing on UI fixes
         tests = [
             ("Health Check", self.test_health_check),
-            ("Tire Search (Real API)", self.test_tire_search),
-            ("Disk Search (Real API)", self.test_disk_search),
-            ("Car Selection Flow", self.test_car_selection_flow),
-            ("Markup Management", self.test_markup_management),
+            ("Tire Search with Size Parsing", self.test_tire_search_with_sizes),
+            ("Disk Search with Size Parsing", self.test_disk_search_with_sizes),
+            ("Car Selection Flow with Field Verification", self.test_car_selection_flow_with_fields),
+            ("Markup Management Still Works", self.test_markup_management_still_works),
             ("Authentication", self.test_authentication),
             ("Orders", self.test_orders),
         ]
