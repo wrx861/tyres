@@ -266,6 +266,8 @@ async def search_disks(
         # Определяем приоритетные склады на основе выбранного города
         priority_warehouses = CITY_WAREHOUSES.get(city, [TYUMEN_WAREHOUSE_ID]) if city else [TYUMEN_WAREHOUSE_ID]
         
+        filtered_disk_data = []
+        
         for item in disk_data:
             # Parse disk size from name (e.g., "7x16 5x114.3 ET45")
             import re
@@ -284,9 +286,15 @@ async def search_disks(
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
                 if warehouses:
-                    # Приоритизируем склады из выбранного города
-                    priority_warehouse = next((w for w in warehouses if w.get('wrh') in priority_warehouses), None)
-                    best_warehouse = priority_warehouse if priority_warehouse else warehouses[0]
+                    # ФИЛЬТРАЦИЯ: ищем склады только из выбранного города
+                    city_warehouses = [w for w in warehouses if w.get('wrh') in priority_warehouses]
+                    
+                    # Если в выбранном городе нет товара, пропускаем
+                    if not city_warehouses and city:
+                        continue
+                    
+                    # Выбираем лучший склад (из города или любой)
+                    best_warehouse = city_warehouses[0] if city_warehouses else warehouses[0]
                     
                     best_price = float(best_warehouse.get('price', 0))
                     item['price_original'] = best_price
@@ -300,6 +308,11 @@ async def search_disks(
                     
                     # Сохраняем все склады для отображения (опционально)
                     item['all_warehouses'] = warehouses
+                    
+                    filtered_disk_data.append(item)
+        
+        # Заменяем disk_data на отфильтрованный список
+        disk_data = filtered_disk_data
         
         # Extract warehouse data
         warehouses = []
