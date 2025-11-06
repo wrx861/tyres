@@ -226,10 +226,11 @@ const CarSelectionPage = ({ onAddToCart, onBack }) => {
                     onClick={() => handleModificationSelect(mod)}
                     className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center font-medium"
                 >
-                  {mod} л
-                </button>
-              ))}
-            </div>
+                    {mod}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
