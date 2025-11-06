@@ -1,0 +1,317 @@
+from fastapi import APIRouter, HTTPException, Query, Depends
+from typing import List, Optional
+from motor.motor_asyncio import AsyncIOMotorDatabase
+import logging
+import os
+
+from services.fourthchki_client import get_fourthchki_client
+from services.mock_data import (
+    generate_mock_tires, 
+    generate_mock_disks, 
+    MOCK_WAREHOUSES
+)
+
+logger = logging.getLogger(__name__)
+
+def use_mock_data() -> bool:
+    """Проверяем, используем ли mock данные"""
+    return os.environ.get('USE_MOCK_DATA', 'false').lower() == 'true'
+
+router = APIRouter(prefix="/products", tags=["products"])
+
+def get_db():
+    from server import db
+    return db
+
+def apply_markup(price: float, markup_percentage: float) -> float:
+    """Применить наценку к цене"""
+    return round(price * (1 + markup_percentage / 100), 2)
+
+async def get_markup_percentage(db: AsyncIOMotorDatabase) -> float:
+    """Получить текущий процент наценки"""
+    settings = await db.settings.find_one({}, {"_id": 0})
+    if settings:
+        return settings.get('markup_percentage', 15.0)
+    return float(os.environ.get('DEFAULT_MARKUP_PERCENTAGE', '15'))
+
+@router.get("/tires/search")
+async def search_tires(
+    width: Optional[int] = Query(None, description="Ширина шины (например, 185)"),
+    height: Optional[int] = Query(None, description="Высота профиля (например, 60)"),
+    diameter: Optional[int] = Query(None, description="Диаметр (например, 15)"),
+    season: Optional[str] = Query(None, description="Сезон: summer, winter, all-season"),
+    brand: Optional[str] = Query(None, description="Бренд"),
+    page: int = Query(0, ge=0, description="Номер страницы"),
+    page_size: int = Query(50, ge=1, le=200, description="Размер страницы"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Поиск шин по параметрам
+    """
+    try:
+        markup = await get_markup_percentage(db)
+        
+        season_map = {
+            'summer': 's',
+            'winter': 'w',
+            'all-season': 'u'
+        }
+        
+        season_list = None
+        if season and season in season_map:
+            season_list = [season_map[season]]
+        
+        if use_mock_data():
+            logger.info("Using MOCK data for tires search")
+            response = generate_mock_tires(
+                season=season_list,
+                width=width,
+                height=height,
+                diameter=diameter,
+                brand=brand,
+                page=page,
+                page_size=page_size
+            )
+        else:
+            client = get_fourthchki_client()
+            brand_list = [brand] if brand else None
+            
+            response = client.search_tires(
+                season_list=season_list,
+                width_min=width,
+                width_max=width,
+                height_min=height,
+                height_max=height,
+                diameter_min=diameter,
+                diameter_max=diameter,
+                brand_list=brand_list,
+                page=page,
+                page_size=page_size
+            )
+        
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
+            raise HTTPException(status_code=400, detail=error_msg)
+        
+        # Extract tire data from nested structure
+        tire_data = []
+        price_rest_list = response.get('price_rest_list', {})
+        if isinstance(price_rest_list, dict) and 'TyrePriceRest' in price_rest_list:
+            tire_data = price_rest_list['TyrePriceRest']
+        elif isinstance(price_rest_list, list):
+            tire_data = price_rest_list
+        
+        # Apply markup to prices
+        for item in tire_data:
+            # Find the best price from warehouse data
+            if item.get('whpr') and item['whpr'].get('wh_price_rest'):
+                warehouses = item['whpr']['wh_price_rest']
+                if warehouses:
+                    # Use the first warehouse price as base price
+                    best_price = min(float(wh['price']) for wh in warehouses)
+                    item['price_original'] = best_price
+                    item['price'] = apply_markup(best_price, markup)
+        
+        # Extract warehouse data
+        warehouses = []
+        warehouse_logistics = response.get('warehouseLogistics', {})
+        if isinstance(warehouse_logistics, dict) and 'WarehouseLogistic' in warehouse_logistics:
+            warehouses = warehouse_logistics['WarehouseLogistic']
+        elif isinstance(warehouse_logistics, list):
+            warehouses = warehouse_logistics
+        
+        return {
+            "success": True,
+            "data": tire_data,
+            "total_pages": response.get('totalPages', 0),
+            "warehouses": warehouses,
+            "currency": response.get('currencyRate', {}),
+            "markup_percentage": markup,
+            "mock_mode": use_mock_data()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error searching tires: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to search tires: {str(e)}")
+
+@router.get("/disks/search")
+async def search_disks(
+    diameter: Optional[int] = Query(None, description="Диаметр (например, 15)"),
+    width: Optional[float] = Query(None, description="Ширина (например, 6.5)"),
+    brand: Optional[str] = Query(None, description="Бренд"),
+    page: int = Query(0, ge=0, description="Номер страницы"),
+    page_size: int = Query(50, ge=1, le=200, description="Размер страницы"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Поиск дисков по параметрам
+    """
+    try:
+        markup = await get_markup_percentage(db)
+        
+        if use_mock_data():
+            logger.info("Using MOCK data for disks search")
+            response = generate_mock_disks(
+                diameter=diameter,
+                width=width,
+                brand=brand,
+                page=page,
+                page_size=page_size
+            )
+        else:
+            client = get_fourthchki_client()
+            brand_list = [brand] if brand else None
+            
+            response = client.search_disks(
+                diameter_min=diameter,
+                diameter_max=diameter,
+                width_min=width,
+                width_max=width,
+                brand_list=brand_list,
+                page=page,
+                page_size=page_size
+            )
+        
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
+            raise HTTPException(status_code=400, detail=error_msg)
+        
+        # Extract disk data from nested structure
+        disk_data = []
+        price_rest_list = response.get('price_rest_list', {})
+        if isinstance(price_rest_list, dict) and 'DiskPriceRest' in price_rest_list:
+            disk_data = price_rest_list['DiskPriceRest']
+        elif isinstance(price_rest_list, dict) and 'TyrePriceRest' in price_rest_list:
+            # Sometimes disks might use the same structure as tires
+            disk_data = price_rest_list['TyrePriceRest']
+        elif isinstance(price_rest_list, list):
+            disk_data = price_rest_list
+        
+        # Apply markup to prices
+        for item in disk_data:
+            # Find the best price from warehouse data
+            if item.get('whpr') and item['whpr'].get('wh_price_rest'):
+                warehouses = item['whpr']['wh_price_rest']
+                if warehouses:
+                    # Use the first warehouse price as base price
+                    best_price = min(float(wh['price']) for wh in warehouses)
+                    item['price_original'] = best_price
+                    item['price'] = apply_markup(best_price, markup)
+        
+        # Extract warehouse data
+        warehouses = []
+        warehouse_logistics = response.get('warehouseLogistics', {})
+        if isinstance(warehouse_logistics, dict) and 'WarehouseLogistic' in warehouse_logistics:
+            warehouses = warehouse_logistics['WarehouseLogistic']
+        elif isinstance(warehouse_logistics, list):
+            warehouses = warehouse_logistics
+        
+        return {
+            "success": True,
+            "data": disk_data,
+            "total_pages": response.get('totalPages', 0),
+            "warehouses": warehouses,
+            "currency": response.get('currencyRate', {}),
+            "markup_percentage": markup,
+            "mock_mode": use_mock_data()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error searching disks: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to search disks: {str(e)}")
+
+@router.get("/info/{code}")
+async def get_product_info(
+    code: str,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Получить подробную информацию о товаре по коду
+    """
+    try:
+        markup = await get_markup_percentage(db)
+        
+        if use_mock_data():
+            # В mock режиме возвращаем фейковую информацию
+            return {
+                "success": True,
+                "data": {
+                    "code": code,
+                    "brand": "Michelin",
+                    "model": "X-Ice North 4",
+                    "price": apply_markup(8500, markup),
+                    "price_original": 8500,
+                    "rest": 12,
+                },
+                "markup_percentage": markup,
+                "mock_mode": True
+            }
+        
+        client = get_fourthchki_client()
+        response = client.get_goods_info(code)
+        
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
+            raise HTTPException(status_code=400, detail=error_msg)
+        
+        if response.get('price'):
+            original_price = float(response['price'])
+            response['price_original'] = original_price
+            response['price'] = apply_markup(original_price, markup)
+        
+        return {
+            "success": True,
+            "data": response,
+            "markup_percentage": markup,
+            "mock_mode": False
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting product info: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get product info: {str(e)}")
+
+@router.get("/warehouses")
+async def get_warehouses():
+    """
+    Получить список доступных складов
+    """
+    try:
+        if use_mock_data():
+            return {
+                "success": True,
+                "data": MOCK_WAREHOUSES,
+                "mock_mode": True
+            }
+        
+        client = get_fourthchki_client()
+        response = client.get_warehouses()
+        
+        # Check if there's a meaningful error (not just empty error structure)
+        error = response.get('error')
+        if error and (error.get('code') or error.get('comment') or error.get('Message')):
+            error_msg = error.get('Message') or error.get('comment') or f"Error code: {error.get('code')}"
+            raise HTTPException(status_code=400, detail=error_msg)
+        
+        return {
+            "success": True,
+            "data": response.get('warehouses', []),
+            "mock_mode": False
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting warehouses: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get warehouses")
