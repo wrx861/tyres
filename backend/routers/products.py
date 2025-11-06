@@ -104,8 +104,22 @@ async def search_tires(
         elif isinstance(price_rest_list, list):
             tire_data = price_rest_list
         
-        # Apply markup to prices and normalize data structure
-        TYUMEN_WAREHOUSE_ID = 42  # ID склада Тюмень
+        # Маппинг городов к ID складов
+        CITY_WAREHOUSES = {
+            'Тюмень': [42],
+            'Сургут': [525, 1948, 1131, 1694, 1882, 1456],
+            'Лянтор': [1477],
+            'Нефтеюганск': [1212, 459, 1824],
+            'Белый Яр': [1997],
+            'Екатеринбург': [1431],
+            'Челябинск': [2017],
+            'Москва': [1, 232],
+            'Санкт-Петербург': [1655]
+        }
+        TYUMEN_WAREHOUSE_ID = 42  # ID склада Тюмень по умолчанию
+        
+        # Определяем приоритетные склады на основе выбранного города
+        priority_warehouses = CITY_WAREHOUSES.get(city, [TYUMEN_WAREHOUSE_ID]) if city else [TYUMEN_WAREHOUSE_ID]
         
         for item in tire_data:
             # Parse tire size from name (e.g., "185/60R15")
