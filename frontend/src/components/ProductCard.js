@@ -2,20 +2,32 @@ import React from 'react';
 import { Plus, MapPin, Package } from 'lucide-react';
 
 const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
+  // Извлекаем данные о складе и остатках
+  const getWarehouseInfo = () => {
+    if (product.whpr && product.whpr.wh_price_rest && product.whpr.wh_price_rest.length > 0) {
+      const warehouse = product.whpr.wh_price_rest[0];
+      return {
+        rest: warehouse.rest || 0,
+        warehouse_name: warehouse.wrh || 'Склад'
+      };
+    }
+    return {
+      rest: product.rest || 0,
+      warehouse_name: product.warehouse_name || 'Склад'
+    };
+  };
+
+  const warehouseInfo = getWarehouseInfo();
+
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
-          <h3 className="font-semibold text-lg text-gray-900">{product.brand}</h3>
-          <p className="text-gray-600 text-sm">{product.model}</p>
+          <h3 className="font-bold text-xl text-gray-900">{product.brand}</h3>
+          <p className="text-gray-600 text-base">{product.model}</p>
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-blue-600">{product.price?.toLocaleString()} ₽</p>
-          {product.price_original && (
-            <p className="text-xs text-gray-500 line-through">
-              {product.price_original?.toLocaleString()} ₽
-            </p>
-          )}
         </div>
       </div>
 
@@ -24,7 +36,7 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
           <>
             <div className="flex items-center text-sm text-gray-700">
               <span className="font-medium">Размер:</span>
-              <span className="ml-2">{product.width}/{product.height} R{product.diameter}</span>
+              <span className="ml-2">{product.width || ''}/{product.height || ''} R{product.diameter || ''}</span>
             </div>
             {product.season_name && (
               <div className="flex items-center text-sm text-gray-700">
