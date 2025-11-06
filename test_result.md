@@ -338,15 +338,17 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
-  run_ui: false
+  test_sequence: 2
+  run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Отображение товаров с правильными размерами"
+    - "Отображение остатков и складов"
+    - "Фильтр по бренду в поиске"
   stuck_tasks: []
-  test_all: false
-  test_priority: "completed"
-  completion_status: "all_backend_tests_passed"
+  test_all: true
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
