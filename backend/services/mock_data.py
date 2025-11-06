@@ -158,6 +158,9 @@ def generate_mock_disks(diameter=None, width=None, brand=None, page=0, page_size
             'rest': random.randint(4, 30),
             'warehouse_id': random.choice([1, 2, 3]),
             'warehouse_name': random.choice(['Москва', 'Санкт-Петербург', 'Екатеринбург']),
+            'img_small': 'https://via.placeholder.com/120x120/10b981/ffffff?text=Disk',
+            'img_big_my': 'https://via.placeholder.com/400x400/10b981/ffffff?text=Disk+Detail',
+            'img_big_pish': 'https://via.placeholder.com/400x400/10b981/ffffff?text=Disk+4tochki',
         }
         
         disks.append(disk)
