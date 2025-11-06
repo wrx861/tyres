@@ -68,8 +68,12 @@ apt-get update -qq
 check_status "Система обновлена"
 
 # 2. Установка базовых зависимостей
-echo -e "${YELLOW}[2/10] Установка базовых зависимостей...${NC}"
-apt-get install -y curl wget git supervisor nginx -qq
+echo -e "${YELLOW}[2/12] Установка базовых зависимостей...${NC}"
+PACKAGES="curl wget git supervisor nginx"
+if [ "$USE_HTTPS" = true ]; then
+    PACKAGES="$PACKAGES certbot python3-certbot-nginx"
+fi
+apt-get install -y $PACKAGES -qq
 check_status "Базовые зависимости установлены"
 
 # 3. Установка Python 3.11
