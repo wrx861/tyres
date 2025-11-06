@@ -241,35 +241,34 @@ class APITester:
             
             modifications = mods_data.get('data', [])
             if len(modifications) == 0:
-                # Try with a different car that might have modifications
-                # Use Toyota Camry which is more likely to have data
+                # Try with BMW 3 Series which we know has modifications
                 try:
-                    response = self.session.get(f"{BACKEND_URL}/cars/models", params={'brand': 'Toyota'})
+                    response = self.session.get(f"{BACKEND_URL}/cars/models", params={'brand': 'BMW'})
                     if response.status_code == 200:
-                        toyota_models = response.json().get('data', [])
-                        if 'Camry' in toyota_models:
-                            # Try Toyota Camry
+                        bmw_models = response.json().get('data', [])
+                        if '3 Series' in bmw_models:
+                            # Try BMW 3 Series
                             response = self.session.get(f"{BACKEND_URL}/cars/years", params={
-                                'brand': 'Toyota',
-                                'model': 'Camry'
+                                'brand': 'BMW',
+                                'model': '3 Series'
                             })
                             if response.status_code == 200:
-                                camry_years = response.json().get('data', [])
-                                if camry_years:
-                                    camry_year = str(camry_years[0])
+                                bmw_years = response.json().get('data', [])
+                                if bmw_years:
+                                    bmw_year = str(bmw_years[0])
                                     response = self.session.get(f"{BACKEND_URL}/cars/modifications", params={
-                                        'brand': 'Toyota',
-                                        'model': 'Camry',
-                                        'year_begin': camry_year,
-                                        'year_end': camry_year
+                                        'brand': 'BMW',
+                                        'model': '3 Series',
+                                        'year_begin': bmw_year,
+                                        'year_end': bmw_year
                                     })
                                     if response.status_code == 200:
-                                        camry_mods = response.json().get('data', [])
-                                        if camry_mods:
-                                            modifications = camry_mods
-                                            first_brand = 'Toyota'
-                                            first_model = 'Camry'
-                                            first_year = camry_year
+                                        bmw_mods = response.json().get('data', [])
+                                        if bmw_mods:
+                                            modifications = bmw_mods
+                                            first_brand = 'BMW'
+                                            first_model = '3 Series'
+                                            first_year = bmw_year
                 except:
                     pass
                 
