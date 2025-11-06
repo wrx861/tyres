@@ -337,6 +337,18 @@ backend:
         agent: "testing"
         comment: "✅ УСПЕШНО: API теперь возвращает поля изображений для товаров. Шины (185/60R15): все 3 товара имеют img_small, img_big_my, img_big_pish с валидными URL. Диски (15x6.5): все 3 товара имеют поля изображений. Fallback логика работает: если img_big_my пустой, используется img_big_pish. Все URL валидные и ведут на сервера 4tochki (api-b2b.pwrs.ru и www.4tochki.ru)."
 
+  - task: "Новые параметры поиска дисков (PCD, ET, DIA, цвет, тип)"
+    implemented: true
+    working: true
+    file: "backend/routers/products.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: Все новые параметры поиска дисков работают корректно с реальным API 4tochki. Протестированы: 1) PCD (5x114.3) - корректно парсится как 5 отверстий x 114.3mm, 2) ET range (35-45) - диапазон вылета работает, 3) DIA range (60.1-73.1) - диапазон ступичного отверстия работает, 4) Color (Серебристый) - фильтр по цвету работает, 5) Disk type (0=Литой) - фильтр по типу диска работает, 6) Комплексный поиск - все параметры работают вместе. USE_MOCK_DATA=false подтверждено. Все 15 тестов пройдены (100% успех)."
+
 frontend:
   - task: "Страница поиска шин/дисков"
     implemented: true
