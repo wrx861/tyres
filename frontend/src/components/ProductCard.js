@@ -11,12 +11,6 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
     if (product.warehouse_id !== undefined && product.rest !== undefined) {
       const warehouseId = product.warehouse_id;
       const warehouseName = warehouses[warehouseId];
-      console.log('ProductCard: using backend data', {
-        warehouseId,
-        warehouseName,
-        warehouses: warehouses,
-        rest: product.rest
-      });
       return {
         rest: product.rest,
         warehouse_name: warehouseName || `Склад ${warehouseId}`
