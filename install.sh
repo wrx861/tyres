@@ -64,6 +64,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Перенаправляем ввод с терминала один раз для всех интерактивных запросов
+exec < /dev/tty
+
 # Если домен не указан через аргументы, запрашиваем интерактивно
 if [ -z "$DOMAIN_NAME" ]; then
     echo -e "${BLUE}Настройка домена для Telegram Mini App${NC}"
@@ -73,8 +76,6 @@ if [ -z "$DOMAIN_NAME" ]; then
     echo "  2. Нажать Enter для режима разработки (localhost)"
     echo ""
     
-    # Перенаправляем ввод с терминала
-    exec < /dev/tty
     read -p "Введите домен для приложения (например: tires.yourdomain.com): " DOMAIN_NAME
     
     if [ -z "$DOMAIN_NAME" ]; then
