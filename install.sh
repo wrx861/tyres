@@ -217,7 +217,7 @@ yarn build --silent
 check_status "Frontend собран"
 
 # 10. Настройка Supervisor
-echo -e "${YELLOW}[10/10] Настройка Supervisor...${NC}"
+echo -e "${YELLOW}[10/12] Настройка Supervisor...${NC}"
 cat > /etc/supervisor/conf.d/tyres-app.conf << 'EOF'
 [program:tyres-backend]
 command=/opt/tyres-app/backend/venv/bin/uvicorn server:app --host 0.0.0.0 --port 8001
@@ -243,6 +243,98 @@ supervisorctl reread
 supervisorctl update
 supervisorctl restart all
 check_status "Supervisor настроен и запущен"
+
+# 11. Настройка Nginx
+echo -e "${YELLOW}[11/12] Настройка Nginx...${NC}"
+
+if [ -n "$DOMAIN_NAME" ]; then
+    # Создаем конфигурацию Nginx для домена
+    cat > /etc/nginx/sites-available/tyres-app << EOF
+server {
+    listen 80;
+    server_name $DOMAIN_NAME;
+
+    # Proxy для backend API
+    location /api {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+    }
+
+    # Proxy для frontend
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+}
+EOF
+
+    # Активируем конфигурацию
+    ln -sf /etc/nginx/sites-available/tyres-app /etc/nginx/sites-enabled/
+    rm -f /etc/nginx/sites-enabled/default
+    
+    # Проверяем конфигурацию nginx
+    nginx -t
+    check_status "Nginx настроен"
+    
+    # Перезапускаем nginx
+    systemctl restart nginx
+else
+    echo -e "${GREEN}✓ Nginx пропущен (режим разработки)${NC}"
+fi
+
+# 12. Установка SSL сертификата
+if [ "$USE_HTTPS" = true ]; then
+    echo -e "${YELLOW}[12/12] Установка SSL сертификата (Let's Encrypt)...${NC}"
+    
+    # Проверка что домен резолвится
+    echo "Проверка DNS для домена $DOMAIN_NAME..."
+    if ! host $DOMAIN_NAME > /dev/null 2>&1; then
+        echo -e "${YELLOW}Предупреждение: Домен $DOMAIN_NAME не резолвится${NC}"
+        echo -e "${YELLOW}Убедитесь что DNS настроен правильно${NC}"
+        read -p "Продолжить установку SSL? (y/n): " CONTINUE_SSL
+        if [[ "$CONTINUE_SSL" != "y" && "$CONTINUE_SSL" != "Y" ]]; then
+            echo -e "${YELLOW}SSL установка пропущена. Вы можете установить SSL позже командой:${NC}"
+            echo -e "${YELLOW}sudo certbot --nginx -d $DOMAIN_NAME${NC}"
+            USE_HTTPS=false
+        fi
+    fi
+    
+    if [ "$USE_HTTPS" = true ]; then
+        # Получаем сертификат
+        certbot --nginx -d $DOMAIN_NAME --non-interactive --agree-tos --email $LETSENCRYPT_EMAIL --redirect
+        
+        if [ $? -eq 0 ]; then
+            check_status "SSL сертификат установлен"
+            
+            # Настраиваем автообновление
+            systemctl enable certbot.timer
+            systemctl start certbot.timer
+            echo -e "${GREEN}✓ Автообновление SSL настроено${NC}"
+        else
+            echo -e "${RED}✗ Не удалось установить SSL сертификат${NC}"
+            echo -e "${YELLOW}Проверьте что:${NC}"
+            echo "  1. Домен $DOMAIN_NAME указывает на IP этого сервера"
+            echo "  2. Порты 80 и 443 открыты в файрволе"
+            echo "  3. Nginx запущен и работает"
+            echo ""
+            echo "Вы можете установить SSL позже командой:"
+            echo -e "${YELLOW}sudo certbot --nginx -d $DOMAIN_NAME${NC}"
+        fi
+    fi
+else
+    echo -e "${GREEN}✓ SSL установка пропущена${NC}"
+fi
 
 echo ""
 echo -e "${GREEN}================================${NC}"
