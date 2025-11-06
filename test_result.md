@@ -418,7 +418,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Поля изображений товаров (img_small, img_big_my, img_big_pish)"
+    - "Новые параметры поиска дисков (PCD, ET, DIA, цвет, тип)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
