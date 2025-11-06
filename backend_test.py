@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for 4tochki Telegram Mini App
-Tests real API integration (USE_MOCK_DATA=false)
+Tests real API integration after UI fixes (USE_MOCK_DATA=false)
+Focus: Size parsing, warehouse data, markup functionality
 """
 
 import requests
 import json
 import sys
 import os
+import re
 from datetime import datetime
 
-# Configuration
+# Configuration - Read from frontend/.env
 BACKEND_URL = "https://wheelwhiz.preview.emergentagent.com/api"
 ADMIN_TELEGRAM_ID = "508352361"
 TEST_USER_TELEGRAM_ID = "123456789"  # Test user ID
