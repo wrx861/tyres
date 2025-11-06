@@ -11,7 +11,15 @@ const SearchPage = ({ onAddToCart, onBack }) => {
     diameter: '',
     season: '',
     brand: '',
-    city: 'Тюмень' // По умолчанию Тюмень
+    city: 'Тюмень', // По умолчанию Тюмень
+    // Фильтры для дисков
+    pcd: '',
+    et_min: '',
+    et_max: '',
+    dia_min: '',
+    dia_max: '',
+    color: '',
+    disk_type: ''
   });
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
