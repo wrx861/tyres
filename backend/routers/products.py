@@ -290,6 +290,14 @@ async def search_disks(
             if not item.get('brand'):
                 item['brand'] = item.get('marka', 'Неизвестно')
             
+            
+            # Extract image URLs
+            item['img_small'] = item.get('img_small', '')
+            item['img_big_my'] = item.get('img_big_my', '')
+            item['img_big_pish'] = item.get('img_big_pish', '')
+            # Fallback: if img_big_my is empty, use img_big_pish
+            if not item['img_big_my']:
+                item['img_big_my'] = item['img_big_pish']
             # Find the best price from warehouse data
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
