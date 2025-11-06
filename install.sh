@@ -153,7 +153,7 @@ cd $APP_DIR
 check_status "Репозиторий клонирован"
 
 # 8. Настройка backend
-echo -e "${YELLOW}[8/10] Настройка backend...${NC}"
+echo -e "${YELLOW}[8/12] Настройка backend...${NC}"
 cd $APP_DIR/backend
 
 # Создание виртуального окружения
