@@ -41,30 +41,31 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
   return (
     <>
       <div className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-        {/* Product Image */}
-        {product.img_small && (
-          <div className="flex justify-center mb-3">
+        <div className="flex items-start space-x-4 mb-3">
+          {/* Product Image */}
+          {product.img_small && (
             <img 
               src={product.img_small} 
               alt={`${product.brand} ${product.model}`}
-              className="w-24 h-24 object-contain cursor-pointer hover:opacity-80 transition-opacity"
+              className="w-20 h-20 object-contain cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
               onClick={() => setShowImageModal(true)}
               onError={(e) => {
                 e.target.style.display = 'none';
               }}
             />
+          )}
+          
+          {/* Product Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-xl text-gray-900">{product.brand}</h3>
+            <p className="text-gray-600 text-base">{product.model}</p>
           </div>
-        )}
-      
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex-1">
-          <h3 className="font-bold text-xl text-gray-900">{product.brand}</h3>
-          <p className="text-gray-600 text-base">{product.model}</p>
+          
+          {/* Price */}
+          <div className="text-right flex-shrink-0">
+            <p className="text-2xl font-bold text-blue-600">{product.price?.toLocaleString()} ₽</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-2xl font-bold text-blue-600">{product.price?.toLocaleString()} ₽</p>
-        </div>
-      </div>
 
       <div className="space-y-2 mb-4">
         {type === 'tires' ? (
