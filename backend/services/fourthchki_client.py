@@ -94,6 +94,16 @@ class FourthchkiClient:
         width_min: Optional[float] = None,
         width_max: Optional[float] = None,
         brand_list: Optional[List[str]] = None,
+        bolts_count_min: Optional[int] = None,
+        bolts_count_max: Optional[int] = None,
+        bolts_spacing_min: Optional[float] = None,
+        bolts_spacing_max: Optional[float] = None,
+        et_min: Optional[float] = None,
+        et_max: Optional[float] = None,
+        dia_min: Optional[float] = None,
+        dia_max: Optional[float] = None,
+        color_list: Optional[List[str]] = None,
+        type_list: Optional[List[int]] = None,
         page: int = 0,
         page_size: int = 50
     ) -> Dict:
@@ -111,6 +121,26 @@ class FourthchkiClient:
                 filter_data['width_max'] = width_max
             if brand_list:
                 filter_data['brand_list'] = brand_list
+            if bolts_count_min is not None:
+                filter_data['bolts_count_min'] = bolts_count_min
+            if bolts_count_max is not None:
+                filter_data['bolts_count_max'] = bolts_count_max
+            if bolts_spacing_min is not None:
+                filter_data['bolts_spacing_min'] = bolts_spacing_min
+            if bolts_spacing_max is not None:
+                filter_data['bolts_spacing_max'] = bolts_spacing_max
+            if et_min is not None:
+                filter_data['et_min'] = et_min
+            if et_max is not None:
+                filter_data['et_max'] = et_max
+            if dia_min is not None:
+                filter_data['dia_min'] = dia_min
+            if dia_max is not None:
+                filter_data['dia_max'] = dia_max
+            if color_list:
+                filter_data['color_list'] = color_list
+            if type_list:
+                filter_data['type_list'] = type_list
             
             response = self.client.service.GetFindDisk(
                 login=self.login,
