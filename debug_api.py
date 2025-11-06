@@ -33,10 +33,27 @@ def test_api_connection():
         print("\nTesting GetMarkaAvto...")
         response = client.get_car_brands()
         print(f"Response type: {type(response)}")
-        print(f"Response keys: {list(response.keys()) if isinstance(response, dict) else 'Not a dict'}")
+        print(f"Response: {response}")
         
-        if 'error' in response:
-            print(f"❌ API Error: {response['error']}")
+        if response.get('error'):
+            error = response['error']
+            print(f"❌ API Error: {error}")
+            
+            # Check if it's an authentication issue
+            if error.get('code') is None and error.get('comment') is None:
+                print("This looks like an authentication or credentials issue")
+                
+                # Try to get more info from the SOAP client
+                print("\nTesting direct SOAP call...")
+                try:
+                    raw_response = client.client.service.GetMarkaAvto(
+                        login=client.login,
+                        password=client.password
+                    )
+                    print(f"Raw SOAP response: {raw_response}")
+                except Exception as soap_e:
+                    print(f"SOAP call error: {soap_e}")
+                    
             return False
         else:
             print(f"✅ API call successful")
