@@ -192,8 +192,11 @@ async def get_car_modifications(
             raise HTTPException(status_code=400, detail=error_msg)
         
         modifications = response.get('modification_list', [])
+        # Handle None case
+        if modifications is None:
+            modifications = []
         # Handle the case where modifications is wrapped in a 'string' key
-        if isinstance(modifications, dict) and 'string' in modifications:
+        elif isinstance(modifications, dict) and 'string' in modifications:
             modifications = modifications['string']
         
         return {
