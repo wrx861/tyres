@@ -10,9 +10,16 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
     // Сначала проверяем обработанные backend данные (они уже приоритизируют Тюмень)
     if (product.warehouse_id !== undefined && product.rest !== undefined) {
       const warehouseId = product.warehouse_id;
+      const warehouseName = warehouses[warehouseId];
+      console.log('ProductCard: using backend data', {
+        warehouseId,
+        warehouseName,
+        warehouses: warehouses,
+        rest: product.rest
+      });
       return {
         rest: product.rest,
-        warehouse_name: warehouses[warehouseId] || `Склад ${warehouseId}`
+        warehouse_name: warehouseName || `Склад ${warehouseId}`
       };
     }
     
@@ -20,6 +27,10 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
     if (product.whpr && product.whpr.wh_price_rest && product.whpr.wh_price_rest.length > 0) {
       const warehouse = product.whpr.wh_price_rest[0];
       const warehouseId = warehouse.wrh || 0;
+      console.log('ProductCard: using whpr data', {
+        warehouseId,
+        rest: warehouse.rest
+      });
       return {
         rest: warehouse.rest || 0,
         warehouse_name: warehouses[warehouseId] || `Склад ${warehouseId}`
