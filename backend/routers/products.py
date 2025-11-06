@@ -104,6 +104,8 @@ async def search_tires(
             tire_data = price_rest_list
         
         # Apply markup to prices and normalize data structure
+        TYUMEN_WAREHOUSE_ID = 42  # ID склада Тюмень
+        
         for item in tire_data:
             # Parse tire size from name (e.g., "185/60R15")
             import re
@@ -122,8 +124,10 @@ async def search_tires(
             if item.get('whpr') and item['whpr'].get('wh_price_rest'):
                 warehouses = item['whpr']['wh_price_rest']
                 if warehouses:
-                    # Use the first warehouse price as base price
-                    best_warehouse = warehouses[0]
+                    # Приоритизируем склад Тюмень (ID 42)
+                    tyumen_warehouse = next((w for w in warehouses if w.get('wrh') == TYUMEN_WAREHOUSE_ID), None)
+                    best_warehouse = tyumen_warehouse if tyumen_warehouse else warehouses[0]
+                    
                     best_price = float(best_warehouse.get('price', 0))
                     item['price_original'] = best_price
                     item['price'] = apply_markup(best_price, markup)
@@ -133,6 +137,9 @@ async def search_tires(
                     wrh_id = best_warehouse.get('wrh', 0)
                     item['warehouse_name'] = f'Склад {wrh_id}'
                     item['warehouse_id'] = wrh_id
+                    
+                    # Сохраняем все склады для отображения (опционально)
+                    item['all_warehouses'] = warehouses
         
         # Extract warehouse data
         warehouses = []
