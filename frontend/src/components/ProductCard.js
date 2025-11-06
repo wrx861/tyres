@@ -7,20 +7,29 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
   
   // Извлекаем данные о складе и остатках
   const getWarehouseInfo = () => {
+    // Сначала проверяем обработанные backend данные (они уже приоритизируют Тюмень)
+    if (product.warehouse_id !== undefined && product.rest !== undefined) {
+      const warehouseId = product.warehouse_id;
+      return {
+        rest: product.rest,
+        warehouse_name: warehouses[warehouseId] || `Склад ${warehouseId}`
+      };
+    }
+    
+    // Если backend не обработал, берем из whpr
     if (product.whpr && product.whpr.wh_price_rest && product.whpr.wh_price_rest.length > 0) {
       const warehouse = product.whpr.wh_price_rest[0];
       const warehouseId = warehouse.wrh || 0;
       return {
         rest: warehouse.rest || 0,
-        warehouse_name: warehouses[warehouseId] || product.warehouse_name || `Склад ${warehouseId}`
+        warehouse_name: warehouses[warehouseId] || `Склад ${warehouseId}`
       };
     }
     
-    // Если данные уже обработаны backend
-    const warehouseId = product.warehouse_id || 0;
+    // Фоллбэк
     return {
-      rest: product.rest || 0,
-      warehouse_name: warehouses[warehouseId] || product.warehouse_name || `Склад ${warehouseId}`
+      rest: 0,
+      warehouse_name: 'Склад'
     };
   };
 
