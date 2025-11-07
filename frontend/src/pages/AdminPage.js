@@ -19,7 +19,7 @@ const AdminPage = ({ user, onBack }) => {
     setLoading(true);
     try {
       if (tab === 'pending') {
-        const response = await getPendingOrders(user.telegram_id);
+        const response = await getAllOrders(user.telegram_id);
         setOrders(response);
       } else if (tab === 'settings') {
         const response = await getMarkup(user.telegram_id);
