@@ -275,6 +275,118 @@ const AdminPage = ({ user, onBack }) => {
               </div>
             )}
 
+            {tab === 'users' && (
+              <div className="space-y-4">
+                {users.length === 0 ? (
+                  <div className="text-center py-12 bg-white rounded-xl">
+                    <Users className="mx-auto text-gray-400 mb-4" size={64} />
+                    <h2 className="text-xl font-semibold text-gray-900 mb-2">Нет пользователей</h2>
+                  </div>
+                ) : (
+                  users.map((u) => (
+                    <div key={u.telegram_id} className="bg-white rounded-xl p-6 shadow-sm">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="font-semibold text-lg text-gray-900">
+                            {u.first_name} {u.last_name}
+                          </p>
+                          {u.username && (
+                            <p className="text-sm text-gray-600">@{u.username}</p>
+                          )}
+                          <p className="text-xs text-gray-500 mt-1">ID: {u.telegram_id}</p>
+                        </div>
+                        <div className="text-right">
+                          {u.is_admin && (
+                            <span className="inline-block px-3 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full mb-2">
+                              Админ
+                            </span>
+                          )}
+                          {u.is_blocked && (
+                            <span className="inline-block px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
+                              Заблокирован
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4 text-xs text-gray-600 mb-4">
+                        <span>Регистрация: {new Date(u.created_at).toLocaleDateString('ru-RU')}</span>
+                        {u.last_activity && (
+                          <span>Последняя активность: {new Date(u.last_activity).toLocaleDateString('ru-RU')}</span>
+                        )}
+                      </div>
+                      {!u.is_admin && (
+                        <button
+                          onClick={() => u.is_blocked ? handleUnblockUser(u.telegram_id) : handleBlockUser(u.telegram_id)}
+                          className={`w-full py-2 rounded-lg font-medium transition-colors ${
+                            u.is_blocked
+                              ? 'bg-green-500 hover:bg-green-600 text-white'
+                              : 'bg-red-500 hover:bg-red-600 text-white'
+                          }`}
+                        >
+                          {u.is_blocked ? 'Разблокировать' : 'Заблокировать'}
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {tab === 'activity' && (
+              <div className="space-y-3">
+                {activity.length === 0 ? (
+                  <div className="text-center py-12 bg-white rounded-xl">
+                    <Activity className="mx-auto text-gray-400 mb-4" size={64} />
+                    <h2 className="text-xl font-semibold text-gray-900 mb-2">Нет активности</h2>
+                  </div>
+                ) : (
+                  activity.map((log, idx) => (
+                    <div key={idx} className="bg-white rounded-lg p-4 shadow-sm">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {log.activity_type === 'tire_search' && 'Поиск шин'}
+                            {log.activity_type === 'disk_search' && 'Поиск дисков'}
+                            {log.activity_type === 'car_selection' && 'Подбор по авто'}
+                            {log.activity_type === 'order_created' && 'Создан заказ'}
+                            {log.activity_type === 'cart_add' && 'Добавление в корзину'}
+                            {log.activity_type === 'cart_remove' && 'Удаление из корзины'}
+                          </p>
+                          {log.username && (
+                            <p className="text-xs text-gray-600">@{log.username} (ID: {log.telegram_id})</p>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {new Date(log.timestamp).toLocaleString('ru-RU', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                      {log.search_params && (
+                        <div className="text-xs text-gray-600 mt-2 p-2 bg-gray-50 rounded">
+                          {Object.entries(log.search_params).map(([key, value]) => (
+                            value !== null && value !== undefined && (
+                              <span key={key} className="mr-3">
+                                <strong>{key}:</strong> {String(value)}
+                              </span>
+                            )
+                          ))}
+                        </div>
+                      )}
+                      {log.result_count !== null && log.result_count !== undefined && (
+                        <p className="text-xs text-green-600 mt-2">
+                          Найдено результатов: {log.result_count}
+                        </p>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
             {tab === 'settings' && (
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h3 className="font-semibold text-lg mb-4">Наценка на товары</h3>
