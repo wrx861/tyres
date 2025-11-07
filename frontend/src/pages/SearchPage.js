@@ -41,6 +41,26 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
     'Санкт-Петербург'
   ];
 
+  // Загрузка списка брендов при монтировании компонента
+  useEffect(() => {
+    const loadBrands = async () => {
+      setBrandsLoading(true);
+      try {
+        const [tiresResponse, disksResponse] = await Promise.all([
+          getTireBrands(),
+          getDiskBrands()
+        ]);
+        setTireBrands(tiresResponse.brands || []);
+        setDiskBrands(disksResponse.brands || []);
+      } catch (error) {
+        console.error('Ошибка загрузки брендов:', error);
+      } finally {
+        setBrandsLoading(false);
+      }
+    };
+    loadBrands();
+  }, []);
+
   const handleSearch = async () => {
     setLoading(true);
     setSearched(true);
