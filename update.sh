@@ -7,6 +7,29 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Параметры по умолчанию
+CREATE_BACKUP=true
+SKIP_BACKUP=false
+
+# Обработка аргументов командной строки
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --no-backup)
+            SKIP_BACKUP=true
+            shift
+            ;;
+        --skip-backup)
+            SKIP_BACKUP=true
+            shift
+            ;;
+        *)
+            echo "Неизвестный параметр: $1"
+            echo "Использование: sudo bash update.sh [--no-backup]"
+            exit 1
+            ;;
+    esac
+done
+
 echo -e "${GREEN}================================${NC}"
 echo -e "${GREEN}  Обновление 4tochki Tyres App${NC}"
 echo -e "${GREEN}================================${NC}"
@@ -15,12 +38,13 @@ echo ""
 # Проверка прав root
 if [[ $EUID -ne 0 ]]; then
    echo -e "${RED}Этот скрипт должен быть запущен с правами root${NC}"
-   echo "Используйте: sudo bash update.sh"
+   echo "Используйте: sudo bash update.sh [--no-backup]"
    exit 1
 fi
 
 # Определяем директорию приложения
 APP_DIR="/opt/tyres-app"
+BACKUP_DIR=""
 
 # Проверяем что директория существует
 if [ ! -d "$APP_DIR" ]; then
@@ -31,10 +55,26 @@ fi
 
 cd $APP_DIR
 
-echo -e "${BLUE}[1/8] Создание backup текущей версии...${NC}"
-BACKUP_DIR="/opt/tyres-app-backup-$(date +%Y%m%d_%H%M%S)"
-cp -r $APP_DIR $BACKUP_DIR
-echo -e "${GREEN}✓ Backup создан: $BACKUP_DIR${NC}"
+# Создание backup
+if [ "$SKIP_BACKUP" = false ]; then
+    echo -e "${BLUE}[1/9] Создание backup текущей версии...${NC}"
+    BACKUP_DIR="/opt/tyres-app-backup-$(date +%Y%m%d_%H%M%S)"
+    cp -r $APP_DIR $BACKUP_DIR
+    echo -e "${GREEN}✓ Backup создан: $BACKUP_DIR${NC}"
+    
+    # Удаляем старые backup (оставляем только последние 3)
+    echo -e "${YELLOW}→ Очистка старых backup...${NC}"
+    BACKUP_COUNT=$(ls -d /opt/tyres-app-backup-* 2>/dev/null | wc -l)
+    if [ $BACKUP_COUNT -gt 3 ]; then
+        ls -dt /opt/tyres-app-backup-* | tail -n +4 | xargs rm -rf
+        REMOVED=$((BACKUP_COUNT - 3))
+        echo -e "${GREEN}✓ Удалено старых backup: $REMOVED${NC}"
+    else
+        echo -e "${GREEN}✓ Старых backup нет (всего: $BACKUP_COUNT)${NC}"
+    fi
+else
+    echo -e "${YELLOW}[1/9] Backup пропущен (--no-backup)${NC}"
+fi
 echo ""
 
 echo -e "${BLUE}[2/8] Получение обновлений из GitHub...${NC}"
