@@ -89,7 +89,7 @@ echo -e "${YELLOW}Изменения:${NC}"
 git log HEAD..origin/main --oneline | head -5
 echo ""
 
-echo -e "${BLUE}[3/8] Применение обновлений...${NC}"
+echo -e "${BLUE}[3/9] Применение обновлений...${NC}"
 git pull origin main
 if [ $? -ne 0 ]; then
     echo -e "${RED}✗ Ошибка при git pull${NC}"
