@@ -141,9 +141,22 @@ const AdminPage = ({ user, onBack }) => {
     }
   };
 
-  const handleContactClient = (userTelegramId) => {
+  const handleContactClient = (userTelegramId, username) => {
     // Открываем диалог с клиентом в Telegram
-    window.open(`tg://user?id=${userTelegramId}`, '_blank');
+    // Если есть username - используем t.me/username (работает везде)
+    // Если нет username - показываем ID и даем ссылку tg://user?id=
+    if (username) {
+      // Убираем @ если есть
+      const cleanUsername = username.replace('@', '');
+      window.open(`https://t.me/${cleanUsername}`, '_blank');
+    } else {
+      // Если нет username - показываем инструкцию
+      const message = `ID клиента: ${userTelegramId}\n\nУ этого клиента нет username в Telegram.\n\nДля связи:\n1. Откройте Telegram\n2. Нажмите "Начать чат"\n3. Введите: @id${userTelegramId}\n\nИли скопируйте эту ссылку (работает только в мобильном приложении):\ntg://user?id=${userTelegramId}`;
+      
+      if (confirm(message + '\n\n❓ Открыть ссылку (работает только в мобильном Telegram)?')) {
+        window.open(`tg://user?id=${userTelegramId}`, '_blank');
+      }
+    }
   };
 
   const handleResetActivity = async () => {
