@@ -170,3 +170,177 @@ async def get_admin_stats(
     except Exception as e:
         logger.error(f"Error getting admin stats: {e}")
         raise HTTPException(status_code=500, detail="Failed to get stats")
+
+@router.get("/users")
+async def get_all_users(
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Получить список всех пользователей (только для админа)
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one({"telegram_id": telegram_id})
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Получаем пользователей
+        users_cursor = db.users.find({}, {"_id": 0}).skip(skip).limit(limit).sort("created_at", -1)
+        users = await users_cursor.to_list(length=limit)
+        
+        # Конвертируем даты из ISO строк
+        for u in users:
+            if isinstance(u.get('created_at'), str):
+                u['created_at'] = u['created_at']
+            if isinstance(u.get('last_activity'), str):
+                u['last_activity'] = u['last_activity']
+        
+        total_count = await db.users.count_documents({})
+        
+        return {
+            "success": True,
+            "users": users,
+            "total": total_count,
+            "skip": skip,
+            "limit": limit
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting users: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get users")
+
+@router.post("/users/{user_telegram_id}/block")
+async def block_user(
+    user_telegram_id: str,
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Заблокировать пользователя (только для админа)
+    """
+    try:
+        # Проверяем, что пользователь админ
+        admin = await db.users.find_one({"telegram_id": telegram_id})
+        
+        if not admin or not admin.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Проверяем что пользователь существует
+        target_user = await db.users.find_one({"telegram_id": user_telegram_id})
+        if not target_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Нельзя заблокировать админа
+        if target_user.get('is_admin'):
+            raise HTTPException(status_code=400, detail="Cannot block admin user")
+        
+        # Блокируем пользователя
+        await db.users.update_one(
+            {"telegram_id": user_telegram_id},
+            {"$set": {"is_blocked": True}}
+        )
+        
+        logger.info(f"User {user_telegram_id} blocked by admin {telegram_id}")
+        
+        return {"success": True, "message": "Пользователь заблокирован"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error blocking user: {e}")
+        raise HTTPException(status_code=500, detail="Failed to block user")
+
+@router.post("/users/{user_telegram_id}/unblock")
+async def unblock_user(
+    user_telegram_id: str,
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Разблокировать пользователя (только для админа)
+    """
+    try:
+        # Проверяем, что пользователь админ
+        admin = await db.users.find_one({"telegram_id": telegram_id})
+        
+        if not admin or not admin.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Проверяем что пользователь существует
+        target_user = await db.users.find_one({"telegram_id": user_telegram_id})
+        if not target_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Разблокируем пользователя
+        await db.users.update_one(
+            {"telegram_id": user_telegram_id},
+            {"$set": {"is_blocked": False}}
+        )
+        
+        logger.info(f"User {user_telegram_id} unblocked by admin {telegram_id}")
+        
+        return {"success": True, "message": "Пользователь разблокирован"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error unblocking user: {e}")
+        raise HTTPException(status_code=500, detail="Failed to unblock user")
+
+@router.get("/activity")
+async def get_user_activity(
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    user_telegram_id: Optional[str] = Query(None, description="Telegram ID пользователя для фильтра"),
+    activity_type: Optional[str] = Query(None, description="Тип активности для фильтра"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Получить логи активности пользователей (только для админа)
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one({"telegram_id": telegram_id})
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Формируем фильтр
+        filter_query = {}
+        if user_telegram_id:
+            filter_query["telegram_id"] = user_telegram_id
+        if activity_type:
+            filter_query["activity_type"] = activity_type
+        
+        # Получаем логи активности
+        logs_cursor = db.activity_logs.find(filter_query, {"_id": 0}).skip(skip).limit(limit).sort("timestamp", -1)
+        logs = await logs_cursor.to_list(length=limit)
+        
+        # Конвертируем даты
+        for log in logs:
+            if isinstance(log.get('timestamp'), str):
+                log['timestamp'] = log['timestamp']
+        
+        total_count = await db.activity_logs.count_documents(filter_query)
+        
+        return {
+            "success": True,
+            "logs": logs,
+            "total": total_count,
+            "skip": skip,
+            "limit": limit
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting activity logs: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get activity logs")
+
