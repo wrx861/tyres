@@ -17,8 +17,15 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   const handleSubmitOrder = async () => {
-    if (!deliveryAddress.city || !deliveryAddress.street || !deliveryAddress.house) {
-      alert('Пожалуйста, заполните адрес доставки');
+    if (!deliveryAddress.city || !deliveryAddress.street || !deliveryAddress.house || !deliveryAddress.phone) {
+      alert('Пожалуйста, заполните все обязательные поля (город, улица, дом, телефон)');
+      return;
+    }
+    
+    // Проверка формата телефона (базовая)
+    const phoneRegex = /^[\d\s\+\-\(\)]{10,}$/;
+    if (!phoneRegex.test(deliveryAddress.phone)) {
+      alert('Пожалуйста, введите корректный номер телефона');
       return;
     }
 
