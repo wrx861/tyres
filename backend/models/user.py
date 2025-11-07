@@ -8,7 +8,9 @@ class User(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     is_admin: bool = False
+    is_blocked: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_activity: Optional[datetime] = None
     
 class UserCreate(BaseModel):
     telegram_id: str
