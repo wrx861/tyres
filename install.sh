@@ -408,9 +408,16 @@ stdout_logfile=/var/log/tyres-frontend.out.log
 environment=PORT="3000"
 EOF
 
+# Копируем telegram бота
+if [ -f telegram_bot.py ]; then
+    cp telegram_bot.py $APP_DIR/
+    chmod +x $APP_DIR/telegram_bot.py
+    check_status "Telegram бот скопирован"
+fi
+
 supervisorctl reread
 supervisorctl update
-supervisorctl start tyres-backend
+supervisorctl start tyres-backend tyres-telegram-bot
 check_status "Supervisor настроен и запущен"
 
 # 11. Настройка Nginx
