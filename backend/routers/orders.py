@@ -469,53 +469,6 @@ async def update_order_status(
         }
         
         if comment:
-
-
-@router.delete("/{order_id}/hide")
-async def hide_order_from_admin(
-    order_id: str,
-    telegram_id: str = Query(..., description="Telegram ID админа"),
-    db: AsyncIOMotorDatabase = Depends(get_db)
-):
-    """
-    Скрыть заказ из админ панели (только для админа)
-    Заказ остается в БД и виден клиенту
-    """
-    try:
-        # Проверяем, что пользователь админ
-        user = await db.users.find_one(
-            {"telegram_id": telegram_id},
-            {"_id": 0}
-        )
-        
-        if not user or not user.get('is_admin'):
-            raise HTTPException(status_code=403, detail="Access denied")
-        
-        # Получаем заказ
-        order = await db.orders.find_one(
-            {"order_id": order_id},
-            {"_id": 0}
-        )
-        
-        if not order:
-            raise HTTPException(status_code=404, detail="Order not found")
-        
-        # Помечаем как скрытый в админке
-        await db.orders.update_one(
-            {"order_id": order_id},
-            {"$set": {"hidden_in_admin": True}}
-        )
-        
-        logger.info(f"Order {order_id} hidden from admin panel by {telegram_id}")
-        
-        return {"success": True, "message": "Order hidden from admin panel"}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error hiding order: {e}")
-        raise HTTPException(status_code=500, detail="Failed to hide order")
-
             update_data['status_comment'] = comment
         
         await db.orders.update_one(
@@ -567,4 +520,50 @@ async def hide_order_from_admin(
     except Exception as e:
         logger.error(f"Error updating order status: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update status: {str(e)}")
+
+
+@router.delete("/{order_id}/hide")
+async def hide_order_from_admin(
+    order_id: str,
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Скрыть заказ из админ панели (только для админа)
+    Заказ остается в БД и виден клиенту
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one(
+            {"telegram_id": telegram_id},
+            {"_id": 0}
+        )
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Получаем заказ
+        order = await db.orders.find_one(
+            {"order_id": order_id},
+            {"_id": 0}
+        )
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Помечаем как скрытый в админке
+        await db.orders.update_one(
+            {"order_id": order_id},
+            {"$set": {"hidden_in_admin": True}}
+        )
+        
+        logger.info(f"Order {order_id} hidden from admin panel by {telegram_id}")
+        
+        return {"success": True, "message": "Order hidden from admin panel"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error hiding order: {e}")
+        raise HTTPException(status_code=500, detail="Failed to hide order")
 
