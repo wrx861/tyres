@@ -10,6 +10,11 @@ const AdminPage = ({ user, onBack }) => {
   const [users, setUsers] = useState([]);
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // State для модального окна отправки сообщения
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageModalData, setMessageModalData] = useState({ clientId: '', clientName: '', phone: '' });
+  const [messageText, setMessageText] = useState('');
 
   useEffect(() => {
     loadData();
