@@ -63,6 +63,8 @@ api_router.include_router(admin.router)
 api_router.include_router(cart.router)
 
 # Middleware для проверки блокировки пользователей
+from fastapi.responses import JSONResponse
+
 class BlockedUserMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Пропускаем проверку для определенных путей
@@ -77,9 +79,9 @@ class BlockedUserMiddleware(BaseHTTPMiddleware):
             try:
                 user = await db.users.find_one({"telegram_id": telegram_id})
                 if user and user.get("is_blocked"):
-                    return HTTPException(
+                    return JSONResponse(
                         status_code=403,
-                        detail="Слишком много запросов, подождите еще и вернитесь не скоро"
+                        content={"detail": "Слишком много запросов, подождите еще и вернитесь не скоро"}
                     )
             except Exception as e:
                 logger.error(f"Error checking user block status: {e}")
