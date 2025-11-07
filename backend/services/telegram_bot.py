@@ -317,6 +317,37 @@ class TelegramNotifier:
             f"Ожидайте дальнейших обновлений."
         )
         return await self.send_message(user_telegram_id, message)
+
+    
+    async def notify_user_order_status_changed(
+        self,
+        user_telegram_id: str,
+        order_id: str,
+        new_status: str,
+        comment: Optional[str] = None
+    ) -> bool:
+        """Уведомить клиента об изменении статуса заказа"""
+        status_emojis = {
+            "Ожидает оплаты": "💳",
+            "Принят в работу": "⚙️",
+            "Передан в доставку": "🚚",
+            "Задержан": "⏰",
+            "Выполнен": "✅",
+            "Отменен": "❌"
+        }
+        
+        emoji = status_emojis.get(new_status, "📦")
+        message = (
+            f"{emoji} <b>Статус заказа изменен</b>\n\n"
+            f"📦 Заказ: <b>#{order_id}</b>\n"
+            f"📊 Новый статус: <b>{new_status}</b>\n"
+        )
+        
+        if comment:
+            message += f"\n💬 Комментарий: {comment}\n"
+        
+        return await self.send_message(user_telegram_id, message)
+
     
     async def notify_user_order_completed(
         self,
