@@ -149,19 +149,49 @@ const AdminPage = ({ user, onBack }) => {
   const handleContactClient = (userTelegramId, username) => {
     // Открываем диалог с клиентом в Telegram
     // Если есть username - используем t.me/username (работает везде)
-    // Если нет username - показываем ID и даем ссылку tg://user?id=
     if (username) {
       // Убираем @ если есть
       const cleanUsername = username.replace('@', '');
       window.open(`https://t.me/${cleanUsername}`, '_blank');
-    } else {
-      // Если нет username - показываем инструкцию
-      const message = `ID клиента: ${userTelegramId}\n\nУ этого клиента нет username в Telegram.\n\nДля связи:\n1. Откройте Telegram\n2. Нажмите "Начать чат"\n3. Введите: @id${userTelegramId}\n\nИли скопируйте эту ссылку (работает только в мобильном приложении):\ntg://user?id=${userTelegramId}`;
-      
-      if (confirm(message + '\n\n❓ Открыть ссылку (работает только в мобильном Telegram)?')) {
-        window.open(`tg://user?id=${userTelegramId}`, '_blank');
-      }
     }
+  };
+
+  const handleOpenMessageModal = (order) => {
+    setMessageModalData({
+      clientId: order.user_telegram_id,
+      clientName: order.user_name || `User ${order.user_telegram_id}`,
+      phone: order.delivery_address?.phone || ''
+    });
+    setMessageText('');
+    setShowMessageModal(true);
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageText.trim()) {
+      alert('Введите текст сообщения');
+      return;
+    }
+
+    try {
+      await sendMessageToClient(user.telegram_id, messageModalData.clientId, messageText);
+      alert('✅ Сообщение отправлено клиенту');
+      setShowMessageModal(false);
+      setMessageText('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('❌ Ошибка отправки сообщения');
+    }
+  };
+
+  const handleContactByPhone = (phone) => {
+    if (!phone) {
+      alert('Телефон не указан');
+      return;
+    }
+    // Очищаем номер от лишних символов
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
+    // Открываем Telegram по номеру телефона
+    window.open(`https://t.me/${cleanPhone}`, '_blank');
   };
 
   const handleResetActivity = async () => {
