@@ -47,6 +47,9 @@ const SearchPage = ({ onAddToCart, onBack }) => {
         page_size: 20
       };
 
+      // Добавляем сортировку если выбрана
+      if (filters.sort_by) params.sort_by = filters.sort_by;
+
       if (searchType === 'tires') {
         if (filters.width) params.width = parseInt(filters.width);
         if (filters.height) params.height = parseInt(filters.height);
