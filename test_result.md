@@ -412,6 +412,20 @@ backend:
 
   - task: "Middleware для проверки блокировки пользователей"
     implemented: true
+
+
+  - task: "Сортировка по цене в поиске шин и дисков"
+    implemented: true
+    working: true
+    file: "backend/routers/products.py, frontend/src/pages/SearchPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Добавлен параметр sort_by в search_tires и search_disks с вариантами: price_asc (дешевле), price_desc (дороже). Сортировка применяется после фильтрации и применения наценки. Frontend обновлен с select элементом для выбора сортировки. Протестировано: шины 185/60R15 зима - от 3737.5₽ (price_asc) до 7049.5₽ (price_desc). Диски 16x7 - от 4830₽ (price_asc) до 15085.7₽ (price_desc). Все работает корректно."
+
     working: true
     file: "backend/server.py"
     stuck_count: 0
