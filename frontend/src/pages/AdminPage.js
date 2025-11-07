@@ -215,7 +215,6 @@ const AdminPage = ({ user, onBack }) => {
                             <p className="text-xs text-gray-600 mb-1">Адрес доставки:</p>
                             <p className="text-sm text-gray-900">
                               {order.delivery_address.city}, {order.delivery_address.street}, д. {order.delivery_address.house}
-                              {order.delivery_address.apartment && `, кв. ${order.delivery_address.apartment}`}
                             </p>
                             {order.delivery_address.phone && (
                               <p className="text-sm text-gray-900 mt-1">
