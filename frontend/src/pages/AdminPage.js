@@ -227,22 +227,67 @@ const AdminPage = ({ user, onBack }) => {
                           </div>
                         )}
 
-                        <div className="flex space-x-3">
-                          <button
-                            onClick={() => handleConfirm(order.order_id)}
-                            className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
-                          >
-                            <Check size={20} />
-                            <span>Подтвердить</span>
-                          </button>
-                          <button
-                            onClick={() => handleReject(order.order_id)}
-                            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
-                          >
-                            <X size={20} />
-                            <span>Отклонить</span>
-                          </button>
-                        </div>
+                        {/* Кнопки действий в зависимости от статуса */}
+                        {order.status === 'pending_confirmation' ? (
+                          <div className="flex space-x-3">
+                            <button
+                              onClick={() => handleConfirm(order.order_id)}
+                              className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
+                            >
+                              <Check size={20} />
+                              <span>Подтвердить</span>
+                            </button>
+                            <button
+                              onClick={() => handleReject(order.order_id)}
+                              className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
+                            >
+                              <X size={20} />
+                              <span>Отклонить</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <p className="text-xs text-gray-600">Изменить статус:</p>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                onClick={() => handleStatusChange(order.order_id, 'awaiting_payment')}
+                                className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                💳 Ожидание оплаты
+                              </button>
+                              <button
+                                onClick={() => handleStatusChange(order.order_id, 'in_progress')}
+                                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                ⚙️ В работе
+                              </button>
+                              <button
+                                onClick={() => handleStatusChange(order.order_id, 'delivery')}
+                                className="bg-purple-500 hover:bg-purple-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                🚚 Доставка
+                              </button>
+                              <button
+                                onClick={() => handleStatusChange(order.order_id, 'delayed')}
+                                className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                ⏰ Задержка
+                              </button>
+                              <button
+                                onClick={() => handleStatusChange(order.order_id, 'completed')}
+                                className="bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                ✅ Выполнен
+                              </button>
+                              <button
+                                onClick={() => handleStatusChange(order.order_id, 'cancelled')}
+                                className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                ❌ Отменить
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
