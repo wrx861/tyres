@@ -8,6 +8,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
     street: '',
     house: '',
     apartment: '',
+    phone: '',
     comment: ''
   });
   const [submitting, setSubmitting] = useState(false);
