@@ -272,13 +272,15 @@ echo -e "${YELLOW}Информация:${NC}"
 if [ -n "$BACKUP_DIR" ]; then
     echo -e "  Backup: ${BACKUP_DIR}"
 else
-    echo -e "  Backup: не создавался (--no-backup)"
+    echo -e "  Backup: не создавался"
 fi
 echo -e "  Логи backend: tail -f /var/log/tyres-backend.err.log"
 echo -e "  Статус: supervisorctl status"
 echo ""
-echo -e "${YELLOW}Совет:${NC}"
-echo -e "  Для обновления без backup: sudo bash update.sh --no-backup"
+echo -e "${YELLOW}Варианты использования:${NC}"
+echo -e "  sudo bash update.sh              # Спросит про backup"
+echo -e "  sudo bash update.sh -y           # С backup без вопросов"
+echo -e "  sudo bash update.sh --no-backup  # Без backup"
 echo ""
 echo -e "${YELLOW}Проверьте работу приложения:${NC}"
 echo -e "  1. Откройте Telegram бот: @shoptyresbot"
