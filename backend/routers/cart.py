@@ -173,9 +173,12 @@ async def remove_from_cart(
     )
     
     # Логируем активность
+    user_display = None
+    if user:
+        user_display = user.get("username") or user.get("first_name") or f"User_{telegram_id[-4:]}"
     activity = {
         "telegram_id": telegram_id,
-        "username": user.get("username") if user else None,
+        "username": user_display,
         "activity_type": ActivityType.CART_REMOVE.value,
         "search_params": {"code": item_code},
         "result_count": None,
