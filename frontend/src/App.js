@@ -39,9 +39,13 @@ function App() {
       console.log('Telegram user data:', telegramUser);
       
       // Аутентифицируем пользователя
-      const authenticatedUser = await authenticateUser(telegramUser);
-      setUser(authenticatedUser);
-      console.log('User authenticated:', authenticatedUser);
+      try {
+        const authenticatedUser = await authenticateUser(telegramUser);
+        setUser(authenticatedUser);
+        console.log('User authenticated:', authenticatedUser);
+      } catch (authError) {
+        console.error('Authentication failed:', authError.response?.status || authError.message);
+      }
 
       // Загружаем список складов для маппинга ID -> название города
       try {
