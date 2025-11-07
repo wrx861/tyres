@@ -41,6 +41,17 @@ export const searchDisks = async (params) => {
   return response.data;
 };
 
+// Products - Brands
+export const getTireBrands = async () => {
+  const response = await axios.get(`${API}/products/brands/tires`);
+  return response.data;
+};
+
+export const getDiskBrands = async () => {
+  const response = await axios.get(`${API}/products/brands/disks`);
+  return response.data;
+};
+
 // Cars
 export const getCarBrands = async () => {
   const response = await axios.get(`${API}/cars/brands`);
