@@ -356,71 +356,89 @@ backend:
     file: "install.sh"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Добавлен systemctl enable supervisor в install.sh для автозапуска всех supervisor программ (backend, telegram-bot) после перезагрузки сервера. SSL автообновление уже было настроено через certbot.timer. Требуется проверка после перезагрузки сервера."
+      - working: "NA"
+        agent: "testing"
+        comment: "Не тестировалось - требует перезагрузки сервера для проверки. Это инфраструктурная задача, которая не может быть протестирована в текущей среде без перезагрузки production сервера."
 
   - task: "База данных пользователей с полем is_blocked"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/models/user.py, backend/routers/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Обновлена модель User: добавлены поля is_blocked (default=False) и last_activity. При создании нового пользователя через auth.py поля инициализируются правильно. Требуется тестирование создания пользователя и проверки полей в БД."
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: База данных пользователей работает корректно. Протестировано: 1) POST /api/auth/telegram создает нового пользователя 999888777 с полями is_blocked=False и last_activity=None, 2) GET /api/auth/me?telegram_id=999888777 возвращает пользователя с корректными полями. Все поля инициализируются правильно при создании пользователя."
 
   - task: "Постоянная корзина в MongoDB"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/models/cart.py, backend/routers/cart.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Создан полный роутер cart.py с эндпоинтами: GET /api/cart/{telegram_id} (получить корзину), POST /api/cart/{telegram_id}/items (добавить товар), PUT /api/cart/{telegram_id}/items/{code} (обновить количество), DELETE /api/cart/{telegram_id}/items/{code} (удалить товар), DELETE /api/cart/{telegram_id} (очистить корзину). Все эндпоинты проверяют блокировку пользователя. Корзина хранится в MongoDB коллекции 'carts'. Требуется тестирование всех CRUD операций с корзиной."
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: Постоянная корзина работает полностью. Протестирован полный CRUD цикл: 1) GET /api/cart/999888777 возвращает пустую корзину, 2) POST /api/cart/999888777/items добавляет товар TEST123 (quantity=2), 3) GET подтверждает товар в корзине, 4) PUT обновляет quantity на 5, 5) GET подтверждает обновление, 6) DELETE удаляет товар, 7) GET подтверждает пустую корзину. Корзина сохраняется в MongoDB между запросами. ИСПРАВЛЕНО: Изменен prefix роутера с '/api/cart' на '/cart' для устранения дублирования пути."
 
   - task: "Управление пользователями в админке"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routers/admin.py, frontend/src/pages/AdminPage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Добавлены эндпоинты: GET /api/admin/users (список всех пользователей с пагинацией), POST /api/admin/users/{telegram_id}/block (заблокировать пользователя), POST /api/admin/users/{telegram_id}/unblock (разблокировать пользователя). Нельзя заблокировать админа. Обновлен AdminPage с табом 'Пользователи' для отображения списка пользователей и кнопок блокировки/разблокировки. Требуется тестирование."
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: Управление пользователями работает полностью. Протестировано: 1) GET /api/admin/users?telegram_id=508352361 возвращает список из 5 пользователей с пагинацией, 2) POST /api/admin/users/999888777/block блокирует пользователя, 3) GET подтверждает is_blocked=true, 4) POST /api/admin/users/999888777/unblock разблокирует пользователя, 5) GET подтверждает is_blocked=false. Все эндпоинты требуют admin права и работают корректно."
 
   - task: "Middleware для проверки блокировки пользователей"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Создан BlockedUserMiddleware который проверяет telegram_id в query параметрах и блокирует доступ заблокированным пользователям с сообщением: 'Слишком много запросов, подождите еще и вернитесь не скоро' (HTTP 403). Middleware исключает пути /api/auth/*. Также проверка блокировки добавлена во все эндпоинты корзины. Требуется тестирование блокировки пользователя и попытки доступа к API."
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: Middleware блокировки работает корректно. Протестировано: 1) Пользователь 999888777 заблокирован через admin API, 2) GET /api/cart/999888777?telegram_id=999888777 возвращает HTTP 403 с сообщением 'Слишком много запросов, подождите еще и вернитесь не скоро', 3) После разблокировки пользователя, 4) GET /api/cart/999888777?telegram_id=999888777 работает нормально (HTTP 200). Middleware корректно проверяет блокировку на уровне приложения."
 
   - task: "Отслеживание активности пользователей"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/models/activity.py, backend/routers/products.py, backend/routers/cart.py, backend/routers/admin.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Создана модель ActivityLog с типами: tire_search, disk_search, car_selection, order_created, cart_add, cart_remove. Добавлено логирование в search_tires и search_disks (сохраняет параметры поиска и количество результатов). Логирование также в cart.py при добавлении/удалении товаров. Создан эндпоинт GET /api/admin/activity для просмотра логов с фильтрацией по user_telegram_id и activity_type. Обновлен AdminPage с табом 'Активность'. Требуется тестирование логирования и отображения в админке."
+      - working: true
+        agent: "testing"
+        comment: "✅ УСПЕШНО: Отслеживание активности работает полностью. Протестировано: 1) GET /api/products/tires/search?telegram_id=999888777 выполняет поиск (28 результатов) и логирует активность, 2) GET /api/products/disks/search?telegram_id=999888777 выполняет поиск (50 результатов) и логирует активность, 3) GET /api/admin/activity?telegram_id=508352361 возвращает логи активности, 4) Найдены логи tire_search и disk_search для пользователя 999888777 с полями search_params и result_count. Логирование корзины также работает: cart_add и cart_remove логируются при добавлении/удалении товаров."
 
   - task: "Frontend API функции для корзины и админки"
     implemented: true
