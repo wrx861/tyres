@@ -133,7 +133,24 @@ class AdminFunctionsTester:
                 order_id = created_order.get('order_id')
                 print(f"   Created test order: {order_id}")
                 
-                # Change status to completed
+                # First confirm the order
+                confirm_data = {
+                    'admin_comment': 'Test order for hide functionality'
+                }
+                confirm_response = self.session.post(
+                    f"{BACKEND_URL}/orders/{order_id}/confirm",
+                    params={'telegram_id': ADMIN_TELEGRAM_ID},
+                    json=confirm_data
+                )
+                
+                if confirm_response.status_code != 200:
+                    self.log_result("Hide Order - Confirm Order", False,
+                                  f"Failed to confirm order: {confirm_response.text}")
+                    return False
+                
+                print(f"   Confirmed order {order_id}")
+                
+                # Then change status to completed
                 status_response = self.session.patch(
                     f"{BACKEND_URL}/orders/{order_id}/status",
                     params={
