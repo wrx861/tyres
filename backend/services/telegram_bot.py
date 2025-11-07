@@ -5,6 +5,7 @@ from telegram import Bot, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 from telegram.error import TelegramError
 from typing import Optional
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,12 @@ class TelegramNotifier:
         self.admin_id = os.environ.get('ADMIN_TELEGRAM_ID')
         self.webapp_url = os.environ.get('WEBAPP_URL', 'https://tyres.vpnsuba.ru')
         self.application = None
+        
+        # Подключение к MongoDB для проверки существующих пользователей
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.environ.get('DB_NAME', 'tires_shop')
+        self.mongo_client = AsyncIOMotorClient(mongo_url)
+        self.db = self.mongo_client[db_name]
         
         if not self.bot_token:
             logger.warning("TELEGRAM_BOT_TOKEN not set")
