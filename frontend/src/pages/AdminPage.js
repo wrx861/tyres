@@ -364,15 +364,41 @@ const AdminPage = ({ user, onBack }) => {
                           </div>
                         )}
 
-                        {/* Кнопка связи с клиентом */}
-                        <div className="mb-4">
+                        {/* Кнопки связи с клиентом */}
+                        <div className="mb-4 space-y-2">
+                          {/* Кнопка: Отправить сообщение через бота */}
                           <button
-                            onClick={() => handleContactClient(order.user_telegram_id, order.user_username)}
-                            className="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
+                            onClick={() => handleOpenMessageModal(order)}
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
                           >
-                            <MessageCircle size={18} />
-                            <span>Связаться с клиентом{order.user_username ? ` @${order.user_username}` : ` (ID: ${order.user_telegram_id})`}</span>
+                            <Send size={18} />
+                            <span>📨 Отправить сообщение клиенту</span>
                           </button>
+
+                          {/* Дополнительные кнопки связи */}
+                          <div className="grid grid-cols-2 gap-2">
+                            {/* Telegram по username (если есть) */}
+                            {order.user_username && (
+                              <button
+                                onClick={() => handleContactClient(order.user_telegram_id, order.user_username)}
+                                className="bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-3 rounded-lg flex items-center justify-center space-x-2 text-sm font-medium transition-colors"
+                              >
+                                <MessageCircle size={16} />
+                                <span>@{order.user_username}</span>
+                              </button>
+                            )}
+                            
+                            {/* Telegram по номеру телефона */}
+                            {order.delivery_address?.phone && (
+                              <button
+                                onClick={() => handleContactByPhone(order.delivery_address.phone)}
+                                className="bg-green-100 hover:bg-green-200 text-green-700 py-2 px-3 rounded-lg flex items-center justify-center space-x-2 text-sm font-medium transition-colors"
+                              >
+                                <Phone size={16} />
+                                <span>По номеру</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
 
                         {/* Кнопки действий в зависимости от статуса */}
