@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search as SearchIcon } from 'lucide-react';
-import { searchTires, searchDisks } from '../api/api';
+import { searchTires, searchDisks, getTireBrands, getDiskBrands } from '../api/api';
 import ProductCard from '../components/ProductCard';
 
 const SearchPage = ({ onAddToCart, onBack, user }) => {
@@ -25,6 +25,9 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [tireBrands, setTireBrands] = useState([]);
+  const [diskBrands, setDiskBrands] = useState([]);
+  const [brandsLoading, setBrandsLoading] = useState(false);
 
   const cities = [
     'Тюмень',
