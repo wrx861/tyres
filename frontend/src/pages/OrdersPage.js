@@ -26,8 +26,15 @@ const OrdersPage = ({ user, onBack }) => {
       case 'pending_confirmation':
         return { icon: Clock, color: 'text-yellow-600 bg-yellow-50', label: 'Ожидает подтверждения' };
       case 'confirmed':
-      case 'sent_to_supplier':
-        return { icon: Truck, color: 'text-blue-600 bg-blue-50', label: 'В обработке' };
+        return { icon: CheckCircle, color: 'text-blue-600 bg-blue-50', label: 'Подтвержден' };
+      case 'awaiting_payment':
+        return { icon: Clock, color: 'text-yellow-600 bg-yellow-50', label: 'Ожидание оплаты' };
+      case 'in_progress':
+        return { icon: Truck, color: 'text-blue-600 bg-blue-50', label: 'В работе' };
+      case 'delivery':
+        return { icon: Truck, color: 'text-purple-600 bg-purple-50', label: 'Доставка' };
+      case 'delayed':
+        return { icon: Clock, color: 'text-orange-600 bg-orange-50', label: 'Задержка' };
       case 'completed':
         return { icon: CheckCircle, color: 'text-green-600 bg-green-50', label: 'Выполнен' };
       case 'cancelled':
