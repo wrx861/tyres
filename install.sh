@@ -421,7 +421,10 @@ fi
 supervisorctl reread
 supervisorctl update
 supervisorctl start tyres-backend tyres-telegram-bot
-check_status "Supervisor настроен и запущен"
+
+# Включаем автозапуск supervisor после перезагрузки
+systemctl enable supervisor
+check_status "Supervisor настроен и запущен (автозапуск включен)"
 
 # 11. Настройка Nginx
 echo -e "${YELLOW}[11/12] Настройка Nginx...${NC}"
