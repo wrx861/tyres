@@ -44,6 +44,7 @@ async def search_tires(
     city: Optional[str] = Query(None, description="Город (для фильтрации по складам)"),
     page: int = Query(0, ge=0, description="Номер страницы"),
     page_size: int = Query(50, ge=1, le=200, description="Размер страницы"),
+    telegram_id: Optional[str] = Query(None, description="Telegram ID пользователя для логирования"),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """
