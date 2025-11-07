@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Check, X, Settings, BarChart3 } from 'lucide-react';
-import { getPendingOrders, confirmOrder, rejectOrder, getMarkup, updateMarkup, getAdminStats } from '../api/api';
+import { ArrowLeft, Check, X, Settings, BarChart3, Users, Activity } from 'lucide-react';
+import { getPendingOrders, confirmOrder, rejectOrder, getMarkup, updateMarkup, getAdminStats, getAllUsers, blockUser, unblockUser, getUserActivity } from '../api/api';
 
 const AdminPage = ({ user, onBack }) => {
-  const [tab, setTab] = useState('pending'); // 'pending' or 'settings' or 'stats'
+  const [tab, setTab] = useState('pending'); // 'pending', 'settings', 'stats', 'users', 'activity'
   const [orders, setOrders] = useState([]);
   const [stats, setStats] = useState(null);
   const [markup, setMarkup] = useState(15);
+  const [users, setUsers] = useState([]);
+  const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
