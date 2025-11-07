@@ -346,14 +346,22 @@ async def search_disks(
             import re
             name = item.get('name', '')
             
-            # Pattern for disk size: WidthxDiameter
+            # Pattern for disk size: WidthxDiameter (первое вхождение)
             size_match = re.search(r'(\d+\.?\d*)x(\d+)', name)
             if size_match:
                 item['width'] = float(size_match.group(1))
                 item['diameter'] = int(size_match.group(2))
+                
+                # Удаляем найденный размер из строки для дальнейшего парсинга PCD
+                # Это предотвратит захват размера как PCD
+                size_str = size_match.group(0)
+                name_without_size = name.replace(size_str, '', 1)
+            else:
+                name_without_size = name
             
             # Parse PCD (разболтовка): 5x114.3 или 4x100
-            pcd_match = re.search(r'(\d)x([\d.]+)', name)
+            # Ищем второе вхождение паттерна NxN (после удаления размера)
+            pcd_match = re.search(r'(\d)x([\d.]+)', name_without_size)
             if pcd_match:
                 item['pcd'] = f"{pcd_match.group(1)}x{pcd_match.group(2)}"
             
