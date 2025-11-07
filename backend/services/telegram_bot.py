@@ -40,6 +40,9 @@ class TelegramNotifier:
             self.application.add_handler(CommandHandler("start", self._handle_start))
             self.application.add_handler(CommandHandler("help", self._handle_help))
             
+            # Регистрируем обработчик callback кнопок
+            self.application.add_handler(CallbackQueryHandler(self._handle_callback))
+            
             # Запускаем polling в фоне
             logger.info("Starting Telegram bot polling...")
             await self.application.initialize()
