@@ -112,6 +112,109 @@ class TelegramNotifier:
             "Используйте кнопку \"🛒 Открыть магазин\" для доступа к каталогу товаров."
         )
         await update.message.reply_text(help_text, parse_mode='HTML')
+
+    async def _handle_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Обработчик нажатий на inline кнопки"""
+        query = update.callback_query
+        await query.answer()  # Подтверждаем нажатие
+        
+        callback_data = query.data
+        user = query.from_user
+        
+        logger.info(f"User {user.id} clicked button: {callback_data}")
+        
+        # Обработка кнопки "Шиномонтаж"
+        if callback_data == "tire_service":
+            text = (
+                "🔧 <b>Шиномонтаж</b>\n\n"
+                "Здесь может быть ваш прайс и запись на ваш шиномонтаж на взаимных условиях.\n\n"
+                "📋 Выберите действие:"
+            )
+            keyboard = [
+                [InlineKeyboardButton("💰 Прайс", callback_data="tire_service_price")],
+                [InlineKeyboardButton("📝 Записаться", callback_data="tire_service_book")],
+                [InlineKeyboardButton("⬅️ Назад", callback_data="back_to_main")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            await query.edit_message_text(
+                text=text,
+                parse_mode='HTML',
+                reply_markup=reply_markup
+            )
+        
+        # Обработка кнопки "Прайс"
+        elif callback_data == "tire_service_price":
+            text = (
+                "💰 <b>Прайс-лист на шиномонтаж</b>\n\n"
+                "<b>Легковые автомобили:</b>\n"
+                "R13-R15: от 300₽ за колесо\n"
+                "R16-R17: от 400₽ за колесо\n"
+                "R18-R20: от 500₽ за колесо\n\n"
+                "<b>Кроссоверы и внедорожники:</b>\n"
+                "R16-R18: от 500₽ за колесо\n"
+                "R19-R22: от 700₽ за колесо\n\n"
+                "<b>Дополнительные услуги:</b>\n"
+                "• Балансировка: от 200₽ за колесо\n"
+                "• Ремонт проколов: от 300₽\n"
+                "• Замена вентилей: 100₽\n\n"
+                "<i>* Цены указаны ориентировочные</i>"
+            )
+            keyboard = [
+                [InlineKeyboardButton("📝 Записаться", callback_data="tire_service_book")],
+                [InlineKeyboardButton("⬅️ Назад", callback_data="tire_service")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            await query.edit_message_text(
+                text=text,
+                parse_mode='HTML',
+                reply_markup=reply_markup
+            )
+        
+        # Обработка кнопки "Записаться"
+        elif callback_data == "tire_service_book":
+            text = (
+                "📝 <b>Запись на шиномонтаж</b>\n\n"
+                "К сожалению, мы еще не нашли партнеров по шиномонтажу.\n\n"
+                "Вы можете подать заявку на партнерство или задать вопросы:\n"
+                "👤 Контакт администратора: @malg1nov"
+            )
+            keyboard = [
+                [InlineKeyboardButton("⬅️ Назад", callback_data="tire_service")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            await query.edit_message_text(
+                text=text,
+                parse_mode='HTML',
+                reply_markup=reply_markup
+            )
+        
+        # Обработка кнопки "Назад" (возврат к главному меню)
+        elif callback_data == "back_to_main":
+            text = (
+                f"🎉 Добро пожаловать, {user.first_name}!\n\n"
+                f"🚗 <b>Интернет-магазин шин и дисков</b>\n\n"
+                f"У нас вы найдёте:\n"
+                f"✅ Самые выгодные цены на шины и диски\n"
+                f"✅ Огромный выбор брендов и моделей\n"
+                f"✅ Подбор по автомобилю\n"
+                f"✅ Доставка на ваш адрес\n\n"
+                f"Нажмите кнопку <b>\"Магазин\"</b> внизу слева и подберите шины для вашего автомобиля!\n\n"
+                f"💰 Наценка минимальная, качество — максимальное!"
+            )
+            keyboard = [
+                [InlineKeyboardButton("🔧 Шиномонтаж", callback_data="tire_service")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            await query.edit_message_text(
+                text=text,
+                parse_mode='HTML',
+                reply_markup=reply_markup
+            )
+
     
     async def send_message(self, chat_id: str, text: str) -> bool:
         """Отправить сообщение пользователю"""
