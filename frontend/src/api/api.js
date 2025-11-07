@@ -143,3 +143,65 @@ export const getAdminStats = async (telegramId) => {
   });
   return response.data;
 };
+
+// Admin - User Management
+export const getAllUsers = async (telegramId) => {
+  const response = await axios.get(`${API}/admin/users`, {
+    params: { telegram_id: telegramId }
+  });
+  return response.data;
+};
+
+export const blockUser = async (adminTelegramId, userTelegramId) => {
+  const response = await axios.post(
+    `${API}/admin/users/${userTelegramId}/block?telegram_id=${adminTelegramId}`
+  );
+  return response.data;
+};
+
+export const unblockUser = async (adminTelegramId, userTelegramId) => {
+  const response = await axios.post(
+    `${API}/admin/users/${userTelegramId}/unblock?telegram_id=${adminTelegramId}`
+  );
+  return response.data;
+};
+
+// Admin - Activity Logs
+export const getUserActivity = async (telegramId, filters = {}) => {
+  const response = await axios.get(`${API}/admin/activity`, {
+    params: { telegram_id: telegramId, ...filters }
+  });
+  return response.data;
+};
+
+// Cart
+export const getCart = async (telegramId) => {
+  const response = await axios.get(`${API}/cart/${telegramId}`);
+  return response.data;
+};
+
+export const addToCart = async (telegramId, item) => {
+  const response = await axios.post(`${API}/cart/${telegramId}/items`, item);
+  return response.data;
+};
+
+export const updateCartItem = async (telegramId, itemCode, warehouseId, quantity) => {
+  const response = await axios.put(
+    `${API}/cart/${telegramId}/items/${itemCode}?warehouse_id=${warehouseId}`,
+    { quantity }
+  );
+  return response.data;
+};
+
+export const removeFromCart = async (telegramId, itemCode, warehouseId) => {
+  const response = await axios.delete(
+    `${API}/cart/${telegramId}/items/${itemCode}?warehouse_id=${warehouseId}`
+  );
+  return response.data;
+};
+
+export const clearCart = async (telegramId) => {
+  const response = await axios.delete(`${API}/cart/${telegramId}`);
+  return response.data;
+};
+
