@@ -541,24 +541,10 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Интегрированный Telegram бот (команды + уведомления)"
-    - "Уведомления через Telegram бота"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
-
-  - task: "Интегрированный Telegram бот (команды + уведомления)"
-    implemented: true
-    working: "NA"
-    file: "backend/services/telegram_bot.py, backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "✨ НОВАЯ АРХИТЕКТУРА: Объединил все функции бота в один процесс backend. Теперь TelegramNotifier: 1) Запускается в polling режиме при старте FastAPI, 2) Обрабатывает команды /start и /help, 3) Отправляет уведомления (заказы, новые посетители), 4) Автоматически останавливается при shutdown. Преимущества: нет конфликта токенов, один процесс, централизованное логирование. Создан test_telegram_bot.py для автоматического тестирования. Создан TELEGRAM_BOT_INTEGRATION.md с полной документацией. Требуется тестирование: 1) Проверить что команды /start и /help работают, 2) Проверить что уведомления о заказах отправляются, 3) Проверить что уведомления о новых посетителях отправляются при первом входе."
 
 agent_communication:
   - agent: "main"
