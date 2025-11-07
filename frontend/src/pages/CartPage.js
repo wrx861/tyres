@@ -199,27 +199,15 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                 placeholder="Ленинский проспект"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Дом *</label>
-                <input
-                  type="text"
-                  value={deliveryAddress.house}
-                  onChange={(e) => setDeliveryAddress({ ...deliveryAddress, house: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="15"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Квартира</label>
-                <input
-                  type="text"
-                  value={deliveryAddress.apartment}
-                  onChange={(e) => setDeliveryAddress({ ...deliveryAddress, apartment: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="45"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Дом *</label>
+              <input
+                type="text"
+                value={deliveryAddress.house}
+                onChange={(e) => setDeliveryAddress({ ...deliveryAddress, house: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="15"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Телефон *</label>
