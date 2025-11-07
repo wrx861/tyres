@@ -420,3 +420,59 @@ async def reset_statistics(
         logger.error(f"Error resetting statistics: {e}")
         raise HTTPException(status_code=500, detail="Failed to reset statistics")
 
+
+class SendMessageRequest(BaseModel):
+    client_telegram_id: str
+    message_text: str
+
+
+@router.post("/send-message")
+async def send_message_to_client(
+    message_data: SendMessageRequest,
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Отправить сообщение клиенту через Telegram бота (только для админа)
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one({"telegram_id": telegram_id})
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Проверяем что клиент существует
+        client = await db.users.find_one({"telegram_id": message_data.client_telegram_id})
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        # Получаем имя админа для подписи
+        admin_name = user.get('first_name') or user.get('username') or "Администратор"
+        
+        # Отправляем сообщение через бота
+        from services.telegram_bot import get_telegram_notifier
+        notifier = get_telegram_notifier()
+        
+        success = await notifier.send_admin_message_to_client(
+            client_telegram_id=message_data.client_telegram_id,
+            message_text=message_data.message_text,
+            admin_name=admin_name
+        )
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to send message")
+        
+        logger.info(f"Admin {telegram_id} sent message to client {message_data.client_telegram_id}")
+        
+        return {
+            "success": True,
+            "message": "Сообщение отправлено клиенту"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending message to client: {e}")
+        raise HTTPException(status_code=500, detail="Failed to send message")
+
