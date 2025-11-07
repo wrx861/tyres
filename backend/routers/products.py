@@ -390,6 +390,32 @@ async def search_disks(
         elif isinstance(warehouse_logistics, list):
             warehouses = warehouse_logistics
         
+        # Логируем активность поиска дисков
+        if telegram_id:
+            from datetime import datetime, timezone
+            user = await db.users.find_one({"telegram_id": telegram_id})
+            activity_log = {
+                "telegram_id": telegram_id,
+                "username": user.get("username") if user else None,
+                "activity_type": "disk_search",
+                "search_params": {
+                    "diameter": diameter,
+                    "width": width,
+                    "brand": brand,
+                    "pcd": pcd,
+                    "et_min": et_min,
+                    "et_max": et_max,
+                    "dia_min": dia_min,
+                    "dia_max": dia_max,
+                    "color": color,
+                    "disk_type": disk_type,
+                    "city": city
+                },
+                "result_count": len(disk_data),
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+            await db.activity_logs.insert_one(activity_log)
+        
         return {
             "success": True,
             "data": disk_data,
