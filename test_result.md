@@ -432,6 +432,54 @@ backend:
         agent: "main"
         comment: "Добавлен параметр sort_by в search_tires и search_disks с вариантами: price_asc (дешевле), price_desc (дороже). Сортировка применяется после фильтрации и применения наценки. Frontend обновлен с select элементом для выбора сортировки. Протестировано: шины 185/60R15 зима - от 3737.5₽ (price_asc) до 7049.5₽ (price_desc). Диски 16x7 - от 4830₽ (price_asc) до 15085.7₽ (price_desc). Все работает корректно."
 
+  - task: "Скрытие завершенных заказов в админ панели"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/orders.py, frontend/src/api/api.js, frontend/src/pages/AdminPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Реализован endpoint DELETE /api/orders/{order_id}/hide который помечает заказ как hidden_in_admin=True. Заказ остается в БД и виден клиенту, но скрывается из админ панели. Frontend: добавлена кнопка 'Скрыть заказ из панели' для completed заказов. Требуется тестирование."
+
+  - task: "Кнопка связи с клиентом через Telegram"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/AdminPage.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Добавлена кнопка 'Связаться с клиентом в Telegram' в карточке каждого заказа в админ панели. Открывает диалог с клиентом через tg://user?id={telegram_id}. Требуется проверка работоспособности в Telegram."
+
+  - task: "Сброс статистики админом"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/admin.py, frontend/src/api/api.js, frontend/src/pages/AdminPage.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Реализован endpoint DELETE /api/admin/stats/reset который удаляет ВСЕ заказы, логи активности, и сбрасывает last_activity пользователей. UI: кнопка в табе 'Статистика' с подтверждением через prompt('СБРОСИТЬ'). Требуется тестирование."
+
+  - task: "Сброс логов активности админом"
+    implemented: true
+    working: "NA"
+    file: "backend/routers/admin.py, frontend/src/api/api.js, frontend/src/pages/AdminPage.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Реализован endpoint DELETE /api/admin/activity/reset который удаляет все логи активности. UI: кнопка 'Сбросить активность' в табе 'Активность'. Требуется тестирование."
+
     working: true
     file: "backend/server.py"
     stuck_count: 0
