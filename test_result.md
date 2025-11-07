@@ -539,7 +539,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Frontend API функции для корзины и админки"
+    - "Интегрированный Telegram бот (команды + уведомления)"
+    - "Уведомления через Telegram бота"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
