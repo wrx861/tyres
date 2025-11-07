@@ -176,7 +176,7 @@ else
 fi
 echo ""
 
-echo -e "${BLUE}[6/8] Перезапуск сервисов...${NC}"
+echo -e "${BLUE}[7/9] Перезапуск сервисов...${NC}"
 # Определяем имена процессов
 if supervisorctl status | grep -q "tyres-backend"; then
     BACKEND_NAME="tyres-backend"
