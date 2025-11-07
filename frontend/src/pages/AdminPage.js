@@ -697,6 +697,56 @@ const AdminPage = ({ user, onBack }) => {
           </>
         )}
       </div>
+
+      {/* Модальное окно для отправки сообщения */}
+      {showMessageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl">
+            <h3 className="text-xl font-bold mb-4">📨 Отправить сообщение клиенту</h3>
+            
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Клиент:</p>
+              <p className="font-semibold">{messageModalData.clientName}</p>
+              <p className="text-xs text-gray-500">ID: {messageModalData.clientId}</p>
+              {messageModalData.phone && (
+                <p className="text-xs text-gray-500">Телефон: {messageModalData.phone}</p>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Текст сообщения:
+              </label>
+              <textarea
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                placeholder="Введите сообщение для клиента..."
+                rows={5}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                ℹ️ Сообщение будет отправлено клиенту через Telegram бота. Клиент сможет ответить прямо в боте.
+              </p>
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowMessageModal(false)}
+                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-lg font-medium transition-colors"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleSendMessage}
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors"
+              >
+                <Send size={18} />
+                <span>Отправить</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
