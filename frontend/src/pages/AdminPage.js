@@ -219,7 +219,7 @@ const AdminPage = ({ user, onBack }) => {
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-2xl font-bold text-blue-600">{order.total_amount.toLocaleString()} ₽</p>
+                            <p className="text-2xl font-bold text-blue-600">{(order.total_amount || order.total_price || 0).toLocaleString()} ₽</p>
                             <p className="text-xs text-gray-500">
                               {new Date(order.created_at).toLocaleDateString('ru-RU', {
                                 day: 'numeric',
