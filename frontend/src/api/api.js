@@ -216,6 +216,20 @@ export const getUserActivity = async (telegramId, filters = {}) => {
   return response.data;
 };
 
+export const resetActivityLogs = async (telegramId) => {
+  const response = await axios.delete(`${API}/admin/activity/reset`, {
+    params: { telegram_id: telegramId }
+  });
+  return response.data;
+};
+
+export const resetStatistics = async (telegramId) => {
+  const response = await axios.delete(`${API}/admin/stats/reset`, {
+    params: { telegram_id: telegramId }
+  });
+  return response.data;
+};
+
 // Cart
 export const getCart = async (telegramId) => {
   const response = await axios.get(`${API}/cart/${telegramId}`);
