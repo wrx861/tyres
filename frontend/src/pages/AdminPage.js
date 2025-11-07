@@ -42,27 +42,54 @@ const AdminPage = ({ user, onBack }) => {
   };
 
   const handleConfirm = async (orderId) => {
-    if (window.confirm('Подтвердить заказ и отправить поставщику?')) {
+    if (window.confirm('Подтвердить заказ?')) {
       try {
         await confirmOrder(orderId, user.telegram_id);
         loadData();
-        alert('Заказ подтвержден и отправлен поставщику');
+        alert('Заказ подтвержден! Теперь можете изменить статус.');
       } catch (error) {
-        alert('Ошибка подтверждения заказа');
+        console.error('Error confirming order:', error);
+        alert('Ошибка при подтверждении заказа');
       }
     }
   };
 
   const handleReject = async (orderId) => {
-    const reason = prompt('Укажите причину отклонения:');
+    const reason = prompt('Причина отклонения:');
     if (reason) {
       try {
         await rejectOrder(orderId, user.telegram_id, reason);
         loadData();
         alert('Заказ отклонен');
       } catch (error) {
-        alert('Ошибка отклонения заказа');
+        console.error('Error rejecting order:', error);
+        alert('Ошибка при отклонении заказа');
       }
+    }
+  };
+
+  const handleStatusChange = async (orderId, newStatus) => {
+    const statusNames = {
+      'awaiting_payment': 'Ожидание оплаты',
+      'in_progress': 'В работе',
+      'delivery': 'Доставка',
+      'delayed': 'Задержка',
+      'completed': 'Выполнен',
+      'cancelled': 'Отменен'
+    };
+    
+    const comment = prompt(`Изменить статус на "${statusNames[newStatus]}"?\nКомментарий (необязательно):`);
+    
+    // Если пользователь нажал отмену в prompt
+    if (comment === null) return;
+    
+    try {
+      await updateOrderStatus(orderId, user.telegram_id, newStatus, comment || null);
+      loadData();
+      alert(`Статус изменен на "${statusNames[newStatus]}"`);
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      alert('Ошибка при изменении статуса');
     }
   };
 
