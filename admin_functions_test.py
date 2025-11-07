@@ -134,7 +134,6 @@ class AdminFunctionsTester:
                 print(f"   Created test order: {order_id}")
                 
                 # Change status to completed
-                from models.order import OrderStatus
                 status_response = self.session.patch(
                     f"{BACKEND_URL}/orders/{order_id}/status",
                     params={
