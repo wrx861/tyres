@@ -42,7 +42,11 @@ echo ""
 # Проверка прав root
 if [[ $EUID -ne 0 ]]; then
    echo -e "${RED}Этот скрипт должен быть запущен с правами root${NC}"
-   echo "Используйте: sudo bash update.sh [--no-backup]"
+   echo ""
+   echo "Использование:"
+   echo "  sudo bash update.sh           # Спросит про backup"
+   echo "  sudo bash update.sh -y        # С backup без вопросов"
+   echo "  sudo bash update.sh --no-backup  # Без backup"
    exit 1
 fi
 
