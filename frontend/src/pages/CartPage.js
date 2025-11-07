@@ -7,7 +7,6 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
     city: '',
     street: '',
     house: '',
-    apartment: '',
     phone: '',
     comment: ''
   });
