@@ -6,7 +6,7 @@ import os
 from models.cart import Cart, CartItem, CartItemAdd, CartUpdateQuantity
 from models.activity import ActivityLog, ActivityType
 
-router = APIRouter(prefix="/api/cart", tags=["cart"])
+router = APIRouter(prefix="/cart", tags=["cart"])
 
 # Получаем database из server.py через dependency
 def get_database():
