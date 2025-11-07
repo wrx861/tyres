@@ -28,7 +28,7 @@ class DeliveryAddress(BaseModel):
     street: str
     house: str
     apartment: Optional[str] = None
-    phone: str  # Телефон клиента (обязательно)
+    phone: Optional[str] = None  # Телефон клиента (обязательно для новых заказов)
     comment: Optional[str] = None
 
 class Order(BaseModel):
