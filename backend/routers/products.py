@@ -179,6 +179,12 @@ async def search_tires(
         # Заменяем tire_data на отфильтрованный список
         tire_data = filtered_tire_data
         
+        # Сортировка по цене
+        if sort_by == 'price_asc':
+            tire_data.sort(key=lambda x: x.get('price', 0))
+        elif sort_by == 'price_desc':
+            tire_data.sort(key=lambda x: x.get('price', 0), reverse=True)
+        
         # Extract warehouse data
         warehouses = []
         warehouse_logistics = response.get('warehouseLogistics', {})
