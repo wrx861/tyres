@@ -3,6 +3,8 @@ from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
 import os
+import time
+from datetime import datetime, timedelta
 
 from services.fourthchki_client import get_fourthchki_client
 from services.mock_data import (
@@ -12,6 +14,14 @@ from services.mock_data import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Кэш брендов (обновляется раз в день)
+BRANDS_CACHE = {
+    'tires': [],
+    'disks': [],
+    'last_updated': None
+}
+CACHE_DURATION = timedelta(hours=24)  # Обновлять раз в 24 часа
 
 def use_mock_data() -> bool:
     """Проверяем, используем ли mock данные"""
