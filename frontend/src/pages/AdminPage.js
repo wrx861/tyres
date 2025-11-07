@@ -20,7 +20,9 @@ const AdminPage = ({ user, onBack }) => {
     try {
       if (tab === 'pending') {
         const response = await getAllOrders(user.telegram_id);
-        setOrders(response);
+        // Фильтруем отменённые заказы - они не должны отображаться в админке
+        const activeOrders = response.filter(order => order.status !== 'cancelled');
+        setOrders(activeOrders);
       } else if (tab === 'settings') {
         const response = await getMarkup(user.telegram_id);
         setMarkup(response.markup_percentage);
