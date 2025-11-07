@@ -117,6 +117,12 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
                 <span className="ml-2">{product.et}</span>
               </div>
             )}
+            {product.dia && (
+              <div className="flex items-center text-sm text-gray-700">
+                <span className="font-medium">DIA:</span>
+                <span className="ml-2">{product.dia}</span>
+              </div>
+            )}
             {product.color && (
               <span className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
                 {product.color}
