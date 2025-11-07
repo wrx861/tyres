@@ -517,17 +517,12 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 3
+  test_sequence: 4
   run_ui: false
 
 test_plan:
   current_focus:
-    - "SSL автообновление и автозапуск сервисов"
-    - "База данных пользователей с полем is_blocked"
-    - "Постоянная корзина в MongoDB"
-    - "Управление пользователями в админке"
-    - "Middleware для проверки блокировки пользователей"
-    - "Отслеживание активности пользователей"
+    - "Frontend API функции для корзины и админки"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
