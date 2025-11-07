@@ -560,61 +560,13 @@ async def get_tire_brands(
 ):
     """
     Получить список брендов шин
-    Результат кэшируется на 24 часа
+    Возвращает статический список брендов с сайта 4tochki.ru
     """
-    global BRANDS_CACHE
-    
-    try:
-        # Проверяем кэш
-        now = datetime.now()
-        if (BRANDS_CACHE['last_updated'] and 
-            now - BRANDS_CACHE['last_updated'] < CACHE_DURATION and 
-            BRANDS_CACHE['tires']):
-            logger.info("Returning tire brands from cache")
-            return {
-                "success": True,
-                "brands": BRANDS_CACHE['tires'],
-                "cached": True,
-                "last_updated": BRANDS_CACHE['last_updated'].isoformat()
-            }
-        
-        # Если кэш пустой или устарел, обновляем
-        logger.info("Updating tire brands cache...")
-        
-        if use_mock_data():
-            # Mock данные
-            mock_brands = [
-                "Michelin", "Bridgestone", "Continental", "Goodyear", "Pirelli",
-                "Yokohama", "Dunlop", "Hankook", "Nokian", "Cooper",
-                "Toyo", "Kumho", "Nexen", "Maxxis", "Falken"
-            ]
-            BRANDS_CACHE['tires'] = sorted(mock_brands)
-        else:
-            # Реальные данные из API
-            client = get_fourthchki_client()
-            brands = client.get_tire_brands(limit=200)
-            BRANDS_CACHE['tires'] = brands
-        
-        BRANDS_CACHE['last_updated'] = now
-        
-        return {
-            "success": True,
-            "brands": BRANDS_CACHE['tires'],
-            "cached": False,
-            "last_updated": now.isoformat()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error getting tire brands: {e}")
-        # В случае ошибки возвращаем кэш если есть
-        if BRANDS_CACHE['tires']:
-            return {
-                "success": True,
-                "brands": BRANDS_CACHE['tires'],
-                "cached": True,
-                "error": str(e)
-            }
-        raise HTTPException(status_code=500, detail="Failed to get tire brands")
+    return {
+        "success": True,
+        "brands": TIRE_BRANDS,
+        "total": len(TIRE_BRANDS)
+    }
 
 @router.get("/brands/disks")
 async def get_disk_brands(
