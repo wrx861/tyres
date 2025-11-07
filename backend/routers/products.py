@@ -12,6 +12,7 @@ from services.mock_data import (
     generate_mock_disks, 
     MOCK_WAREHOUSES
 )
+from services.brands_data import TIRE_BRANDS, DISK_BRANDS
 
 logger = logging.getLogger(__name__)
 
