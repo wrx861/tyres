@@ -107,6 +107,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Import Telegram notifier
+from services.telegram_bot import get_telegram_notifier
+
+@app.on_event("startup")
+async def startup_event():
+    """Запуск приложения - инициализация Telegram бота"""
+    logger.info("Starting up application...")
+    telegram_notifier = get_telegram_notifier()
+    await telegram_notifier.start_bot_polling()
+    logger.info("Application startup complete")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    """Остановка приложения - закрытие соединений"""
+    logger.info("Shutting down application...")
+    telegram_notifier = get_telegram_notifier()
+    await telegram_notifier.stop_bot_polling()
     client.close()
+    logger.info("Application shutdown complete")
