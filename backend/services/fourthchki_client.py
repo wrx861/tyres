@@ -346,21 +346,15 @@ class FourthchkiClient:
         ]
         
         try:
-            # Первый запрос без фильтров
-            response = self.search_tires(page=0, page_size=100)
-            if 'tyre_list' in response and response['tyre_list']:
-                for tyre in response['tyre_list']:
-                    if 'brand' in tyre and tyre['brand']:
-                        brands.add(tyre['brand'])
-            
-            # Дополнительные запросы с разными размерами
+            # Запросы с разными размерами
             for size_filter in size_ranges:
                 try:
-                    response = self.search_tires(page=0, page_size=50, **size_filter)
+                    response = self.search_tires(page=0, page_size=100, **size_filter)
                     if 'tyre_list' in response and response['tyre_list']:
                         for tyre in response['tyre_list']:
                             if 'brand' in tyre and tyre['brand']:
                                 brands.add(tyre['brand'])
+                        logger.info(f"Found {len([t for t in response['tyre_list'] if 'brand' in t])} brands in range {size_filter}")
                                 
                     if len(brands) >= limit:
                         break
@@ -368,7 +362,7 @@ class FourthchkiClient:
                     logger.warning(f"Error in tire brands query with filter {size_filter}: {e}")
                     continue
             
-            logger.info(f"Found {len(brands)} tire brands")
+            logger.info(f"Found total {len(brands)} tire brands")
             return sorted(list(brands))
         except Exception as e:
             logger.error(f"Error getting tire brands: {e}")
