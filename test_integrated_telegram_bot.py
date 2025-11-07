@@ -183,16 +183,16 @@ def test_order_notification():
     # Создаем заказ
     print_info("Создание тестового заказа...")
     order_data = {
-        "user_telegram_id": TEST_USER_ID,
         "items": [
             {
                 "code": "TEST_TIRE_001",
                 "name": "Тестовая шина 185/60R15",
                 "brand": "TestBrand",
-                "model": "TestModel",
-                "price": 5000.0,
                 "quantity": 4,
-                "type": "tire"
+                "price_base": 4000.0,
+                "price_final": 5000.0,
+                "warehouse_id": 1,
+                "warehouse_name": "Тестовый склад"
             }
         ],
         "delivery_address": {
@@ -200,10 +200,8 @@ def test_order_notification():
             "street": "Тестовая улица",
             "house": "1",
             "apartment": "1",
-            "postal_code": "123456"
-        },
-        "phone": "+79991234567",
-        "comment": "Тестовый заказ для проверки уведомлений бота"
+            "comment": "Тестовый заказ для проверки уведомлений бота"
+        }
     }
     
     try:
