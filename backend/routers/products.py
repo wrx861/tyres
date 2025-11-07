@@ -342,14 +342,30 @@ async def search_disks(
         filtered_disk_data = []
         
         for item in disk_data:
-            # Parse disk size from name (e.g., "7x16 5x114.3 ET45")
+            # Parse disk size from name (e.g., "7x16 5x114.3 ET45 DIA60.1")
             import re
             name = item.get('name', '')
+            
             # Pattern for disk size: WidthxDiameter
             size_match = re.search(r'(\d+\.?\d*)x(\d+)', name)
             if size_match:
                 item['width'] = float(size_match.group(1))
                 item['diameter'] = int(size_match.group(2))
+            
+            # Parse PCD (разболтовка): 5x114.3 или 4x100
+            pcd_match = re.search(r'(\d)x([\d.]+)', name)
+            if pcd_match:
+                item['pcd'] = f"{pcd_match.group(1)}x{pcd_match.group(2)}"
+            
+            # Parse ET (вылет): ET45 или ET-5
+            et_match = re.search(r'ET[:\s]*(-?\d+\.?\d*)', name, re.IGNORECASE)
+            if et_match:
+                item['et'] = et_match.group(1)
+            
+            # Parse DIA (диаметр ступичного отверстия): DIA60.1 или d60.1
+            dia_match = re.search(r'(?:DIA|d)[:\s]*([\d.]+)', name, re.IGNORECASE)
+            if dia_match:
+                item['dia'] = dia_match.group(1)
             
             # Extract brand and model if not present
             if not item.get('brand'):
