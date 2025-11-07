@@ -229,7 +229,7 @@ async def get_all_orders(
             raise HTTPException(status_code=403, detail="Access denied")
         
         # Формируем фильтр
-        filter_query = {}
+        filter_query = {"hidden_in_admin": {"$ne": True}}  # Не показывать скрытые
         if status:
             filter_query["status"] = status
         
