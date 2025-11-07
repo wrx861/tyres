@@ -1,6 +1,8 @@
 import os
 import logging
-from telegram import Bot
+import asyncio
+from telegram import Bot, Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 from telegram.error import TelegramError
 from typing import Optional
 
@@ -10,6 +12,8 @@ class TelegramNotifier:
     def __init__(self):
         self.bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
         self.admin_id = os.environ.get('ADMIN_TELEGRAM_ID')
+        self.webapp_url = os.environ.get('WEBAPP_URL', 'https://tyres.vpnsuba.ru')
+        self.application = None
         
         if not self.bot_token:
             logger.warning("TELEGRAM_BOT_TOKEN not set")
@@ -21,6 +25,80 @@ class TelegramNotifier:
             except Exception as e:
                 logger.error(f"Failed to initialize Telegram bot: {e}")
                 self.bot = None
+    
+    async def start_bot_polling(self):
+        """Запустить бота в режиме polling для обработки команд"""
+        if not self.bot_token:
+            logger.warning("Cannot start bot polling: token not set")
+            return
+        
+        try:
+            # Создаём приложение для обработки команд
+            self.application = Application.builder().token(self.bot_token).build()
+            
+            # Регистрируем обработчики команд
+            self.application.add_handler(CommandHandler("start", self._handle_start))
+            self.application.add_handler(CommandHandler("help", self._handle_help))
+            
+            # Запускаем polling в фоне
+            logger.info("Starting Telegram bot polling...")
+            await self.application.initialize()
+            await self.application.start()
+            await self.application.updater.start_polling(allowed_updates=Update.ALL_TYPES)
+            logger.info("Telegram bot polling started successfully!")
+        except Exception as e:
+            logger.error(f"Failed to start bot polling: {e}")
+    
+    async def stop_bot_polling(self):
+        """Остановить polling бота"""
+        if self.application:
+            try:
+                logger.info("Stopping Telegram bot polling...")
+                await self.application.updater.stop()
+                await self.application.stop()
+                await self.application.shutdown()
+                logger.info("Telegram bot polling stopped")
+            except Exception as e:
+                logger.error(f"Error stopping bot polling: {e}")
+    
+    async def _handle_start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Обработчик команды /start"""
+        user = update.effective_user
+        
+        # Отправляем приветственное сообщение
+        welcome_text = (
+            f"🎉 Добро пожаловать, {user.first_name}!\n\n"
+            f"🚗 <b>Интернет-магазин шин и дисков</b>\n\n"
+            f"У нас вы найдёте:\n"
+            f"✅ Самые выгодные цены на шины и диски\n"
+            f"✅ Огромный выбор брендов и моделей\n"
+            f"✅ Подбор по автомобилю\n"
+            f"✅ Доставка в ваш город\n\n"
+            f"Нажмите кнопку <b>\"Магазин\"</b> внизу слева и подберите шины для вашего автомобиля!\n\n"
+            f"💰 Наценка минимальная, качество — максимальное!"
+        )
+        
+        await update.message.reply_text(welcome_text, parse_mode='HTML')
+        logger.info(f"User {user.id} (@{user.username}) started the bot")
+        
+        # Уведомляем админа о новом пользователе (если это не сам админ)
+        if self.admin_id and str(user.id) != self.admin_id:
+            await self.notify_admin_new_visitor(
+                telegram_id=str(user.id),
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name
+            )
+    
+    async def _handle_help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Обработчик команды /help"""
+        help_text = (
+            "🤖 <b>Команды бота:</b>\n\n"
+            "/start - Открыть магазин\n"
+            "/help - Показать эту справку\n\n"
+            "Используйте кнопку \"🛒 Открыть магазин\" для доступа к каталогу товаров."
+        )
+        await update.message.reply_text(help_text, parse_mode='HTML')
     
     async def send_message(self, chat_id: str, text: str) -> bool:
         """Отправить сообщение пользователю"""
