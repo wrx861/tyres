@@ -412,9 +412,13 @@ async def search_disks(
         if telegram_id:
             from datetime import datetime, timezone
             user = await db.users.find_one({"telegram_id": telegram_id})
+            # Используем username или first_name в качестве идентификатора
+            user_display = None
+            if user:
+                user_display = user.get("username") or user.get("first_name") or f"User_{telegram_id[-4:]}"
             activity_log = {
                 "telegram_id": telegram_id,
-                "username": user.get("username") if user else None,
+                "username": user_display,
                 "activity_type": "disk_search",
                 "search_params": {
                     "diameter": diameter,
