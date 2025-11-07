@@ -59,25 +59,41 @@ fi
 
 cd $APP_DIR
 
-# Создание backup
+# Создание backup - спрашиваем пользователя
 if [ "$SKIP_BACKUP" = false ]; then
-    echo -e "${BLUE}[1/9] Создание backup текущей версии...${NC}"
-    BACKUP_DIR="/opt/tyres-app-backup-$(date +%Y%m%d_%H%M%S)"
-    cp -r $APP_DIR $BACKUP_DIR
-    echo -e "${GREEN}✓ Backup создан: $BACKUP_DIR${NC}"
+    # Спрашиваем только если не указан флаг -y
+    if [ "$AUTO_YES" = false ]; then
+        echo -e "${YELLOW}Создать backup перед обновлением? (y/n)${NC}"
+        echo -e "${YELLOW}(Backup занимает ~200MB, оставляются последние 3)${NC}"
+        read -t 15 -n 1 -r BACKUP_ANSWER
+        echo ""
+        
+        if [[ ! $BACKUP_ANSWER =~ ^[Yy]$ ]]; then
+            echo -e "${YELLOW}[1/9] Backup пропущен (пользователь отказался)${NC}"
+            SKIP_BACKUP=true
+        fi
+    fi
     
-    # Удаляем старые backup (оставляем только последние 3)
-    echo -e "${YELLOW}→ Очистка старых backup...${NC}"
-    BACKUP_COUNT=$(ls -d /opt/tyres-app-backup-* 2>/dev/null | wc -l)
-    if [ $BACKUP_COUNT -gt 3 ]; then
-        ls -dt /opt/tyres-app-backup-* | tail -n +4 | xargs rm -rf
-        REMOVED=$((BACKUP_COUNT - 3))
-        echo -e "${GREEN}✓ Удалено старых backup: $REMOVED${NC}"
-    else
-        echo -e "${GREEN}✓ Старых backup нет (всего: $BACKUP_COUNT)${NC}"
+    # Создаем backup если пользователь согласился или указан флаг -y
+    if [ "$SKIP_BACKUP" = false ]; then
+        echo -e "${BLUE}[1/9] Создание backup текущей версии...${NC}"
+        BACKUP_DIR="/opt/tyres-app-backup-$(date +%Y%m%d_%H%M%S)"
+        cp -r $APP_DIR $BACKUP_DIR
+        echo -e "${GREEN}✓ Backup создан: $BACKUP_DIR${NC}"
+        
+        # Удаляем старые backup (оставляем только последние 3)
+        echo -e "${YELLOW}→ Очистка старых backup...${NC}"
+        BACKUP_COUNT=$(ls -d /opt/tyres-app-backup-* 2>/dev/null | wc -l)
+        if [ $BACKUP_COUNT -gt 3 ]; then
+            ls -dt /opt/tyres-app-backup-* | tail -n +4 | xargs rm -rf
+            REMOVED=$((BACKUP_COUNT - 3))
+            echo -e "${GREEN}✓ Удалено старых backup: $REMOVED${NC}"
+        else
+            echo -e "${GREEN}✓ Старых backup нет (всего: $BACKUP_COUNT)${NC}"
+        fi
     fi
 else
-    echo -e "${YELLOW}[1/9] Backup пропущен (--no-backup)${NC}"
+    echo -e "${YELLOW}[1/9] Backup пропущен (флаг --no-backup)${NC}"
 fi
 echo ""
 
