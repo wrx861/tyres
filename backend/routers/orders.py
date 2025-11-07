@@ -365,3 +365,108 @@ async def reject_order(
     except Exception as e:
         logger.error(f"Error rejecting order: {e}")
         raise HTTPException(status_code=500, detail="Failed to reject order")
+
+
+@router.patch("/{order_id}/status", response_model=Order)
+async def update_order_status(
+    order_id: str,
+    new_status: OrderStatus,
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    comment: Optional[str] = Query(None, description="Комментарий к изменению статуса"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Изменить статус заказа (только для админа)
+    Доступные статусы после подтверждения:
+    - awaiting_payment: Ожидание оплаты
+    - in_progress: В работе
+    - delivery: Доставка
+    - delayed: Задержка
+    - completed: Выполнен
+    - cancelled: Отменен
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one(
+            {"telegram_id": telegram_id},
+            {"_id": 0}
+        )
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Получаем заказ
+        order = await db.orders.find_one(
+            {"order_id": order_id},
+            {"_id": 0}
+        )
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Проверяем что заказ можно изменить
+        if order['status'] == OrderStatus.PENDING_CONFIRMATION.value:
+            raise HTTPException(
+                status_code=400,
+                detail="Use /confirm or /reject endpoints for pending orders"
+            )
+        
+        # Обновляем статус
+        update_data = {
+            'status': new_status.value,
+            'updated_at': datetime.now(timezone.utc).isoformat()
+        }
+        
+        if comment:
+            update_data['status_comment'] = comment
+        
+        await db.orders.update_one(
+            {"order_id": order_id},
+            {"$set": update_data}
+        )
+        
+        logger.info(f"Order {order_id} status changed to {new_status.value} by admin {telegram_id}")
+        
+        # Отправляем уведомление клиенту о изменении статуса
+        notifier = get_telegram_notifier()
+        status_messages = {
+            OrderStatus.AWAITING_PAYMENT: "Ожидает оплаты",
+            OrderStatus.IN_PROGRESS: "Принят в работу",
+            OrderStatus.DELIVERY: "Передан в доставку",
+            OrderStatus.DELAYED: "Задержан",
+            OrderStatus.COMPLETED: "Выполнен",
+            OrderStatus.CANCELLED: "Отменен"
+        }
+        
+        status_text = status_messages.get(new_status, new_status.value)
+        await notifier.notify_user_order_status_changed(
+            user_telegram_id=order['user_telegram_id'],
+            order_id=order_id,
+            new_status=status_text,
+            comment=comment
+        )
+        
+        # Получаем обновленный заказ
+        updated_order = await db.orders.find_one(
+            {"order_id": order_id},
+            {"_id": 0}
+        )
+        
+        # Конвертируем даты и статус
+        if isinstance(updated_order.get('created_at'), str):
+            updated_order['created_at'] = datetime.fromisoformat(updated_order['created_at'])
+        if isinstance(updated_order.get('confirmed_at'), str):
+            updated_order['confirmed_at'] = datetime.fromisoformat(updated_order['confirmed_at'])
+        if isinstance(updated_order.get('updated_at'), str):
+            updated_order['updated_at'] = datetime.fromisoformat(updated_order['updated_at'])
+        if isinstance(updated_order.get('status'), str):
+            updated_order['status'] = OrderStatus(updated_order['status'])
+        
+        return Order(**updated_order)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating order status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update status: {str(e)}")
+
