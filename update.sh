@@ -101,7 +101,7 @@ fi
 echo -e "${GREEN}✓ Код обновлен${NC}"
 echo ""
 
-echo -e "${BLUE}[4/8] Проверка изменений в зависимостях...${NC}"
+echo -e "${BLUE}[4/9] Проверка изменений в зависимостях...${NC}"
 
 # Проверяем изменения в requirements.txt
 if git diff HEAD@{1} HEAD --name-only | grep -q "backend/requirements.txt"; then
