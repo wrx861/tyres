@@ -384,21 +384,15 @@ class FourthchkiClient:
         ]
         
         try:
-            # Первый запрос без фильтров
-            response = self.search_disks(page=0, page_size=100)
-            if 'disk_list' in response and response['disk_list']:
-                for disk in response['disk_list']:
-                    if 'brand' in disk and disk['brand']:
-                        brands.add(disk['brand'])
-            
-            # Дополнительные запросы с разными размерами
+            # Запросы с разными размерами
             for size_filter in size_ranges:
                 try:
-                    response = self.search_disks(page=0, page_size=50, **size_filter)
+                    response = self.search_disks(page=0, page_size=100, **size_filter)
                     if 'disk_list' in response and response['disk_list']:
                         for disk in response['disk_list']:
                             if 'brand' in disk and disk['brand']:
                                 brands.add(disk['brand'])
+                        logger.info(f"Found {len([d for d in response['disk_list'] if 'brand' in d])} brands in range {size_filter}")
                                 
                     if len(brands) >= limit:
                         break
@@ -406,7 +400,7 @@ class FourthchkiClient:
                     logger.warning(f"Error in disk brands query with filter {size_filter}: {e}")
                     continue
             
-            logger.info(f"Found {len(brands)} disk brands")
+            logger.info(f"Found total {len(brands)} disk brands")
             return sorted(list(brands))
         except Exception as e:
             logger.error(f"Error getting disk brands: {e}")
