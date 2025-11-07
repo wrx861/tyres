@@ -407,11 +407,15 @@ stdout_logfile=/var/log/tyres-frontend.out.log
 environment=PORT="3000"
 EOF
 
-# Копируем telegram бота
+# Копируем telegram бота и создаём .env для него
 if [ -f telegram_bot.py ]; then
     cp telegram_bot.py $APP_DIR/
     chmod +x $APP_DIR/telegram_bot.py
-    check_status "Telegram бот скопирован"
+    
+    # Создаём .env для бота (используем backend/.env)
+    ln -sf $APP_DIR/backend/.env $APP_DIR/.env
+    
+    check_status "Telegram бот скопирован и настроен"
 fi
 
 supervisorctl reread
