@@ -541,7 +541,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Скрытие завершенных заказов в админ панели"
+    - "Кнопка связи с клиентом через Telegram"
+    - "Сброс статистики"
+    - "Сброс логов активности"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
