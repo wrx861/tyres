@@ -142,7 +142,27 @@ else
 fi
 echo ""
 
-echo -e "${BLUE}[5/8] Проверка конфигурации supervisor...${NC}"
+echo -e "${BLUE}[5/9] Пересборка frontend (если изменился)...${NC}"
+# Проверяем изменения в frontend/src
+if git diff HEAD@{1} HEAD --name-only | grep -q "frontend/src"; then
+    echo -e "${YELLOW}→ Обнаружены изменения в frontend/src${NC}"
+    if command -v yarn &> /dev/null; then
+        echo -e "${YELLOW}→ Пересборка frontend...${NC}"
+        cd $APP_DIR/frontend
+        yarn build
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✓ Frontend пересобран${NC}"
+        else
+            echo -e "${RED}✗ Ошибка пересборки frontend${NC}"
+        fi
+        cd $APP_DIR
+    fi
+else
+    echo -e "${GREEN}✓ Изменений в frontend/src нет${NC}"
+fi
+echo ""
+
+echo -e "${BLUE}[6/9] Проверка конфигурации supervisor...${NC}"
 # Проверяем наличие старого процесса telegram-bot
 if supervisorctl status | grep -q "tyres-telegram-bot"; then
     echo -e "${YELLOW}→ Обнаружен старый процесс tyres-telegram-bot, удаление...${NC}"
