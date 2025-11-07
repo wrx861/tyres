@@ -16,14 +16,6 @@ from services.brands_data import TIRE_BRANDS, DISK_BRANDS
 
 logger = logging.getLogger(__name__)
 
-# Кэш брендов (обновляется раз в день)
-BRANDS_CACHE = {
-    'tires': [],
-    'disks': [],
-    'last_updated': None
-}
-CACHE_DURATION = timedelta(hours=24)  # Обновлять раз в 24 часа
-
 def use_mock_data() -> bool:
     """Проверяем, используем ли mock данные"""
     return os.environ.get('USE_MOCK_DATA', 'false').lower() == 'true'
