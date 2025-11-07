@@ -399,11 +399,22 @@ class FourthchkiClient:
             for size_filter in size_ranges:
                 try:
                     response = self.search_disks(page=0, page_size=100, **size_filter)
-                    if 'disk_list' in response and response['disk_list']:
-                        for disk in response['disk_list']:
-                            if 'brand' in disk and disk['brand']:
-                                brands.add(disk['brand'])
-                        logger.info(f"Found {len([d for d in response['disk_list'] if 'brand' in d])} brands in range {size_filter}")
+                    
+                    # Извлекаем disk_data из вложенной структуры
+                    disk_data = []
+                    price_rest_list = response.get('price_rest_list', {})
+                    if isinstance(price_rest_list, dict) and 'DiskPriceRest' in price_rest_list:
+                        disk_data = price_rest_list['DiskPriceRest']
+                    elif isinstance(price_rest_list, list):
+                        disk_data = price_rest_list
+                    
+                    if disk_data:
+                        for disk in disk_data:
+                            # Используем поле 'marka' из API
+                            brand = disk.get('brand') or disk.get('marka')
+                            if brand:
+                                brands.add(brand)
+                        logger.info(f"Found {len([d for d in disk_data if d.get('marka') or d.get('brand')])} brands in range {size_filter}")
                                 
                     if len(brands) >= limit:
                         break
