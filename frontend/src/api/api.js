@@ -156,6 +156,14 @@ export const updateOrderStatus = async (orderId, telegramId, newStatus, comment 
   return response.data;
 };
 
+export const hideOrderFromAdmin = async (orderId, telegramId) => {
+  const response = await axios.delete(
+    `${API}/orders/${orderId}/hide`,
+    { params: { telegram_id: telegramId } }
+  );
+  return response.data;
+};
+
 export const getMarkup = async (telegramId) => {
   const response = await axios.get(`${API}/admin/markup`, {
     params: { telegram_id: telegramId }
