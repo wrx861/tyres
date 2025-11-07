@@ -62,9 +62,34 @@ api_router.include_router(orders.router)
 api_router.include_router(admin.router)
 api_router.include_router(cart.router)
 
+# Middleware для проверки блокировки пользователей
+class BlockedUserMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Пропускаем проверку для определенных путей
+        excluded_paths = ["/api/", "/api/health", "/api/auth/telegram", "/api/auth/me"]
+        if request.url.path in excluded_paths or request.url.path == "/api":
+            return await call_next(request)
+        
+        # Проверяем telegram_id в query параметрах
+        telegram_id = request.query_params.get("telegram_id")
+        
+        if telegram_id and telegram_id != "None":
+            try:
+                user = await db.users.find_one({"telegram_id": telegram_id})
+                if user and user.get("is_blocked"):
+                    return HTTPException(
+                        status_code=403,
+                        detail="Слишком много запросов, подождите еще и вернитесь не скоро"
+                    )
+            except Exception as e:
+                logger.error(f"Error checking user block status: {e}")
+        
+        return await call_next(request)
+
 # Include the router in the main app
 app.include_router(api_router)
 
+app.add_middleware(BlockedUserMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
