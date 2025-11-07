@@ -8,8 +8,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Параметры по умолчанию
-CREATE_BACKUP=true
 SKIP_BACKUP=false
+AUTO_YES=false
 
 # Обработка аргументов командной строки
 while [[ $# -gt 0 ]]; do
@@ -22,9 +22,13 @@ while [[ $# -gt 0 ]]; do
             SKIP_BACKUP=true
             shift
             ;;
+        -y|--yes)
+            AUTO_YES=true
+            shift
+            ;;
         *)
             echo "Неизвестный параметр: $1"
-            echo "Использование: sudo bash update.sh [--no-backup]"
+            echo "Использование: sudo bash update.sh [--no-backup] [-y]"
             exit 1
             ;;
     esac
