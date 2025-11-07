@@ -207,6 +207,57 @@ async def get_pending_orders(
         logger.error(f"Error getting pending orders: {e}")
         raise HTTPException(status_code=500, detail="Failed to get pending orders")
 
+
+@router.get("/admin/all", response_model=List[Order])
+async def get_all_orders(
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    status: Optional[str] = Query(None, description="Фильтр по статусу"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Получить список ВСЕХ заказов (только для админа)
+    Опционально можно фильтровать по статусу
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one(
+            {"telegram_id": telegram_id},
+            {"_id": 0}
+        )
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Формируем фильтр
+        filter_query = {}
+        if status:
+            filter_query["status"] = status
+        
+        orders = await db.orders.find(
+            filter_query,
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(1000)
+        
+        # Конвертируем даты и статусы
+        for order in orders:
+            if isinstance(order.get('created_at'), str):
+                order['created_at'] = datetime.fromisoformat(order['created_at'])
+            if isinstance(order.get('confirmed_at'), str):
+                order['confirmed_at'] = datetime.fromisoformat(order['confirmed_at'])
+            if isinstance(order.get('updated_at'), str):
+                order['updated_at'] = datetime.fromisoformat(order['updated_at'])
+            if isinstance(order.get('status'), str):
+                order['status'] = OrderStatus(order['status'])
+        
+        return orders
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting all orders: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get orders")
+
+
 @router.post("/{order_id}/confirm", response_model=Order)
 async def confirm_order(
     order_id: str,
