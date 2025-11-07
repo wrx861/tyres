@@ -186,6 +186,27 @@ async def search_tires(
         elif isinstance(warehouse_logistics, list):
             warehouses = warehouse_logistics
         
+        # Логируем активность поиска шин
+        if telegram_id:
+            from datetime import datetime, timezone
+            user = await db.users.find_one({"telegram_id": telegram_id})
+            activity_log = {
+                "telegram_id": telegram_id,
+                "username": user.get("username") if user else None,
+                "activity_type": "tire_search",
+                "search_params": {
+                    "width": width,
+                    "height": height,
+                    "diameter": diameter,
+                    "season": season,
+                    "brand": brand,
+                    "city": city
+                },
+                "result_count": len(tire_data),
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+            await db.activity_logs.insert_one(activity_log)
+        
         return {
             "success": True,
             "data": tire_data,
