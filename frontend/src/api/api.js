@@ -133,6 +133,29 @@ export const rejectOrder = async (orderId, telegramId, reason) => {
   return response.data;
 };
 
+export const getAllOrders = async (telegramId, status = null) => {
+  const params = { telegram_id: telegramId };
+  if (status) params.status = status;
+  const response = await axios.get(`${API}/orders/admin/all`, { params });
+  return response.data;
+};
+
+export const updateOrderStatus = async (orderId, telegramId, newStatus, comment = null) => {
+  const params = { telegram_id: telegramId };
+  if (comment) params.comment = comment;
+  const response = await axios.patch(
+    `${API}/orders/${orderId}/status`,
+    null,
+    { 
+      params: {
+        ...params,
+        new_status: newStatus
+      }
+    }
+  );
+  return response.data;
+};
+
 export const getMarkup = async (telegramId) => {
   const response = await axios.get(`${API}/admin/markup`, {
     params: { telegram_id: telegramId }
