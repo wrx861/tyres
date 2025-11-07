@@ -13,7 +13,7 @@ import re
 from datetime import datetime
 
 # Configuration - Read from frontend/.env
-BACKEND_URL = "https://tire-api-service.preview.emergentagent.com/api"
+BACKEND_URL = "https://teledisk-shop.preview.emergentagent.com/api"
 ADMIN_TELEGRAM_ID = "508352361"
 TEST_USER_TELEGRAM_ID = "123456789"  # Test user ID
 
