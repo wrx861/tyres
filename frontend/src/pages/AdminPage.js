@@ -332,11 +332,11 @@ const AdminPage = ({ user, onBack }) => {
                         {/* Кнопка связи с клиентом */}
                         <div className="mb-4">
                           <button
-                            onClick={() => handleContactClient(order.user_telegram_id)}
+                            onClick={() => handleContactClient(order.user_telegram_id, order.user_username)}
                             className="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
                           >
                             <MessageCircle size={18} />
-                            <span>Связаться с клиентом в Telegram</span>
+                            <span>Связаться с клиентом{order.user_username ? ` @${order.user_username}` : ` (ID: ${order.user_telegram_id})`}</span>
                           </button>
                         </div>
 
