@@ -25,14 +25,23 @@ function App() {
 
   const initializeApp = async () => {
     try {
+      // Инициализация Telegram Web App
+      initTelegramWebApp();
+      
       // Получаем данные пользователя из Telegram
       const telegramUser = getTelegramUser();
       
-      if (telegramUser) {
-        // Аутентифицируем пользователя
-        const authenticatedUser = await authenticateUser(telegramUser);
-        setUser(authenticatedUser);
+      if (!telegramUser) {
+        console.error('Не удалось получить данные пользователя из Telegram');
+        return;
       }
+      
+      console.log('Telegram user data:', telegramUser);
+      
+      // Аутентифицируем пользователя
+      const authenticatedUser = await authenticateUser(telegramUser);
+      setUser(authenticatedUser);
+      console.log('User authenticated:', authenticatedUser);
 
       // Загружаем список складов для маппинга ID -> название города
       try {
