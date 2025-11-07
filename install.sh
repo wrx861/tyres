@@ -387,6 +387,16 @@ autorestart=true
 stderr_logfile=/var/log/tyres-backend.err.log
 stdout_logfile=/var/log/tyres-backend.out.log
 
+[program:tyres-telegram-bot]
+command=/opt/tyres-app/backend/venv/bin/python telegram_bot.py
+directory=/opt/tyres-app
+user=root
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/tyres-telegram-bot.err.log
+stdout_logfile=/var/log/tyres-telegram-bot.out.log
+environment=WEBAPP_URL="https://$DOMAIN_NAME"
+
 [program:tyres-frontend]
 command=yarn start
 directory=/opt/tyres-app/frontend
