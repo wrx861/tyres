@@ -15,9 +15,18 @@ export const WarehousesContext = createContext({});
 function App() {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState('home');
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    // Загружаем корзину из localStorage при инициализации
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
   const [loading, setLoading] = useState(true);
   const [warehouses, setWarehouses] = useState({});
+
+  // Сохраняем корзину в localStorage при каждом изменении
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   useEffect(() => {
     initializeApp();
