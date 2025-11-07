@@ -125,9 +125,9 @@ function App() {
       case 'home':
         return <HomePage user={user} onNavigate={setCurrentPage} cartCount={cart.length} />;
       case 'search':
-        return <SearchPage onAddToCart={addToCart} onBack={() => setCurrentPage('home')} />;
+        return <SearchPage user={user} onAddToCart={addToCart} onBack={() => setCurrentPage('home')} />;
       case 'car-selection':
-        return <CarSelectionPage onAddToCart={addToCart} onBack={() => setCurrentPage('home')} />;
+        return <CarSelectionPage user={user} onAddToCart={addToCart} onBack={() => setCurrentPage('home')} />;
       case 'cart':
         return (
           <CartPage 
