@@ -168,6 +168,13 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
 
         <button
           onClick={() => {
+            // Проверка доступного количества
+            if (quantity > warehouseInfo.rest) {
+              setShowAddedNotification(true);
+              setTimeout(() => setShowAddedNotification(false), 3000);
+              return;
+            }
+            
             onAddToCart({ ...product, quantity });
             setShowAddedNotification(true);
             setTimeout(() => setShowAddedNotification(false), 2000);
@@ -180,8 +187,15 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
 
         {/* Added Notification */}
         {showAddedNotification && (
-          <div className="mt-2 bg-green-100 text-green-800 text-sm py-2 px-3 rounded-lg text-center">
-            ✓ Добавлено {quantity} шт в корзину
+          <div className={`mt-2 text-sm py-2 px-3 rounded-lg text-center ${
+            quantity > warehouseInfo.rest 
+              ? 'bg-red-100 text-red-800' 
+              : 'bg-green-100 text-green-800'
+          }`}>
+            {quantity > warehouseInfo.rest 
+              ? `⚠️ Доступно только ${warehouseInfo.rest} шт`
+              : `✓ Добавлено ${quantity} шт в корзину`
+            }
           </div>
         )}
       </div>
