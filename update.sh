@@ -77,7 +77,7 @@ else
 fi
 echo ""
 
-echo -e "${BLUE}[2/8] Получение обновлений из GitHub...${NC}"
+echo -e "${BLUE}[2/9] Получение обновлений из GitHub...${NC}"
 git fetch origin
 if [ $? -ne 0 ]; then
     echo -e "${RED}✗ Ошибка при git fetch${NC}"
