@@ -35,6 +35,7 @@ class Order(BaseModel):
     order_id: str = Field(default_factory=lambda: f"ORD-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}")
     user_telegram_id: str
     user_name: Optional[str] = None
+    user_username: Optional[str] = None  # Telegram username клиента (если есть)
     items: List[OrderItem]
     total_amount: float
     markup_percentage: float  # Процент наценки на момент заказа
