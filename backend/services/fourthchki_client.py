@@ -329,6 +329,95 @@ class FourthchkiClient:
             logger.error(f"Error getting warehouses: {e}")
             raise
 
+    
+    def get_tire_brands(self, limit: int = 200) -> List[str]:
+        """
+        Получить список брендов шин
+        Делает несколько запросов с разными параметрами для получения максимального списка брендов
+        """
+        brands = set()
+        
+        # Запросы с разными размерами для получения большего количества брендов
+        size_ranges = [
+            {'diameter_min': 13, 'diameter_max': 14},
+            {'diameter_min': 15, 'diameter_max': 16},
+            {'diameter_min': 17, 'diameter_max': 18},
+            {'diameter_min': 19, 'diameter_max': 22},
+        ]
+        
+        try:
+            # Первый запрос без фильтров
+            response = self.search_tires(page=0, page_size=100)
+            if 'tyre_list' in response and response['tyre_list']:
+                for tyre in response['tyre_list']:
+                    if 'brand' in tyre and tyre['brand']:
+                        brands.add(tyre['brand'])
+            
+            # Дополнительные запросы с разными размерами
+            for size_filter in size_ranges:
+                try:
+                    response = self.search_tires(page=0, page_size=50, **size_filter)
+                    if 'tyre_list' in response and response['tyre_list']:
+                        for tyre in response['tyre_list']:
+                            if 'brand' in tyre and tyre['brand']:
+                                brands.add(tyre['brand'])
+                                
+                    if len(brands) >= limit:
+                        break
+                except Exception as e:
+                    logger.warning(f"Error in tire brands query with filter {size_filter}: {e}")
+                    continue
+            
+            logger.info(f"Found {len(brands)} tire brands")
+            return sorted(list(brands))
+        except Exception as e:
+            logger.error(f"Error getting tire brands: {e}")
+            return []
+    
+    def get_disk_brands(self, limit: int = 200) -> List[str]:
+        """
+        Получить список брендов дисков
+        Делает несколько запросов с разными параметрами для получения максимального списка брендов
+        """
+        brands = set()
+        
+        # Запросы с разными размерами
+        size_ranges = [
+            {'diameter_min': 13, 'diameter_max': 14},
+            {'diameter_min': 15, 'diameter_max': 16},
+            {'diameter_min': 17, 'diameter_max': 18},
+            {'diameter_min': 19, 'diameter_max': 22},
+        ]
+        
+        try:
+            # Первый запрос без фильтров
+            response = self.search_disks(page=0, page_size=100)
+            if 'disk_list' in response and response['disk_list']:
+                for disk in response['disk_list']:
+                    if 'brand' in disk and disk['brand']:
+                        brands.add(disk['brand'])
+            
+            # Дополнительные запросы с разными размерами
+            for size_filter in size_ranges:
+                try:
+                    response = self.search_disks(page=0, page_size=50, **size_filter)
+                    if 'disk_list' in response and response['disk_list']:
+                        for disk in response['disk_list']:
+                            if 'brand' in disk and disk['brand']:
+                                brands.add(disk['brand'])
+                                
+                    if len(brands) >= limit:
+                        break
+                except Exception as e:
+                    logger.warning(f"Error in disk brands query with filter {size_filter}: {e}")
+                    continue
+            
+            logger.info(f"Found {len(brands)} disk brands")
+            return sorted(list(brands))
+        except Exception as e:
+            logger.error(f"Error getting disk brands: {e}")
+            return []
+
 # Singleton instance
 fourthchki_client = None
 
