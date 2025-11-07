@@ -316,6 +316,17 @@ const AdminPage = ({ user, onBack }) => {
                           </div>
                         )}
 
+                        {/* Кнопка связи с клиентом */}
+                        <div className="mb-4">
+                          <button
+                            onClick={() => handleContactClient(order.user_telegram_id)}
+                            className="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg flex items-center justify-center space-x-2 font-medium transition-colors"
+                          >
+                            <MessageCircle size={18} />
+                            <span>Связаться с клиентом в Telegram</span>
+                          </button>
+                        </div>
+
                         {/* Кнопки действий в зависимости от статуса */}
                         {order.status === 'pending_confirmation' ? (
                           <div className="flex space-x-3">
