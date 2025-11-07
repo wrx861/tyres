@@ -101,14 +101,26 @@ class TelegramNotifier:
         )
         logger.info(f"User {user.id} (@{user.username}) started the bot")
         
-        # Уведомляем админа о новом пользователе (если это не сам админ)
+        # Проверяем, является ли пользователь новым
         if self.admin_id and str(user.id) != self.admin_id:
-            await self.notify_admin_new_visitor(
-                telegram_id=str(user.id),
-                username=user.username,
-                first_name=user.first_name,
-                last_name=user.last_name
-            )
+            try:
+                # Проверяем существование пользователя в БД
+                existing_user = await self.db.users.find_one({"telegram_id": str(user.id)})
+                
+                if not existing_user:
+                    # Это новый пользователь - отправляем уведомление админу
+                    logger.info(f"New user detected: {user.id} (@{user.username})")
+                    await self.notify_admin_new_visitor(
+                        telegram_id=str(user.id),
+                        username=user.username,
+                        first_name=user.first_name,
+                        last_name=user.last_name
+                    )
+                else:
+                    logger.info(f"Existing user: {user.id} (@{user.username}) - notification skipped")
+            except Exception as e:
+                logger.error(f"Error checking user in DB: {e}")
+                # В случае ошибки не отправляем уведомление
     
     async def _handle_help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик команды /help"""
