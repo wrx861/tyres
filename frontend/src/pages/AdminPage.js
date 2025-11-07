@@ -217,6 +217,11 @@ const AdminPage = ({ user, onBack }) => {
                               {order.delivery_address.city}, {order.delivery_address.street}, д. {order.delivery_address.house}
                               {order.delivery_address.apartment && `, кв. ${order.delivery_address.apartment}`}
                             </p>
+                            {order.delivery_address.phone && (
+                              <p className="text-sm text-gray-900 mt-1">
+                                <span className="font-medium">📞 Телефон:</span> {order.delivery_address.phone}
+                              </p>
+                            )}
                             {order.delivery_address.comment && (
                               <p className="text-xs text-gray-600 mt-1">Комментарий: {order.delivery_address.comment}</p>
                             )}
