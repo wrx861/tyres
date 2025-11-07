@@ -111,18 +111,34 @@ const AdminPage = ({ user, onBack }) => {
           </div>
           
           {/* Tabs */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 overflow-x-auto">
             <button
               onClick={() => setTab('pending')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
                 tab === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               Заказы
             </button>
             <button
+              onClick={() => setTab('users')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                tab === 'users' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Пользователи
+            </button>
+            <button
+              onClick={() => setTab('activity')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                tab === 'activity' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Активность
+            </button>
+            <button
               onClick={() => setTab('stats')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
                 tab === 'stats' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -130,7 +146,7 @@ const AdminPage = ({ user, onBack }) => {
             </button>
             <button
               onClick={() => setTab('settings')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
                 tab === 'settings' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
