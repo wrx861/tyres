@@ -137,6 +137,51 @@ class TelegramNotifier:
             "Используйте кнопку \"🛒 Открыть магазин\" для доступа к каталогу товаров."
         )
         await update.message.reply_text(help_text, parse_mode='HTML')
+    
+    async def _handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Обработчик обычных текстовых сообщений (пересылка админу)"""
+        user = update.effective_user
+        message_text = update.message.text
+        
+        # Если сообщение от админа - игнорируем (чтобы не создавать петлю)
+        if self.admin_id and str(user.id) == self.admin_id:
+            return
+        
+        # Получаем информацию о пользователе из БД
+        try:
+            db_user = await self.db.users.find_one({"telegram_id": str(user.id)})
+            
+            # Формируем информацию о клиенте
+            user_info = f"ID: {user.id}"
+            if user.username:
+                user_info += f" | @{user.username}"
+            if db_user:
+                display_name = db_user.get('first_name') or db_user.get('username') or f"User_{str(user.id)[-4:]}"
+                user_info += f" | {display_name}"
+            
+            # Отправляем админу пересланное сообщение
+            forward_message = (
+                f"📨 <b>Сообщение от клиента</b>\n\n"
+                f"👤 {user_info}\n\n"
+                f"💬 <i>\"{message_text}\"</i>\n\n"
+                f"➡️ Чтобы ответить, используйте админ-панель"
+            )
+            
+            await self.send_message(self.admin_id, forward_message)
+            logger.info(f"Message from {user.id} forwarded to admin")
+            
+            # Подтверждаем клиенту получение сообщения
+            await update.message.reply_text(
+                "✅ Ваше сообщение получено!\n"
+                "Администратор ответит вам в ближайшее время."
+            )
+            
+        except Exception as e:
+            logger.error(f"Error forwarding message to admin: {e}")
+            await update.message.reply_text(
+                "❌ Произошла ошибка при отправке сообщения.\n"
+                "Пожалуйста, попробуйте позже."
+            )
 
     async def _handle_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик нажатий на inline кнопки"""
