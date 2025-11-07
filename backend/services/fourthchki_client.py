@@ -350,11 +350,22 @@ class FourthchkiClient:
             for size_filter in size_ranges:
                 try:
                     response = self.search_tires(page=0, page_size=100, **size_filter)
-                    if 'tyre_list' in response and response['tyre_list']:
-                        for tyre in response['tyre_list']:
-                            if 'brand' in tyre and tyre['brand']:
-                                brands.add(tyre['brand'])
-                        logger.info(f"Found {len([t for t in response['tyre_list'] if 'brand' in t])} brands in range {size_filter}")
+                    
+                    # Извлекаем tire_data из вложенной структуры
+                    tire_data = []
+                    price_rest_list = response.get('price_rest_list', {})
+                    if isinstance(price_rest_list, dict) and 'TyrePriceRest' in price_rest_list:
+                        tire_data = price_rest_list['TyrePriceRest']
+                    elif isinstance(price_rest_list, list):
+                        tire_data = price_rest_list
+                    
+                    if tire_data:
+                        for tyre in tire_data:
+                            # Используем поле 'marka' из API
+                            brand = tyre.get('brand') or tyre.get('marka')
+                            if brand:
+                                brands.add(brand)
+                        logger.info(f"Found {len([t for t in tire_data if t.get('marka') or t.get('brand')])} brands in range {size_filter}")
                                 
                     if len(brands) >= limit:
                         break
