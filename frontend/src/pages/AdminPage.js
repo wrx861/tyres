@@ -75,6 +75,30 @@ const AdminPage = ({ user, onBack }) => {
     }
   };
 
+  const handleBlockUser = async (userTelegramId) => {
+    if (window.confirm('Заблокировать этого пользователя?')) {
+      try {
+        await blockUser(user.telegram_id, userTelegramId);
+        loadData();
+        alert('Пользователь заблокирован');
+      } catch (error) {
+        alert('Ошибка блокировки пользователя');
+      }
+    }
+  };
+
+  const handleUnblockUser = async (userTelegramId) => {
+    if (window.confirm('Разблокировать этого пользователя?')) {
+      try {
+        await unblockUser(user.telegram_id, userTelegramId);
+        loadData();
+        alert('Пользователь разблокирован');
+      } catch (error) {
+        alert('Ошибка разблокировки пользователя');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm sticky top-0 z-10">
