@@ -236,7 +236,7 @@ else
 fi
 echo ""
 
-echo -e "${BLUE}[8/8] Финальная проверка...${NC}"
+echo -e "${BLUE}[9/9] Финальная проверка...${NC}"
 supervisorctl status
 
 echo ""
