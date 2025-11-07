@@ -261,3 +261,15 @@ export const clearCart = async (telegramId) => {
   return response.data;
 };
 
+// Admin - Send message to client
+export const sendMessageToClient = async (adminTelegramId, clientTelegramId, messageText) => {
+  const response = await axios.post(
+    `${API}/admin/send-message?telegram_id=${adminTelegramId}`,
+    {
+      client_telegram_id: clientTelegramId,
+      message_text: messageText
+    }
+  );
+  return response.data;
+};
+
