@@ -206,6 +206,17 @@ const AdminPage = ({ user, onBack }) => {
                             <p className="text-sm text-gray-600">ID заказа</p>
                             <p className="font-semibold text-gray-900">{order.order_id}</p>
                             <p className="text-sm text-gray-600 mt-1">От: {order.user_name}</p>
+                            {/* Статус заказа */}
+                            <p className="text-sm font-medium mt-1">
+                              {order.status === 'pending_confirmation' && <span className="text-yellow-600">⏳ Ждет подтверждения</span>}
+                              {order.status === 'confirmed' && <span className="text-blue-600">✅ Подтвержден</span>}
+                              {order.status === 'awaiting_payment' && <span className="text-yellow-600">💳 Ожидание оплаты</span>}
+                              {order.status === 'in_progress' && <span className="text-blue-600">⚙️ В работе</span>}
+                              {order.status === 'delivery' && <span className="text-purple-600">🚚 Доставка</span>}
+                              {order.status === 'delayed' && <span className="text-orange-600">⏰ Задержка</span>}
+                              {order.status === 'completed' && <span className="text-green-600">✅ Выполнен</span>}
+                              {order.status === 'cancelled' && <span className="text-gray-600">❌ Отменен</span>}
+                            </p>
                           </div>
                           <div className="text-right">
                             <p className="text-2xl font-bold text-blue-600">{order.total_amount.toLocaleString()} ₽</p>
