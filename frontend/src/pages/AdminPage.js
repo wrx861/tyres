@@ -346,8 +346,17 @@ const AdminPage = ({ user, onBack }) => {
                             </button>
                           </div>
                         ) : order.status === 'completed' ? (
-                          <div className="text-center py-3">
-                            <p className="text-sm text-green-600 font-medium">✅ Заказ выполнен</p>
+                          <div className="space-y-2">
+                            <div className="text-center py-2">
+                              <p className="text-sm text-green-600 font-medium">✅ Заказ выполнен</p>
+                            </div>
+                            <button
+                              onClick={() => handleHideOrder(order.order_id)}
+                              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-lg flex items-center justify-center space-x-2 text-sm font-medium transition-colors"
+                            >
+                              <X size={16} />
+                              <span>Скрыть заказ из панели</span>
+                            </button>
                           </div>
                         ) : (
                           <div className="space-y-3">
