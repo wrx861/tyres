@@ -493,9 +493,18 @@ if [ "$USE_HTTPS" = true ]; then
         if [ $? -eq 0 ]; then
             check_status "SSL сертификат установлен"
             
-            # Настраиваем автообновление
+            # Настраиваем автообновление SSL
             systemctl enable certbot.timer
             systemctl start certbot.timer
+            
+            # Добавляем хук для перезапуска nginx после обновления сертификата
+            mkdir -p /etc/letsencrypt/renewal-hooks/deploy
+            cat > /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh << 'HOOK_EOF'
+#!/bin/bash
+systemctl reload nginx
+HOOK_EOF
+            chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+            
             echo -e "${GREEN}✓ Автообновление SSL настроено${NC}"
         else
             echo -e "${RED}✗ Не удалось установить SSL сертификат${NC}"
