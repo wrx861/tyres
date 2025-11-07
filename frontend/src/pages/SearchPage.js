@@ -12,6 +12,7 @@ const SearchPage = ({ onAddToCart, onBack }) => {
     season: '',
     brand: '',
     city: 'Тюмень', // По умолчанию Тюмень
+    sort_by: '', // Сортировка по цене
     // Фильтры для дисков
     pcd: '',
     et_min: '',
