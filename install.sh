@@ -395,7 +395,6 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/tyres-telegram-bot.err.log
 stdout_logfile=/var/log/tyres-telegram-bot.out.log
-environment=WEBAPP_URL="https://$DOMAIN_NAME"
 
 [program:tyres-frontend]
 command=yarn start
