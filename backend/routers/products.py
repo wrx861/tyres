@@ -390,6 +390,12 @@ async def search_disks(
         # Заменяем disk_data на отфильтрованный список
         disk_data = filtered_disk_data
         
+        # Сортировка по цене
+        if sort_by == 'price_asc':
+            disk_data.sort(key=lambda x: x.get('price', 0))
+        elif sort_by == 'price_desc':
+            disk_data.sort(key=lambda x: x.get('price', 0), reverse=True)
+        
         # Extract warehouse data
         warehouses = []
         warehouse_logistics = response.get('warehouseLogistics', {})
