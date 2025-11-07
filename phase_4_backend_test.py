@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://teledisk-shop.preview.emergentagent.com/api"
+BACKEND_URL = "https://explore-repo.preview.emergentagent.com/api"
 ADMIN_TELEGRAM_ID = "508352361"
 TEST_USER_1 = "999888777"
 TEST_USER_1_USERNAME = "test_user"
