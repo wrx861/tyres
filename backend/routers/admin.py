@@ -344,3 +344,79 @@ async def get_user_activity(
         logger.error(f"Error getting activity logs: {e}")
         raise HTTPException(status_code=500, detail="Failed to get activity logs")
 
+@router.delete("/activity/reset")
+async def reset_activity_logs(
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Сбросить всю активность (удалить все логи активности) - только для админа
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one({"telegram_id": telegram_id})
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Удаляем все логи активности
+        result = await db.activity_logs.delete_many({})
+        
+        logger.info(f"Activity logs reset by admin {telegram_id}. Deleted {result.deleted_count} logs")
+        
+        return {
+            "success": True,
+            "message": f"Удалено {result.deleted_count} записей активности",
+            "deleted_count": result.deleted_count
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting activity logs: {e}")
+        raise HTTPException(status_code=500, detail="Failed to reset activity logs")
+
+@router.delete("/stats/reset")
+async def reset_statistics(
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Сбросить всю статистику (удалить все заказы и активность) - только для админа
+    ВНИМАНИЕ: Это удалит ВСЕ заказы из базы данных!
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one({"telegram_id": telegram_id})
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Удаляем все заказы
+        orders_result = await db.orders.delete_many({})
+        
+        # Удаляем все логи активности
+        activity_result = await db.activity_logs.delete_many({})
+        
+        # Сбрасываем last_activity у всех пользователей
+        await db.users.update_many({}, {"$set": {"last_activity": None}})
+        
+        logger.warning(
+            f"STATISTICS RESET by admin {telegram_id}. "
+            f"Deleted {orders_result.deleted_count} orders, "
+            f"Deleted {activity_result.deleted_count} activity logs"
+        )
+        
+        return {
+            "success": True,
+            "message": "Вся статистика сброшена",
+            "deleted_orders": orders_result.deleted_count,
+            "deleted_activity_logs": activity_result.deleted_count
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting statistics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to reset statistics")
+
