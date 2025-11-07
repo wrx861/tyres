@@ -49,6 +49,9 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
 
       // Добавляем сортировку если выбрана
       if (filters.sort_by) params.sort_by = filters.sort_by;
+      
+      // Добавляем telegram_id для логирования и проверки блокировки
+      if (user?.telegram_id) params.telegram_id = user.telegram_id;
 
       if (searchType === 'tires') {
         if (filters.width) params.width = parseInt(filters.width);
