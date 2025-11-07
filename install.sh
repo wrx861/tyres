@@ -387,15 +387,6 @@ autorestart=true
 stderr_logfile=/var/log/tyres-backend.err.log
 stdout_logfile=/var/log/tyres-backend.out.log
 
-[program:tyres-telegram-bot]
-command=/opt/tyres-app/backend/venv/bin/python telegram_bot.py
-directory=/opt/tyres-app
-user=root
-autostart=true
-autorestart=true
-stderr_logfile=/var/log/tyres-telegram-bot.err.log
-stdout_logfile=/var/log/tyres-telegram-bot.out.log
-
 [program:tyres-frontend]
 command=yarn start
 directory=/opt/tyres-app/frontend
@@ -407,20 +398,12 @@ stdout_logfile=/var/log/tyres-frontend.out.log
 environment=PORT="3000"
 EOF
 
-# Копируем telegram бота и создаём .env для него
-if [ -f telegram_bot.py ]; then
-    cp telegram_bot.py $APP_DIR/
-    chmod +x $APP_DIR/telegram_bot.py
-    
-    # Создаём .env для бота (используем backend/.env)
-    ln -sf $APP_DIR/backend/.env $APP_DIR/.env
-    
-    check_status "Telegram бот скопирован и настроен"
-fi
+# Примечание: Telegram бот интегрирован в backend и запускается автоматически
+echo -e "${GREEN}ℹ️  Telegram бот интегрирован в backend (не требует отдельного процесса)${NC}"
 
 supervisorctl reread
 supervisorctl update
-supervisorctl start tyres-backend tyres-telegram-bot
+supervisorctl start tyres-backend
 
 # Включаем автозапуск supervisor после перезагрузки
 systemctl enable supervisor
