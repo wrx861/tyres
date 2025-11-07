@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext } from 'react';
 import './App.css';
-import { getTelegramUser, authenticateUser, getWarehouses } from './api/api';
-import { initTelegramWebApp } from './utils/telegram';
+import { authenticateUser, getWarehouses } from './api/api';
+import { initTelegramWebApp, getTelegramUser } from './utils/telegram';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import CarSelectionPage from './pages/CarSelectionPage';
