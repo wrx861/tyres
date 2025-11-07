@@ -5,8 +5,11 @@ from enum import Enum
 
 class OrderStatus(str, Enum):
     PENDING_CONFIRMATION = "pending_confirmation"  # Ждет подтверждения админа
-    CONFIRMED = "confirmed"  # Подтвержден админом
-    SENT_TO_SUPPLIER = "sent_to_supplier"  # Отправлен в 4tochki
+    CONFIRMED = "confirmed"  # Подтвержден админом (в обработке)
+    AWAITING_PAYMENT = "awaiting_payment"  # Ожидание оплаты
+    IN_PROGRESS = "in_progress"  # В работе (заказан у поставщика)
+    DELIVERY = "delivery"  # Доставка
+    DELAYED = "delayed"  # Задержка
     COMPLETED = "completed"  # Выполнен
     CANCELLED = "cancelled"  # Отменен
 
