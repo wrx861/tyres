@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 
 # Конфигурация
-BACKEND_URL = "https://tirebot-admin.preview.emergentagent.com/api"
+BACKEND_URL = "https://izuchi-nash.preview.emergentagent.com/api"
 TELEGRAM_BOT_TOKEN = "8290483601:AAFqXwpx1_paoekO0dt3kR46z471zlDKChI"
 ADMIN_TELEGRAM_ID = "508352361"
 TEST_USER_ID = "999888777"  # Тестовый пользователь

@@ -15,7 +15,7 @@ import re
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://tirebot-admin.preview.emergentagent.com/api"
+BACKEND_URL = "https://izuchi-nash.preview.emergentagent.com/api"
 ADMIN_TELEGRAM_ID = "508352361"
 
 class FocusedAPITester:
