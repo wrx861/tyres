@@ -79,9 +79,27 @@ sudo supervisorctl status
 sudo supervisorctl restart all
 
 # Логи
-sudo tail -f /var/log/tyres-backend.err.log
-sudo tail -f /var/log/tyres-frontend.err.log
+sudo tail -f /var/log/supervisor/backend.err.log
+sudo tail -f /var/log/supervisor/frontend.err.log
+
+# Проверка Telegram бота (интегрирован в backend)
+sudo tail -f /var/log/supervisor/backend.err.log | grep telegram
 ```
+
+## 🤖 Telegram бот
+
+Бот **интегрирован в backend** и запускается автоматически:
+- ✅ Обработка команд: `/start`, `/help`
+- ✅ Уведомления админу: новые заказы, новые посетители
+- ✅ Уведомления клиентам: статус заказа
+
+**Тестирование:**
+```bash
+cd /app
+python3 test_telegram_bot.py
+```
+
+Подробнее: см. [TELEGRAM_BOT_INTEGRATION.md](TELEGRAM_BOT_INTEGRATION.md)
 
 ## 📁 Структура
 
