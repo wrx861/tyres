@@ -557,13 +557,16 @@ fi
 
 echo "Для изменения учетных данных в любой момент:"
 echo -e "  ${YELLOW}nano $APP_DIR/backend/.env${NC}"
-echo "  Затем: ${YELLOW}sudo supervisorctl restart all${NC}"
+echo "  Затем: ${YELLOW}sudo supervisorctl restart backend${NC}"
 echo ""
 echo "Полезные команды:"
 echo -e "  Проверка статуса: ${YELLOW}sudo supervisorctl status${NC}"
-echo -e "  Просмотр логов backend: ${YELLOW}tail -f /var/log/tyres-backend.out.log${NC}"
-echo -e "  Просмотр логов frontend: ${YELLOW}tail -f /var/log/tyres-frontend.out.log${NC}"
+echo -e "  Просмотр логов backend: ${YELLOW}tail -f /var/log/tyres-backend.err.log${NC}"
+echo -e "  Просмотр логов Telegram бота: ${YELLOW}tail -f /var/log/tyres-backend.err.log | grep telegram${NC}"
+echo -e "  Просмотр логов frontend: ${YELLOW}tail -f /var/log/tyres-frontend.err.log${NC}"
 echo -e "  Просмотр логов nginx: ${YELLOW}tail -f /var/log/nginx/error.log${NC}"
+echo ""
+echo -e "${GREEN}ℹ️  Telegram бот интегрирован в backend и запускается автоматически${NC}"
 echo ""
 
 if [ "$USE_HTTPS" = true ]; then
