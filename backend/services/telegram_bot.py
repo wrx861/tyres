@@ -303,6 +303,27 @@ class TelegramNotifier:
             logger.error(f"Failed to send message to {chat_id}: {e}")
             return False
     
+    async def send_admin_message_to_client(self, client_telegram_id: str, message_text: str, admin_name: str = "Администратор") -> bool:
+        """Отправить сообщение клиенту от имени админа"""
+        if not self.bot:
+            logger.warning("Bot not initialized, skipping message")
+            return False
+        
+        try:
+            # Форматируем сообщение
+            formatted_message = (
+                f"💼 <b>Сообщение от {admin_name}</b>\n\n"
+                f"{message_text}\n\n"
+                f"<i>Вы можете ответить на это сообщение прямо здесь</i>"
+            )
+            
+            await self.bot.send_message(chat_id=client_telegram_id, text=formatted_message, parse_mode='HTML')
+            logger.info(f"Admin message sent to client {client_telegram_id}")
+            return True
+        except TelegramError as e:
+            logger.error(f"Failed to send admin message to client {client_telegram_id}: {e}")
+            return False
+    
     async def notify_admin_new_order(
         self, 
         order_id: str, 
