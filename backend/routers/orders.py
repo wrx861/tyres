@@ -215,7 +215,8 @@ async def confirm_order(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """
-    Подтвердить заказ и отправить его поставщику (только для админа)
+    Подтвердить заказ (только для админа)
+    Статус меняется на CONFIRMED для ручной обработки админом
     """
     try:
         # Проверяем, что пользователь админ
@@ -242,36 +243,12 @@ async def confirm_order(
                 detail=f"Order cannot be confirmed in status: {order['status']}"
             )
         
-        # Отправляем заказ поставщику
-        client = get_fourthchki_client()
-        
-        # Формируем список товаров для API поставщика
-        order_items = []
-        for item in order['items']:
-            order_items.append({
-                'code': item['code'],
-                'quantity': item['quantity'],
-                'wrh': item['warehouse_id']
-            })
-        
-        # Создаем заказ у поставщика
-        supplier_response = client.create_order(order_items)
-        
-        # Проверяем успешность создания заказа
-        if not supplier_response.get('success'):
-            error_msg = "Failed to create order at supplier"
-            if supplier_response.get('error'):
-                error_msg = supplier_response['error'].get('Message', error_msg)
-            raise HTTPException(status_code=400, detail=error_msg)
-        
-        # Обновляем заказ
+        # Обновляем заказ - НЕ отправляем поставщику, просто подтверждаем
         now = datetime.now(timezone.utc)
         update_data = {
-            'status': OrderStatus.SENT_TO_SUPPLIER.value,
+            'status': OrderStatus.CONFIRMED.value,  # Статус "подтвержден" для ручной обработки
             'confirmed_at': now.isoformat(),
-            'confirmed_by_admin': telegram_id,
-            'fourthchki_order_id': str(supplier_response.get('orderID')),
-            'fourthchki_order_number': supplier_response.get('orderNumber')
+            'confirmed_by_admin': telegram_id
         }
         
         if confirm_data.admin_comment:
@@ -282,14 +259,13 @@ async def confirm_order(
             {"$set": update_data}
         )
         
-        logger.info(f"Order {order_id} confirmed and sent to supplier")
+        logger.info(f"Order {order_id} confirmed by admin {telegram_id} for manual processing")
         
         # Отправляем уведомление клиенту
         notifier = get_telegram_notifier()
-        await notifier.notify_user_order_sent_to_supplier(
+        await notifier.notify_user_order_confirmed(
             user_telegram_id=order['user_telegram_id'],
-            order_id=order_id,
-            supplier_order_number=supplier_response.get('orderNumber', 'N/A')
+            order_id=order_id
         )
         
         # Получаем обновленный заказ
