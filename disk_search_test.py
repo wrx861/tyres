@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://explore-repo.preview.emergentagent.com/api"
+BACKEND_URL = "https://tirebot-admin.preview.emergentagent.com/api"
 
 class DiskSearchTester:
     def __init__(self):
