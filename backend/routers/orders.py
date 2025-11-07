@@ -54,10 +54,12 @@ async def create_order(
         
         # Создаем заказ
         user_display_name = user.get('username') or user.get('first_name') or telegram_id
+        user_username = user.get('username')  # Сохраняем username если есть
         
         order = Order(
             user_telegram_id=telegram_id,
             user_name=user_display_name,
+            user_username=user_username,
             items=order_data.items,
             total_amount=total_amount,
             markup_percentage=markup,
