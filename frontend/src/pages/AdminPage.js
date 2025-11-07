@@ -27,6 +27,12 @@ const AdminPage = ({ user, onBack }) => {
       } else if (tab === 'stats') {
         const response = await getAdminStats(user.telegram_id);
         setStats(response.stats);
+      } else if (tab === 'users') {
+        const response = await getAllUsers(user.telegram_id);
+        setUsers(response.users);
+      } else if (tab === 'activity') {
+        const response = await getUserActivity(user.telegram_id);
+        setActivity(response.logs);
       }
     } catch (error) {
       console.error('Ошибка загрузки данных:', error);
