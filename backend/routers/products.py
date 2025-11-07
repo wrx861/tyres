@@ -3,8 +3,6 @@ from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
 import os
-import time
-from datetime import datetime, timedelta
 
 from services.fourthchki_client import get_fourthchki_client
 from services.mock_data import (
