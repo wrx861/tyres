@@ -90,13 +90,15 @@ sudo tail -f /var/log/supervisor/backend.err.log | grep telegram
 
 Бот **интегрирован в backend** и запускается автоматически:
 - ✅ Обработка команд: `/start`, `/help`
+- ✅ Интерактивное меню: Шиномонтаж → Прайс → Записаться
 - ✅ Уведомления админу: новые заказы, новые посетители
 - ✅ Уведомления клиентам: статус заказа
 
 **Тестирование:**
 ```bash
 cd /app
-python3 test_telegram_bot.py
+python3 test_telegram_bot.py  # Базовый тест
+python3 test_bot_menu.py       # Тест меню с кнопками
 ```
 
 Подробнее: см. [TELEGRAM_BOT_INTEGRATION.md](TELEGRAM_BOT_INTEGRATION.md)
