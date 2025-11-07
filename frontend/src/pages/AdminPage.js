@@ -285,6 +285,10 @@ const AdminPage = ({ user, onBack }) => {
                               <span>Отклонить</span>
                             </button>
                           </div>
+                        ) : order.status === 'completed' ? (
+                          <div className="text-center py-3">
+                            <p className="text-sm text-green-600 font-medium">✅ Заказ выполнен</p>
+                          </div>
                         ) : (
                           <div className="space-y-3">
                             <p className="text-xs text-gray-600">Изменить статус:</p>
