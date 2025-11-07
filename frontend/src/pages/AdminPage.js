@@ -128,6 +128,55 @@ const AdminPage = ({ user, onBack }) => {
     }
   };
 
+  const handleHideOrder = async (orderId) => {
+    if (window.confirm('Скрыть этот заказ из админ панели? Заказ останется в базе и будет виден клиенту.')) {
+      try {
+        await hideOrderFromAdmin(orderId, user.telegram_id);
+        loadData();
+        alert('Заказ скрыт из админ панели');
+      } catch (error) {
+        console.error('Error hiding order:', error);
+        alert('Ошибка при скрытии заказа');
+      }
+    }
+  };
+
+  const handleContactClient = (userTelegramId) => {
+    // Открываем диалог с клиентом в Telegram
+    window.open(`tg://user?id=${userTelegramId}`, '_blank');
+  };
+
+  const handleResetActivity = async () => {
+    if (window.confirm('⚠️ ВНИМАНИЕ! Это удалит ВСЕ логи активности пользователей. Продолжить?')) {
+      try {
+        const result = await resetActivityLogs(user.telegram_id);
+        alert(`✅ ${result.message}`);
+        loadData();
+      } catch (error) {
+        console.error('Error resetting activity:', error);
+        alert('Ошибка при сбросе активности');
+      }
+    }
+  };
+
+  const handleResetStatistics = async () => {
+    const confirmText = '⚠️ ВНИМАНИЕ! Это удалит ВСЕ:\n- Заказы\n- Логи активности\n- Историю\n\nЭто действие НЕОБРАТИМО! Введите "СБРОСИТЬ" для подтверждения:';
+    const userConfirmation = prompt(confirmText);
+    
+    if (userConfirmation === 'СБРОСИТЬ') {
+      try {
+        const result = await resetStatistics(user.telegram_id);
+        alert(`✅ Статистика сброшена:\n- Удалено заказов: ${result.deleted_orders}\n- Удалено логов: ${result.deleted_activity_logs}`);
+        loadData();
+      } catch (error) {
+        console.error('Error resetting statistics:', error);
+        alert('Ошибка при сбросе статистики');
+      }
+    } else if (userConfirmation !== null) {
+      alert('Сброс отменён. Необходимо ввести "СБРОСИТЬ" для подтверждения.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm sticky top-0 z-10">
