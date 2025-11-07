@@ -447,9 +447,6 @@ async def send_message_to_client(
         if not client:
             raise HTTPException(status_code=404, detail="Client not found")
         
-        # Получаем имя админа для подписи
-        admin_name = user.get('first_name') or user.get('username') or "Администратор"
-        
         # Отправляем сообщение через бота
         from services.telegram_bot import get_telegram_notifier
         notifier = get_telegram_notifier()
@@ -457,7 +454,7 @@ async def send_message_to_client(
         success = await notifier.send_admin_message_to_client(
             client_telegram_id=message_data.client_telegram_id,
             message_text=message_data.message_text,
-            admin_name=admin_name
+            admin_name="Администратор"
         )
         
         if not success:
