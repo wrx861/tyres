@@ -84,9 +84,12 @@ async def add_to_cart(telegram_id: str, item: CartItemAdd, db = Depends(get_data
     )
     
     # Логируем активность
+    user_display = None
+    if user:
+        user_display = user.get("username") or user.get("first_name") or f"User_{telegram_id[-4:]}"
     activity = {
         "telegram_id": telegram_id,
-        "username": user.get("username") if user else None,
+        "username": user_display,
         "activity_type": ActivityType.CART_ADD.value,
         "search_params": {"code": item.code, "quantity": item.quantity},
         "result_count": None,
