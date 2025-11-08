@@ -129,6 +129,142 @@ async def update_markup(
         logger.error(f"Error updating markup: {e}")
         raise HTTPException(status_code=500, detail="Failed to update markup")
 
+# Новые endpoints для гибкой системы наценки
+@router.get("/markup/settings", response_model=MarkupSettingsResponse)
+async def get_markup_settings(
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Получить настройки системы наценки (фиксированная или ступенчатая)
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one(
+            {"telegram_id": telegram_id},
+            {"_id": 0}
+        )
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        settings = await db.settings.find_one({}, {"_id": 0})
+        
+        if not settings or 'markup_settings' not in settings:
+            # Создаем дефолтные настройки
+            default_settings = {
+                'type': 'fixed',
+                'markup_percentage': 15.0,
+                'updated_at': datetime.now(timezone.utc).isoformat(),
+                'updated_by_admin': telegram_id
+            }
+            await db.settings.update_one(
+                {},
+                {"$set": {'markup_settings': default_settings}},
+                upsert=True
+            )
+            return MarkupSettingsResponse(**default_settings)
+        
+        return MarkupSettingsResponse(**settings['markup_settings'])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting markup settings: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get markup settings")
+
+@router.put("/markup/settings", response_model=MarkupSettingsResponse)
+async def update_markup_settings(
+    settings_data: MarkupSettingsUpdate,
+    telegram_id: str = Query(..., description="Telegram ID админа"),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Обновить настройки системы наценки
+    """
+    try:
+        # Проверяем, что пользователь админ
+        user = await db.users.find_one(
+            {"telegram_id": telegram_id},
+            {"_id": 0}
+        )
+        
+        if not user or not user.get('is_admin'):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Валидация
+        if settings_data.type not in ['fixed', 'tiered']:
+            raise HTTPException(
+                status_code=400,
+                detail="Type must be 'fixed' or 'tiered'"
+            )
+        
+        if settings_data.type == 'fixed':
+            if settings_data.markup_percentage is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail="markup_percentage is required for fixed type"
+                )
+            if settings_data.markup_percentage < 0 or settings_data.markup_percentage > 100:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Markup percentage must be between 0 and 100"
+                )
+        
+        if settings_data.type == 'tiered':
+            if not settings_data.tiers or len(settings_data.tiers) == 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail="tiers are required for tiered type"
+                )
+            # Валидация ступеней
+            for tier in settings_data.tiers:
+                if tier.min_price < 0:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="min_price must be >= 0"
+                    )
+                if tier.max_price <= tier.min_price:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="max_price must be > min_price"
+                    )
+                if tier.markup_percentage < 0 or tier.markup_percentage > 100:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="markup_percentage must be between 0 and 100"
+                    )
+        
+        new_settings = {
+            'type': settings_data.type,
+            'updated_at': datetime.now(timezone.utc).isoformat(),
+            'updated_by_admin': telegram_id
+        }
+        
+        if settings_data.type == 'fixed':
+            new_settings['markup_percentage'] = settings_data.markup_percentage
+        else:
+            new_settings['tiers'] = [tier.dict() for tier in settings_data.tiers]
+        
+        # Обновляем настройки
+        await db.settings.update_one(
+            {},
+            {"$set": {'markup_settings': new_settings}},
+            upsert=True
+        )
+        
+        logger.info(
+            f"Markup settings updated to {settings_data.type} by {telegram_id}"
+        )
+        
+        return MarkupSettingsResponse(**new_settings)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating markup settings: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update markup settings")
+
 @router.get("/stats")
 async def get_admin_stats(
     telegram_id: str = Query(..., description="Telegram ID админа"),
