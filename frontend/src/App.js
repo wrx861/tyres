@@ -39,6 +39,20 @@ function App() {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
+  // Применяем темную тему
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   useEffect(() => {
     // Предотвращаем повторные вызовы
     if (isInitializing.current || isInitialized.current) {
