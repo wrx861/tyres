@@ -20,7 +20,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
 # Configuration
-BACKEND_URL = "https://wheelstore.preview.emergentagent.com/api"
+BACKEND_URL = "https://order-info-enhance.preview.emergentagent.com/api"
 MONGO_URL = "mongodb://localhost:27017"
 DB_NAME = "tires_shop"
 ADMIN_TELEGRAM_ID = "508352361"

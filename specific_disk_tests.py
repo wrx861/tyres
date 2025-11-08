@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://wheelstore.preview.emergentagent.com/api"
+BACKEND_URL = "https://order-info-enhance.preview.emergentagent.com/api"
 
 class SpecificDiskTester:
     def __init__(self):
