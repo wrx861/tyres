@@ -28,6 +28,10 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
   const [tireBrands, setTireBrands] = useState([]);
   const [diskBrands, setDiskBrands] = useState([]);
   const [brandsLoading, setBrandsLoading] = useState(false);
+  
+  // Пагинация
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
 
   const cities = [
     'Тюмень',
