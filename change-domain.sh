@@ -211,9 +211,21 @@ echo ""
 # Обновление nginx конфигурации
 echo -e "${YELLOW}[3/11] Обновление nginx конфигурации...${NC}"
 
+# Определяем имя конфигурационного файла
+if [ -f "/etc/nginx/sites-available/tyres-app" ]; then
+    NGINX_CONFIG_NAME="tyres-app"
+elif [ -f "/etc/nginx/sites-available/tyres" ]; then
+    NGINX_CONFIG_NAME="tyres"
+else
+    # Создаем новый файл
+    NGINX_CONFIG_NAME="tyres-app"
+fi
+
+NGINX_CONFIG="/etc/nginx/sites-available/$NGINX_CONFIG_NAME"
+
 if [ "$USE_SSL" = true ]; then
     # Сначала создаем конфигурацию для HTTP (для получения SSL)
-    cat > /etc/nginx/sites-available/tyres << EOF
+    cat > $NGINX_CONFIG << EOF
 server {
     listen 80;
     server_name $NEW_DOMAIN;
