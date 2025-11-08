@@ -80,7 +80,7 @@ const OrdersPage = ({ user, onBack }) => {
               const StatusIcon = statusConfig.icon;
               
               return (
-                <div key={order.order_id} className="bg-white rounded-xl p-6 shadow-sm">
+                <div key={order.order_id} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-transparent dark:border-gray-700">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <p className="text-sm text-gray-600">ID заказа</p>
