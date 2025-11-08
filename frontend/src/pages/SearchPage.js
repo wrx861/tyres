@@ -193,12 +193,12 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-          <h3 className="font-semibold text-lg mb-4">Фильтры</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-6">
+          <h3 className="font-semibold text-lg mb-4 dark:text-white">Фильтры</h3>
           
           {/* Выбор города */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Город (склад)
             </label>
             <select
