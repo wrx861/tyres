@@ -178,9 +178,17 @@ echo -e "${YELLOW}[2/11] Создание backup конфигураций...${NC
 BACKUP_DIR="/opt/tyres-app-domain-backup-$(date +%Y%m%d_%H%M%S)"
 mkdir -p $BACKUP_DIR
 
+# Определяем имя nginx конфига для backup
+NGINX_BACKUP_NAME=""
+if [ -f "/etc/nginx/sites-available/tyres-app" ]; then
+    NGINX_BACKUP_NAME="tyres-app"
+elif [ -f "/etc/nginx/sites-available/tyres" ]; then
+    NGINX_BACKUP_NAME="tyres"
+fi
+
 # Backup nginx конфигурации
-if [ -f "/etc/nginx/sites-available/tyres" ]; then
-    cp /etc/nginx/sites-available/tyres $BACKUP_DIR/nginx-tyres
+if [ -n "$NGINX_BACKUP_NAME" ]; then
+    cp /etc/nginx/sites-available/$NGINX_BACKUP_NAME $BACKUP_DIR/nginx-$NGINX_BACKUP_NAME
     check_status "Backup nginx конфигурации"
 fi
 
