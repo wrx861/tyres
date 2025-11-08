@@ -106,9 +106,9 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
           </div>
         </div>
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <ShoppingBag className="mx-auto text-gray-400 mb-4" size={64} />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Корзина пуста</h2>
-          <p className="text-gray-600">Добавьте товары для оформления заказа</p>
+          <ShoppingBag className="mx-auto text-gray-400 dark:text-gray-600 mb-4" size={64} />
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Корзина пуста</h2>
+          <p className="text-gray-600 dark:text-gray-300">Добавьте товары для оформления заказа</p>
         </div>
       </div>
     );
