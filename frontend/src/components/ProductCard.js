@@ -47,7 +47,7 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
 
   return (
     <>
-      <div className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow border border-transparent dark:border-gray-700">
         <div className="flex items-start space-x-4 mb-3">
           {/* Product Image */}
           {product.img_small && (
