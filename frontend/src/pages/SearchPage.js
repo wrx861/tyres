@@ -3,7 +3,7 @@ import { ArrowLeft, Search as SearchIcon } from 'lucide-react';
 import { searchTires, searchDisks, getTireBrands, getDiskBrands } from '../api/api';
 import ProductCard from '../components/ProductCard';
 
-const SearchPage = ({ onAddToCart, onBack, user, cart }) => {
+const SearchPage = ({ onAddToCart, onRemoveFromCart, onBack, user, cart }) => {
   const [searchType, setSearchType] = useState('tires'); // 'tires' or 'disks'
   const [filters, setFilters] = useState({
     width: '',
