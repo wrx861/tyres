@@ -228,7 +228,7 @@ async def search_tires(
                     
                     best_price = float(best_warehouse.get('price', 0))
                     item['price_original'] = best_price
-                    item['price'] = apply_markup(best_price, markup)
+                    item['price'] = apply_markup(best_price, markup_settings)
                     
                     # Extract warehouse info for display
                     item['rest'] = best_warehouse.get('rest', 0)
@@ -474,7 +474,7 @@ async def search_disks(
                     
                     best_price = float(best_warehouse.get('price', 0))
                     item['price_original'] = best_price
-                    item['price'] = apply_markup(best_price, markup)
+                    item['price'] = apply_markup(best_price, markup_settings)
                     
                     # Extract warehouse info for display
                     item['rest'] = best_warehouse.get('rest', 0)
