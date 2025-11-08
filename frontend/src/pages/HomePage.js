@@ -1,14 +1,22 @@
-import React from 'react';
-import { Car, Search, ShoppingCart, Package, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Wrench, Search, ShoppingCart, Package, Settings } from 'lucide-react';
 
 const HomePage = ({ user, onNavigate, cartCount }) => {
+  const [showServiceModal, setShowServiceModal] = useState(false);
+
+  const handleServiceClick = () => {
+    setShowServiceModal(true);
+    setTimeout(() => setShowServiceModal(false), 2000);
+  };
+
   const menuItems = [
     {
-      id: 'car-selection',
-      title: 'Подбор по автомобилю',
-      description: 'Выберите марку и модель авто',
-      icon: Car,
-      color: 'bg-blue-500'
+      id: 'tire-service',
+      title: '🔧 Шиномонтаж',
+      description: 'Услуги шиномонтажа',
+      icon: Wrench,
+      color: 'bg-blue-500',
+      onClick: handleServiceClick
     },
     {
       id: 'search',
