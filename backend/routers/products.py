@@ -137,6 +137,12 @@ async def search_tires(
         filtered_tire_data = []
         
         for item in tire_data:
+            # Фильтрация по шипам (если указан фильтр)
+            if studded_filter is not None:
+                item_has_studs = item.get('thorn', False)
+                if item_has_studs != studded_filter:
+                    continue  # Пропускаем товар если не соответствует фильтру
+            
             # Parse tire size from name (e.g., "185/60R15")
             import re
             name = item.get('name', '')
