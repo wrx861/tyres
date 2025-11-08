@@ -166,14 +166,14 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => onUpdateQuantity(item.code, item.quantity - 1)}
-                    className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                    className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white"
                   >
                     <Minus size={16} />
                   </button>
-                  <span className="font-medium w-8 text-center">{item.quantity}</span>
+                  <span className="font-medium w-8 text-center dark:text-white">{item.quantity}</span>
                   <button
                     onClick={() => onUpdateQuantity(item.code, item.quantity + 1)}
-                    className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                    className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white"
                   >
                     <Plus size={16} />
                   </button>
