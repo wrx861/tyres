@@ -518,7 +518,7 @@ const AdminPage = ({ user, onBack }) => {
                   </div>
                   <div className="bg-white rounded-xl p-6 shadow-sm col-span-2">
                     <p className="text-sm text-gray-600 mb-2">Общая сумма</p>
-                    <p className="text-4xl font-bold text-blue-600">{stats.total_revenue.toLocaleString()} ₽</p>
+                    <p className="text-4xl font-bold text-blue-600">{formatPrice(stats.total_revenue)} ₽</p>
                   </div>
                   <div className="bg-white rounded-xl p-6 shadow-sm col-span-2">
                     <p className="text-sm text-gray-600 mb-2">Пользователей</p>
