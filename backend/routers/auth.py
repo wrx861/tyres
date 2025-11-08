@@ -34,6 +34,7 @@ async def authenticate_telegram_user(
         )
         
         if existing_user:
+            logger.info(f"Existing user authenticated: {user_data.telegram_id}")
             # Конвертируем timestamp обратно в datetime
             if isinstance(existing_user.get('created_at'), str):
                 existing_user['created_at'] = datetime.fromisoformat(existing_user['created_at'])
@@ -54,24 +55,40 @@ async def authenticate_telegram_user(
         user_dict = new_user.model_dump()
         user_dict['created_at'] = user_dict['created_at'].isoformat()
         
-        await db.users.insert_one(user_dict)
-        
-        logger.info(f"New user created: {user_data.telegram_id}, admin: {is_admin}")
-        
-        # Уведомляем админа о новом посетителе (только если это не сам админ)
-        if not is_admin:
-            try:
-                notifier = get_telegram_notifier()
-                await notifier.notify_admin_new_visitor(
-                    telegram_id=user_data.telegram_id,
-                    username=user_data.username,
-                    first_name=user_data.first_name,
-                    last_name=user_data.last_name
+        try:
+            await db.users.insert_one(user_dict)
+            logger.info(f"New user created: {user_data.telegram_id}, admin: {is_admin}")
+            
+            # Уведомляем админа о новом посетителе (только если это не сам админ)
+            if not is_admin:
+                try:
+                    notifier = get_telegram_notifier()
+                    await notifier.notify_admin_new_visitor(
+                        telegram_id=user_data.telegram_id,
+                        username=user_data.username,
+                        first_name=user_data.first_name,
+                        last_name=user_data.last_name
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to notify admin about new visitor: {e}")
+            
+            return new_user
+            
+        except Exception as insert_error:
+            # Если произошла ошибка дубликата ключа (race condition), 
+            # возвращаем существующего пользователя
+            if "duplicate key" in str(insert_error).lower() or "E11000" in str(insert_error):
+                logger.warning(f"Duplicate user creation attempt detected for {user_data.telegram_id}, returning existing user")
+                existing_user = await db.users.find_one(
+                    {"telegram_id": user_data.telegram_id},
+                    {"_id": 0}
                 )
-            except Exception as e:
-                logger.error(f"Failed to notify admin about new visitor: {e}")
-        
-        return new_user
+                if existing_user:
+                    if isinstance(existing_user.get('created_at'), str):
+                        existing_user['created_at'] = datetime.fromisoformat(existing_user['created_at'])
+                    return User(**existing_user)
+            # Пробрасываем другие ошибки
+            raise insert_error
         
     except Exception as e:
         logger.error(f"Error authenticating user: {e}")
