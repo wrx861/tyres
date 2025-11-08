@@ -51,8 +51,8 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Шины и Диски</h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Шины и Диски</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                 Привет, {user?.first_name || user?.username || 'Гость'}!
               </p>
             </div>
