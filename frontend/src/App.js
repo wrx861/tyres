@@ -35,26 +35,38 @@ function App() {
 
   const initializeApp = async () => {
     try {
+      console.log('🚀 Initializing app...');
+      
       // Инициализация Telegram Web App
-      initTelegramWebApp();
+      const tgInitialized = initTelegramWebApp();
+      console.log('📱 Telegram WebApp initialized:', tgInitialized);
       
       // Получаем данные пользователя из Telegram
       const telegramUser = getTelegramUser();
+      console.log('👤 Telegram user data:', telegramUser);
       
       if (!telegramUser) {
-        console.error('Не удалось получить данные пользователя из Telegram');
+        console.error('❌ Не удалось получить данные пользователя из Telegram');
+        console.error('🔍 Проверьте:');
+        console.error('  1. URL в BotFather обновлён на:', window.location.origin);
+        console.error('  2. Приложение открыто через Telegram (не браузер)');
+        console.error('  3. initDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
         return;
       }
       
-      console.log('Telegram user data:', telegramUser);
+      console.log('✅ Telegram user получен:', telegramUser);
       
       // Аутентифицируем пользователя
       try {
+        console.log('🔐 Аутентификация пользователя...');
         const authenticatedUser = await authenticateUser(telegramUser);
         setUser(authenticatedUser);
-        console.log('User authenticated:', authenticatedUser);
+        console.log('✅ User authenticated:', authenticatedUser);
       } catch (authError) {
-        console.error('Authentication failed:', authError.response?.status || authError.message);
+        console.error('❌ Authentication failed:', authError);
+        console.error('Status:', authError.response?.status);
+        console.error('Data:', authError.response?.data);
+        console.error('Message:', authError.message);
       }
 
       // Загружаем список складов для маппинга ID -> название города
