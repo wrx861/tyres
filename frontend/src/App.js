@@ -209,13 +209,13 @@ function App() {
         {/* Кнопка переключения темы */}
         <button
           onClick={toggleDarkMode}
-          className="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
+          className="fixed top-3 right-3 z-50 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700"
           aria-label="Переключить тему"
         >
           {darkMode ? (
-            <span className="text-2xl">☀️</span>
+            <span className="text-xl">☀️</span>
           ) : (
-            <span className="text-2xl">🌙</span>
+            <span className="text-xl">🌙</span>
           )}
         </button>
         
