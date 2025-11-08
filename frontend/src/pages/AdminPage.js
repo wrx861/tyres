@@ -580,18 +580,32 @@ const AdminPage = ({ user, onBack }) => {
                           <span>Последняя активность: {new Date(u.last_activity).toLocaleDateString('ru-RU')}</span>
                         )}
                       </div>
-                      {!u.is_admin && (
+                      
+                      {/* Кнопки действий */}
+                      <div className="flex gap-2">
+                        {/* Кнопка написать */}
                         <button
-                          onClick={() => u.is_blocked ? handleUnblockUser(u.telegram_id) : handleBlockUser(u.telegram_id)}
-                          className={`w-full py-2 rounded-lg font-medium transition-colors ${
-                            u.is_blocked
-                              ? 'bg-green-500 hover:bg-green-600 text-white'
-                              : 'bg-red-500 hover:bg-red-600 text-white'
-                          }`}
+                          onClick={() => handleOpenMessageModalForUser(u)}
+                          className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2"
                         >
-                          {u.is_blocked ? 'Разблокировать' : 'Заблокировать'}
+                          <MessageCircle size={16} />
+                          <span>Написать</span>
                         </button>
-                      )}
+                        
+                        {/* Кнопка блокировки/разблокировки (только для не-админов) */}
+                        {!u.is_admin && (
+                          <button
+                            onClick={() => u.is_blocked ? handleUnblockUser(u.telegram_id) : handleBlockUser(u.telegram_id)}
+                            className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                              u.is_blocked
+                                ? 'bg-green-500 hover:bg-green-600 text-white'
+                                : 'bg-red-500 hover:bg-red-600 text-white'
+                            }`}
+                          >
+                            {u.is_blocked ? '✓' : '✕'}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))
                 )}
