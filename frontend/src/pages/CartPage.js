@@ -255,7 +255,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
           </div>
           <div className="flex justify-between items-center text-xl font-bold pt-4 border-t border-gray-200">
             <span>Итого:</span>
-            <span className="text-blue-600">{total.toLocaleString()} ₽</span>
+            <span className="text-blue-600">{formatPrice(total)} ₽</span>
           </div>
         </div>
 
