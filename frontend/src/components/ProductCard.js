@@ -153,11 +153,11 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
         
         {/* Quantity Selector */}
         <div className="flex items-center space-x-3 mb-3">
-          <span className="text-sm font-medium text-gray-700">Количество:</span>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Количество:</span>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-900 dark:text-white font-bold"
             >
               -
             </button>
@@ -165,12 +165,12 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-16 text-center border border-gray-300 rounded-lg py-1"
+              className="w-16 text-center border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg py-1"
               min="1"
             />
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-900 dark:text-white font-bold"
             >
               +
             </button>
