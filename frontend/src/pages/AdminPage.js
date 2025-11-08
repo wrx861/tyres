@@ -16,6 +16,19 @@ const AdminPage = ({ user, onBack }) => {
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   
+  // Новые состояния для гибкой системы наценки
+  const [markupSettings, setMarkupSettings] = useState({
+    type: 'fixed',
+    markup_percentage: 15,
+    tiers: []
+  });
+  const [newTier, setNewTier] = useState({
+    min_price: 0,
+    max_price: 5000,
+    markup_percentage: 15,
+    label: ''
+  });
+  
   // State для модального окна отправки сообщения
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageModalData, setMessageModalData] = useState({ clientId: '', clientName: '', phone: '' });
