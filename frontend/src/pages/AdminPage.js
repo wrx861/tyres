@@ -500,27 +500,27 @@ const AdminPage = ({ user, onBack }) => {
             {tab === 'stats' && stats && (
               <div>
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                     <p className="text-sm text-gray-600 mb-2">Всего заказов</p>
                     <p className="text-3xl font-bold text-blue-600">{stats.total_orders}</p>
                   </div>
-                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                     <p className="text-sm text-gray-600 mb-2">На подтверждении</p>
                     <p className="text-3xl font-bold text-yellow-600">{stats.pending_orders}</p>
                   </div>
-                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                     <p className="text-sm text-gray-600 mb-2">Выполнено</p>
                     <p className="text-3xl font-bold text-green-600">{stats.completed_orders}</p>
                   </div>
-                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                     <p className="text-sm text-gray-600 mb-2">Отменено</p>
                     <p className="text-3xl font-bold text-red-600">{stats.cancelled_orders}</p>
                   </div>
-                  <div className="bg-white rounded-xl p-6 shadow-sm col-span-2">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm col-span-2">
                     <p className="text-sm text-gray-600 mb-2">Общая сумма</p>
                     <p className="text-4xl font-bold text-blue-600">{formatPrice(stats.total_revenue)} ₽</p>
                   </div>
-                  <div className="bg-white rounded-xl p-6 shadow-sm col-span-2">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm col-span-2">
                     <p className="text-sm text-gray-600 mb-2">Пользователей</p>
                     <p className="text-3xl font-bold text-purple-600">{stats.total_users}</p>
                   </div>
