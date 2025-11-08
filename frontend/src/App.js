@@ -205,7 +205,20 @@ function App() {
 
   return (
     <WarehousesContext.Provider value={warehouses}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        {/* Кнопка переключения темы */}
+        <button
+          onClick={toggleDarkMode}
+          className="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
+          aria-label="Переключить тему"
+        >
+          {darkMode ? (
+            <span className="text-2xl">☀️</span>
+          ) : (
+            <span className="text-2xl">🌙</span>
+          )}
+        </button>
+        
         {renderPage()}
       </div>
       
