@@ -104,6 +104,9 @@ function App() {
     } catch (error) {
       console.error('Ошибка инициализации:', error);
     } finally {
+      // Отмечаем инициализацию как завершенную
+      isInitialized.current = true;
+      isInitializing.current = false;
       setLoading(false);
     }
   };
