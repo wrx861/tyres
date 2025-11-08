@@ -166,6 +166,16 @@ const AdminPage = ({ user, onBack }) => {
     setShowMessageModal(true);
   };
 
+  const handleOpenMessageModalForUser = (user) => {
+    setMessageModalData({
+      clientId: user.telegram_id,
+      clientName: `${user.first_name || ''} ${user.last_name || ''}`.trim() || `User ${user.telegram_id}`,
+      phone: ''
+    });
+    setMessageText('');
+    setShowMessageModal(true);
+  };
+
   const handleSendMessage = async () => {
     if (!messageText.trim()) {
       alert('Введите текст сообщения');
