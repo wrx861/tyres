@@ -87,6 +87,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
         
         const response = await searchTires(params);
         setResults(response.data || []);
+        setCurrentPage(1); // Сбрасываем на первую страницу при новом поиске
       } else {
         if (filters.diameter) params.diameter = parseInt(filters.diameter);
         if (filters.width) params.width = parseFloat(filters.width);
@@ -102,6 +103,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
         
         const response = await searchDisks(params);
         setResults(response.data || []);
+        setCurrentPage(1); // Сбрасываем на первую страницу при новом поиске
       }
     } catch (error) {
       console.error('Ошибка поиска:', error);
@@ -109,6 +111,45 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Вычисляем данные для текущей страницы
+  const totalPages = Math.ceil(results.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentResults = results.slice(startIndex, endIndex);
+
+  // Генерация номеров страниц для отображения
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5; // Максимум видимых кнопок страниц
+    
+    if (totalPages <= maxVisible) {
+      // Показываем все страницы если их мало
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Показываем первую, последнюю и страницы вокруг текущей
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push('...');
+        pages.push(currentPage - 1);
+        pages.push(currentPage);
+        pages.push(currentPage + 1);
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+    return pages;
   };
 
   return (
