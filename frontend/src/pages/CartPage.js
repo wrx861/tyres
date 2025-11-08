@@ -72,8 +72,8 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
 
   if (orderCreated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center shadow-lg">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md mx-4 text-center shadow-lg border border-transparent dark:border-gray-700">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <ShoppingBag className="text-green-600" size={32} />
           </div>
