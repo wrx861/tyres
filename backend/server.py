@@ -112,8 +112,16 @@ from services.telegram_bot import get_telegram_notifier
 
 @app.on_event("startup")
 async def startup_event():
-    """Запуск приложения - инициализация Telegram бота"""
+    """Запуск приложения - инициализация Telegram бота и БД"""
     logger.info("Starting up application...")
+    
+    # Создаем уникальный индекс на telegram_id для предотвращения дубликатов
+    try:
+        await db.users.create_index("telegram_id", unique=True)
+        logger.info("✅ Unique index on telegram_id created/verified")
+    except Exception as e:
+        logger.warning(f"Index creation warning (may already exist): {e}")
+    
     telegram_notifier = get_telegram_notifier()
     await telegram_notifier.start_bot_polling()
     logger.info("Application startup complete")
