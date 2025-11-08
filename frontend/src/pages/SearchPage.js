@@ -457,7 +457,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 {results.length > 0 ? `Найдено: ${results.length}` : 'Ничего не найдено'}
               </h3>
               {results.length > 0 && (
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   Страница {currentPage} из {totalPages}
                 </span>
               )}
