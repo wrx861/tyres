@@ -22,6 +22,16 @@ class OrderItem(BaseModel):
     price_final: float  # Цена с наценкой для клиента
     warehouse_id: int
     warehouse_name: str
+    # Параметры товара (опциональные)
+    width: Optional[int] = None  # Ширина шины или диска
+    height: Optional[int] = None  # Высота профиля шины
+    diameter: Optional[int] = None  # Диаметр шины или диска
+    season: Optional[str] = None  # Сезон для шин (winter, summer, all-season)
+    pcd: Optional[str] = None  # PCD для дисков (например, "5x114.3")
+    et: Optional[int] = None  # Вылет (ET) для дисков
+    dia: Optional[float] = None  # Диаметр ступицы (DIA) для дисков
+    color: Optional[str] = None  # Цвет диска
+    disk_type: Optional[str] = None  # Тип диска (0=Литой, 1=Кованый, 2=Штампованный)
 
 class DeliveryAddress(BaseModel):
     city: str
