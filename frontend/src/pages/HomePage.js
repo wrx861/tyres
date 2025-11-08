@@ -11,14 +11,6 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
 
   const menuItems = [
     {
-      id: 'tire-service',
-      title: 'Шиномонтаж',
-      description: 'Услуги шиномонтажа',
-      icon: Wrench,
-      color: 'bg-blue-500',
-      onClick: handleServiceClick
-    },
-    {
       id: 'search',
       title: 'Поиск шин и дисков',
       description: 'Поиск по размерам',
@@ -32,6 +24,14 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
       icon: ShoppingCart,
       color: 'bg-orange-500',
       badge: cartCount
+    },
+    {
+      id: 'tire-service',
+      title: 'Шиномонтаж',
+      description: 'Услуги шиномонтажа',
+      icon: Wrench,
+      color: 'bg-blue-500',
+      onClick: handleServiceClick
     },
     {
       id: 'orders',
