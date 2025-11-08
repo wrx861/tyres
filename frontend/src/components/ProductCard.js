@@ -191,24 +191,36 @@ const ProductCard = ({ product, onAddToCart, onRemoveFromCart, cart = [], type =
           )}
         </div>
 
-        <button
-          onClick={() => {
-            // Проверка доступного количества
-            if (quantity > warehouseInfo.rest) {
+        <div className="flex space-x-2">
+          <button
+            onClick={() => {
+              // Проверка доступного количества
+              if (quantity > warehouseInfo.rest) {
+                setShowAddedNotification(true);
+                setTimeout(() => setShowAddedNotification(false), 3000);
+                return;
+              }
+              
+              onAddToCart({ ...product, quantity });
               setShowAddedNotification(true);
-              setTimeout(() => setShowAddedNotification(false), 3000);
-              return;
-            }
-            
-            onAddToCart({ ...product, quantity });
-            setShowAddedNotification(true);
-            setTimeout(() => setShowAddedNotification(false), 2000);
-          }}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors"
-        >
-          <Plus size={18} />
-          <span>Добавить в корзину</span>
-        </button>
+              setTimeout(() => setShowAddedNotification(false), 2000);
+            }}
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+          >
+            <Plus size={18} />
+            <span>Добавить в корзину</span>
+          </button>
+          
+          {inCartQuantity > 0 && onRemoveFromCart && (
+            <button
+              onClick={() => onRemoveFromCart(product.code)}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+              title="Удалить из корзины"
+            >
+              🗑️
+            </button>
+          )}
+        </div>
 
         {/* Added Notification */}
         {showAddedNotification && (
