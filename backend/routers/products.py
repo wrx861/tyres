@@ -40,7 +40,7 @@ async def search_tires(
     width: Optional[int] = Query(None, description="Ширина шины (например, 185)"),
     height: Optional[int] = Query(None, description="Высота профиля (например, 60)"),
     diameter: Optional[int] = Query(None, description="Диаметр (например, 15)"),
-    season: Optional[str] = Query(None, description="Сезон: summer, winter, all-season"),
+    season: Optional[str] = Query(None, description="Сезон: summer, winter, all-season, winter-studded, winter-non-studded"),
     brand: Optional[str] = Query(None, description="Бренд"),
     city: Optional[str] = Query(None, description="Город (для фильтрации по складам)"),
     sort_by: Optional[str] = Query(None, description="Сортировка: price_asc (дешевле), price_desc (дороже)"),
