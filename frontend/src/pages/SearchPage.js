@@ -469,6 +469,7 @@ const SearchPage = ({ onAddToCart, onBack, user, cart }) => {
                   key={item.code}
                   product={item}
                   onAddToCart={onAddToCart}
+                  cart={cart}
                   type={searchType}
                 />
               ))}
