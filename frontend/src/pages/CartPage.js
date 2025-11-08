@@ -194,7 +194,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
           <h3 className="font-semibold text-lg mb-4 dark:text-white">Адрес доставки</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Город *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Город *</label>
               <input
                 type="text"
                 value={deliveryAddress.city}
@@ -204,7 +204,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Улица *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Улица *</label>
               <input
                 type="text"
                 value={deliveryAddress.street}
@@ -214,7 +214,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Дом *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Дом *</label>
               <input
                 type="text"
                 value={deliveryAddress.house}
@@ -224,7 +224,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Телефон *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Телефон *</label>
               <input
                 type="tel"
                 value={deliveryAddress.phone}
@@ -235,7 +235,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
               <p className="text-xs text-gray-500 mt-1">Для связи по заказу</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Комментарий</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Комментарий</label>
               <textarea
                 value={deliveryAddress.comment}
                 onChange={(e) => setDeliveryAddress({ ...deliveryAddress, comment: e.target.value })}
