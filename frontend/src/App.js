@@ -8,6 +8,7 @@ import CarSelectionPage from './pages/CarSelectionPage';
 import CartPage from './pages/CartPage';
 import OrdersPage from './pages/OrdersPage';
 import AdminPage from './pages/AdminPage';
+import DebugInfo from './components/DebugInfo';
 
 // Контекст для складов
 export const WarehousesContext = createContext({});
