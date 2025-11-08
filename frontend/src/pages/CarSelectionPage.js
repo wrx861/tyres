@@ -270,6 +270,7 @@ const CarSelectionPage = ({ onAddToCart, onBack, user, cart }) => {
                   key={item.code}
                   product={item}
                   onAddToCart={onAddToCart}
+                  cart={cart}
                   type={selected.product_type === 'tyre' ? 'tires' : 'disks'}
                 />
               ))}
