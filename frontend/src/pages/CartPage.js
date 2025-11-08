@@ -94,8 +94,8 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow-sm">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="bg-white dark:bg-gray-800 shadow-sm">
           <div className="max-w-4xl mx-auto px-4 py-4">
             <div className="flex items-center space-x-4">
               <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-lg">
