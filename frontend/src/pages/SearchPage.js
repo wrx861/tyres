@@ -444,11 +444,19 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
         {/* Results */}
         {searched && (
           <div>
-            <h3 className="font-semibold text-lg mb-4">
-              {results.length > 0 ? `Найдено: ${results.length}` : 'Ничего не найдено'}
-            </h3>
-            <div className="space-y-4">
-              {results.map((item) => (
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-lg">
+                {results.length > 0 ? `Найдено: ${results.length}` : 'Ничего не найдено'}
+              </h3>
+              {results.length > 0 && (
+                <span className="text-sm text-gray-600">
+                  Страница {currentPage} из {totalPages}
+                </span>
+              )}
+            </div>
+            
+            <div className="space-y-4 mb-6">
+              {currentResults.map((item) => (
                 <ProductCard
                   key={item.code}
                   product={item}
@@ -457,6 +465,69 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 />
               ))}
             </div>
+
+            {/* Пагинация */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center space-x-2 mt-6 pb-6">
+                {/* Кнопка "Предыдущая" */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(1, prev - 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg font-medium ${
+                    currentPage === 1
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                  }`}
+                >
+                  ← Назад
+                </button>
+
+                {/* Номера страниц */}
+                <div className="flex space-x-1">
+                  {getPageNumbers().map((page, index) => (
+                    page === '...' ? (
+                      <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-500">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={page}
+                        onClick={() => {
+                          setCurrentPage(page);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className={`px-3 py-2 rounded-lg font-medium ${
+                          currentPage === page
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  ))}
+                </div>
+
+                {/* Кнопка "Следующая" */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg font-medium ${
+                    currentPage === totalPages
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                  }`}
+                >
+                  Вперед →
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
