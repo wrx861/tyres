@@ -76,7 +76,7 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
             return (
               <button
                 key={item.id}
-                onClick={() => onNavigate(item.id)}
+                onClick={() => item.onClick ? item.onClick() : onNavigate(item.id)}
                 className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 text-left relative overflow-hidden group border border-transparent dark:border-gray-700"
               >
                 <div className="flex items-start space-x-4">
