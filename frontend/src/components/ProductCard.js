@@ -77,18 +77,18 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
       <div className="space-y-2 mb-4">
         {type === 'tires' ? (
           <>
-            <div className="flex items-center text-sm text-gray-700">
+            <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
               <span className="font-medium">Размер:</span>
               <span className="ml-2">{product.width || ''}/{product.height || ''} R{product.diameter || ''}</span>
             </div>
             {product.season_name && (
-              <div className="flex items-center text-sm text-gray-700">
+              <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
                 <span className="font-medium">Сезон:</span>
                 <span className="ml-2">{product.season_name}</span>
               </div>
             )}
             {product.load_index && product.speed_index && (
-              <div className="flex items-center text-sm text-gray-700">
+              <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
                 <span className="font-medium">Индексы:</span>
                 <span className="ml-2">{product.load_index}{product.speed_index}</span>
               </div>
@@ -106,24 +106,24 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
           </>
         ) : (
           <>
-            <div className="flex items-center text-sm text-gray-700">
+            <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
               <span className="font-medium">Размер:</span>
               <span className="ml-2">{product.width}x{product.diameter}</span>
             </div>
             {product.pcd && (
-              <div className="flex items-center text-sm text-gray-700">
+              <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
                 <span className="font-medium">PCD:</span>
                 <span className="ml-2">{product.pcd}</span>
               </div>
             )}
             {product.et && (
-              <div className="flex items-center text-sm text-gray-700">
+              <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
                 <span className="font-medium">ET:</span>
                 <span className="ml-2">{product.et}</span>
               </div>
             )}
             {product.dia && (
-              <div className="flex items-center text-sm text-gray-700">
+              <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
                 <span className="font-medium">DIA:</span>
                 <span className="ml-2">{product.dia}</span>
               </div>
