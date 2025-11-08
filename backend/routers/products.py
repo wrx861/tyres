@@ -589,7 +589,7 @@ async def get_product_info(
         if response.get('price'):
             original_price = float(response['price'])
             response['price_original'] = original_price
-            response['price'] = apply_markup(original_price, markup)
+            response['price'] = apply_markup(original_price, markup_settings)
         
         return {
             "success": True,
