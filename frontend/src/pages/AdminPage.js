@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Check, X, Settings, BarChart3, Users, Activity, MessageCircle, Trash2, Send, Phone } from 'lucide-react';
-import { getPendingOrders, getAllOrders, confirmOrder, rejectOrder, updateOrderStatus, hideOrderFromAdmin, getMarkup, updateMarkup, getAdminStats, getAllUsers, blockUser, unblockUser, getUserActivity, resetActivityLogs, resetStatistics, sendMessageToClient } from '../api/api';
+import { getPendingOrders, getAllOrders, confirmOrder, rejectOrder, updateOrderStatus, hideOrderFromAdmin, getMarkup, updateMarkup, getMarkupSettings, updateMarkupSettings, getAdminStats, getAllUsers, blockUser, unblockUser, getUserActivity, resetActivityLogs, resetStatistics, sendMessageToClient } from '../api/api';
 
 // Хелпер для форматирования цены без копеек
 const formatPrice = (price) => {
