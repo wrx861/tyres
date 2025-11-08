@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { ArrowLeft, Trash2, Minus, Plus, ShoppingBag } from 'lucide-react';
 import { createOrder } from '../api/api';
 
+// Хелпер для форматирования цены без копеек
+const formatPrice = (price) => {
+  return Math.round(price).toLocaleString('ru-RU');
+};
+
 const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) => {
   const [deliveryAddress, setDeliveryAddress] = useState({
     city: '',
