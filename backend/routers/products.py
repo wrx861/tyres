@@ -250,7 +250,7 @@ async def search_disks(
     city: Optional[str] = Query(None, description="Город (для фильтрации по складам)"),
     sort_by: Optional[str] = Query(None, description="Сортировка: price_asc (дешевле), price_desc (дороже)"),
     page: int = Query(0, ge=0, description="Номер страницы"),
-    page_size: int = Query(50, ge=1, le=200, description="Размер страницы"),
+    page_size: int = Query(2000, ge=1, le=2000, description="Размер страницы"),
     telegram_id: Optional[str] = Query(None, description="Telegram ID пользователя для логирования"),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
