@@ -279,13 +279,21 @@ fi
 
 check_status "Nginx конфигурация обновлена"
 
+# Создаем symlink если нужно
+if [ ! -L "/etc/nginx/sites-enabled/$NGINX_CONFIG_NAME" ]; then
+    ln -s $NGINX_CONFIG /etc/nginx/sites-enabled/$NGINX_CONFIG_NAME
+    echo -e "${GREEN}✓ Symlink создан${NC}"
+fi
+
 # Проверка конфигурации nginx
 echo -e "${YELLOW}Проверка конфигурации nginx...${NC}"
 nginx -t
 if [ $? -ne 0 ]; then
     echo -e "${RED}✗ Ошибка в конфигурации nginx${NC}"
     echo -e "${YELLOW}Откат к backup...${NC}"
-    cp $BACKUP_DIR/nginx-tyres /etc/nginx/sites-available/tyres
+    if [ -f "$BACKUP_DIR/nginx-$NGINX_CONFIG_NAME" ]; then
+        cp $BACKUP_DIR/nginx-$NGINX_CONFIG_NAME $NGINX_CONFIG
+    fi
     nginx -t
     exit 1
 fi
