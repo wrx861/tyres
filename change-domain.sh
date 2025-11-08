@@ -365,11 +365,21 @@ echo ""
 
 # Перезапуск сервисов
 echo -e "${YELLOW}[8/11] Перезапуск сервисов...${NC}"
-supervisorctl restart frontend
+
+# Определяем имена процессов supervisor
+if supervisorctl status | grep -q "tyres-frontend"; then
+    FRONTEND_NAME="tyres-frontend"
+    BACKEND_NAME="tyres-backend"
+else
+    FRONTEND_NAME="frontend"
+    BACKEND_NAME="backend"
+fi
+
+supervisorctl restart $FRONTEND_NAME
 sleep 2
 check_status "Frontend перезапущен"
 
-supervisorctl restart backend
+supervisorctl restart $BACKEND_NAME
 sleep 2
 check_status "Backend перезапущен"
 echo ""
