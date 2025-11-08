@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Plus, MapPin, Package } from 'lucide-react';
+import { Plus, MapPin, Package, ShoppingCart } from 'lucide-react';
 import { WarehousesContext } from '../App';
 import ProductImageModal from './ProductImageModal';
 
@@ -8,11 +8,15 @@ const formatPrice = (price) => {
   return Math.round(price).toLocaleString('ru-RU');
 };
 
-const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
+const ProductCard = ({ product, onAddToCart, cart = [], type = 'tires' }) => {
   const warehouses = useContext(WarehousesContext);
   const [showImageModal, setShowImageModal] = useState(false);
   const [quantity, setQuantity] = useState(4); // По умолчанию 4 шт (комплект)
   const [showAddedNotification, setShowAddedNotification] = useState(false);
+  
+  // Получаем количество этого товара в корзине
+  const cartItem = cart.find(item => item.code === product.code);
+  const inCartQuantity = cartItem ? cartItem.quantity : 0;
   
   // Извлекаем данные о складе и остатках
   const getWarehouseInfo = () => {
