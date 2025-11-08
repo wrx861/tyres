@@ -43,12 +43,12 @@ const SupportButton = () => {
   return (
     <button
       onClick={handleSupportClick}
-      className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all hover:scale-105 z-50"
-      aria-label="Поддержка"
+      className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-full shadow-lg flex items-center space-x-1.5 transition-all hover:scale-105 z-50"
+      aria-label="Вопрос"
       title="Связаться с поддержкой"
     >
-      <MessageCircle size={20} />
-      <span className="font-medium">Поддержка</span>
+      <MessageCircle size={18} />
+      <span className="font-medium text-sm">Вопрос</span>
     </button>
   );
 };
