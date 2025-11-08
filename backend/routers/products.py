@@ -289,7 +289,7 @@ async def search_tires(
             "total_pages": response.get('totalPages', 0),
             "warehouses": warehouses,
             "currency": response.get('currencyRate', {}),
-            "markup_percentage": markup,
+            "markup_percentage": await get_markup_percentage(db),
             "mock_mode": use_mock_data()
         }
         
@@ -540,7 +540,7 @@ async def search_disks(
             "total_pages": response.get('totalPages', 0),
             "warehouses": warehouses,
             "currency": response.get('currencyRate', {}),
-            "markup_percentage": markup,
+            "markup_percentage": await get_markup_percentage(db),
             "mock_mode": use_mock_data()
         }
         
@@ -573,7 +573,7 @@ async def get_product_info(
                     "price_original": 8500,
                     "rest": 12,
                 },
-                "markup_percentage": markup,
+                "markup_percentage": await get_markup_percentage(db),
                 "mock_mode": True
             }
         
@@ -594,7 +594,7 @@ async def get_product_info(
         return {
             "success": True,
             "data": response,
-            "markup_percentage": markup,
+            "markup_percentage": await get_markup_percentage(db),
             "mock_mode": False
         }
         
