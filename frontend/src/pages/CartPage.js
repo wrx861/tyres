@@ -248,14 +248,14 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-6 border border-transparent dark:border-gray-700">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-gray-600">Товаров:</span>
-            <span className="font-medium">{cart.reduce((sum, item) => sum + item.quantity, 0)} шт</span>
+            <span className="text-gray-600 dark:text-gray-300">Товаров:</span>
+            <span className="font-medium dark:text-white">{cart.reduce((sum, item) => sum + item.quantity, 0)} шт</span>
           </div>
-          <div className="flex justify-between items-center text-xl font-bold pt-4 border-t border-gray-200">
-            <span>Итого:</span>
-            <span className="text-blue-600">{formatPrice(total)} ₽</span>
+          <div className="flex justify-between items-center text-xl font-bold pt-4 border-t border-gray-200 dark:border-gray-700">
+            <span className="dark:text-white">Итого:</span>
+            <span className="text-blue-600 dark:text-blue-400">{formatPrice(total)} ₽</span>
           </div>
         </div>
 
