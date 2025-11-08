@@ -179,6 +179,22 @@ export const updateMarkup = async (telegramId, markupPercentage) => {
   return response.data;
 };
 
+// Новые функции для гибкой системы наценки
+export const getMarkupSettings = async (telegramId) => {
+  const response = await axios.get(`${API}/admin/markup/settings`, {
+    params: { telegram_id: telegramId }
+  });
+  return response.data;
+};
+
+export const updateMarkupSettings = async (telegramId, settings) => {
+  const response = await axios.put(
+    `${API}/admin/markup/settings?telegram_id=${telegramId}`,
+    settings
+  );
+  return response.data;
+};
+
 export const getAdminStats = async (telegramId) => {
   const response = await axios.get(`${API}/admin/stats`, {
     params: { telegram_id: telegramId }
