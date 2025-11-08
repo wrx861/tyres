@@ -137,9 +137,9 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
         )}
       </div>
 
-      <div className="pt-3 border-t border-gray-100">
+      <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300">
             <div className="flex items-center">
               <Package size={16} className="mr-1" />
               <span>{warehouseInfo.rest} шт</span>
