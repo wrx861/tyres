@@ -87,15 +87,63 @@ const OrdersPage = ({ user, onBack }) => {
                     </div>
                   </div>
 
-                  <div className="space-y-2 mb-4">
-                    {order.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between text-sm">
-                        <span className="text-gray-700">
-                          {item.brand} {item.name} x{item.quantity}
-                        </span>
-                        <span className="font-medium">{(item.price_final * item.quantity).toLocaleString()} ₽</span>
-                      </div>
-                    ))}
+                  <div className="space-y-3 mb-4">
+                    {order.items.map((item, idx) => {
+                      // Определяем параметры товара
+                      let params = '';
+                      if (item.width && item.diameter) {
+                        // Шины: width/height R diameter (например, 185/60 R15)
+                        if (item.height) {
+                          params = `${item.width}/${item.height} R${item.diameter}`;
+                        }
+                        // Диски: width x diameter (например, 7x16)
+                        else {
+                          params = `${item.width}x${item.diameter}`;
+                        }
+                      }
+                      
+                      // Сезон для шин
+                      const seasonMap = {
+                        'winter': '❄️ Зима',
+                        'summer': '☀️ Лето',
+                        'all-season': '🍂 Всесезон'
+                      };
+                      const seasonText = item.season ? seasonMap[item.season] || item.season : '';
+                      
+                      // Дополнительные параметры для дисков
+                      let diskParams = [];
+                      if (item.pcd) diskParams.push(`PCD ${item.pcd}`);
+                      if (item.et) diskParams.push(`ET ${item.et}`);
+                      if (item.dia) diskParams.push(`DIA ${item.dia}`);
+                      if (item.color) diskParams.push(item.color);
+                      
+                      return (
+                        <div key={idx} className="border-b border-gray-100 pb-2 last:border-0">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="text-gray-900 font-medium">
+                                {item.brand} {params && <span className="text-blue-600">({params})</span>}
+                              </div>
+                              <div className="text-sm text-gray-600 mt-1">
+                                {item.name}
+                                {seasonText && <span className="ml-2">{seasonText}</span>}
+                              </div>
+                              {diskParams.length > 0 && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {diskParams.join(' • ')}
+                                </div>
+                              )}
+                              <div className="text-xs text-gray-500 mt-1">
+                                Количество: {item.quantity} шт
+                              </div>
+                            </div>
+                            <span className="font-medium text-gray-900 ml-4">
+                              {(item.price_final * item.quantity).toLocaleString()} ₽
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className="pt-4 border-t border-gray-200">
