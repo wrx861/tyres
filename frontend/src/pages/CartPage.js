@@ -39,7 +39,17 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
           price_base: item.price_original || item.price,
           price_final: item.price,
           warehouse_id: item.warehouse_id || 1,
-          warehouse_name: item.warehouse_name || 'Москва'
+          warehouse_name: item.warehouse_name || 'Москва',
+          // Параметры товара
+          width: item.width,
+          height: item.height,
+          diameter: item.diameter,
+          season: item.season,
+          pcd: item.pcd,
+          et: item.et,
+          dia: item.dia,
+          color: item.color,
+          disk_type: item.disk_type
         })),
         delivery_address: deliveryAddress
       };
