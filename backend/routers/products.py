@@ -58,8 +58,17 @@ async def search_tires(
         season_map = {
             'summer': 's',
             'winter': 'w',
-            'all-season': 'u'
+            'all-season': 'u',
+            'winter-studded': 'w',  # Зимние с шипами
+            'winter-non-studded': 'w'  # Зимние без шипов
         }
+        
+        # Определяем фильтр по шипам
+        studded_filter = None
+        if season == 'winter-studded':
+            studded_filter = True
+        elif season == 'winter-non-studded':
+            studded_filter = False
         
         season_list = None
         if season and season in season_map:
