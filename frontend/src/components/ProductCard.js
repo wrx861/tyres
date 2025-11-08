@@ -8,7 +8,7 @@ const formatPrice = (price) => {
   return Math.round(price).toLocaleString('ru-RU');
 };
 
-const ProductCard = ({ product, onAddToCart, cart = [], type = 'tires' }) => {
+const ProductCard = ({ product, onAddToCart, onRemoveFromCart, cart = [], type = 'tires' }) => {
   const warehouses = useContext(WarehousesContext);
   const [showImageModal, setShowImageModal] = useState(false);
   const [quantity, setQuantity] = useState(4); // По умолчанию 4 шт (комплект)
