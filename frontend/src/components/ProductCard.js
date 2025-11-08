@@ -70,7 +70,7 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
           
           {/* Price */}
           <div className="text-right flex-shrink-0">
-            <p className="text-2xl font-bold text-blue-600">{product.price?.toLocaleString()} ₽</p>
+            <p className="text-2xl font-bold text-blue-600">{formatPrice(product.price)} ₽</p>
           </div>
         </div>
 
