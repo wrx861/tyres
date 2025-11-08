@@ -24,16 +24,58 @@ def get_db():
     from server import db
     return db
 
-def apply_markup(price: float, markup_percentage: float) -> float:
-    """Применить наценку к цене"""
+def apply_markup(price: float, markup_data) -> float:
+    """
+    Применить наценку к цене
+    markup_data может быть:
+    - float: фиксированный процент
+    - dict: настройки ступенчатой наценки
+    """
+    if isinstance(markup_data, dict):
+        # Ступенчатая наценка
+        if markup_data.get('type') == 'tiered':
+            tiers = markup_data.get('tiers', [])
+            # Сортируем ступени по min_price
+            sorted_tiers = sorted(tiers, key=lambda x: x.get('min_price', 0))
+            
+            # Находим подходящую ступень
+            applicable_tier = None
+            for tier in sorted_tiers:
+                min_price = tier.get('min_price', 0)
+                max_price = tier.get('max_price', float('inf'))
+                if min_price <= price <= max_price:
+                    applicable_tier = tier
+                    break
+            
+            if applicable_tier:
+                markup_percentage = applicable_tier.get('markup_percentage', 15.0)
+            else:
+                # Если не нашли подходящую ступень, берем последнюю
+                markup_percentage = sorted_tiers[-1].get('markup_percentage', 15.0) if sorted_tiers else 15.0
+            
+            return round(price * (1 + markup_percentage / 100), 2)
+    
+    # Фиксированная наценка (старая логика)
+    markup_percentage = markup_data if isinstance(markup_data, (int, float)) else 15.0
     return round(price * (1 + markup_percentage / 100), 2)
 
-async def get_markup_percentage(db: AsyncIOMotorDatabase) -> float:
-    """Получить текущий процент наценки"""
+async def get_markup_settings(db: AsyncIOMotorDatabase):
+    """Получить настройки наценки"""
     settings = await db.settings.find_one({}, {"_id": 0})
-    if settings:
+    if settings and 'markup_settings' in settings:
+        return settings['markup_settings']
+    # По умолчанию - фиксированная наценка 15%
+    return {
+        'type': 'fixed',
+        'markup_percentage': 15.0
+    }
+
+async def get_markup_percentage(db: AsyncIOMotorDatabase) -> float:
+    """Получить текущий процент наценки (для обратной совместимости)"""
+    settings = await get_markup_settings(db)
+    if settings.get('type') == 'fixed':
         return settings.get('markup_percentage', 15.0)
-    return float(os.environ.get('DEFAULT_MARKUP_PERCENTAGE', '15'))
+    return 15.0  # Для ступенчатой наценки возвращаем дефолт
 
 @router.get("/tires/search")
 async def search_tires(
