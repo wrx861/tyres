@@ -190,8 +190,8 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
         </div>
 
         {/* Delivery Address */}
-        <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-          <h3 className="font-semibold text-lg mb-4">Адрес доставки</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-6 border border-transparent dark:border-gray-700">
+          <h3 className="font-semibold text-lg mb-4 dark:text-white">Адрес доставки</h3>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Город *</label>
