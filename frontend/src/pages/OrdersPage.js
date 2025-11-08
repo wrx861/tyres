@@ -166,7 +166,7 @@ const OrdersPage = ({ user, onBack }) => {
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-600">Итого</p>
-                        <p className="text-xl font-bold text-blue-600">{order.total_amount.toLocaleString()} ₽</p>
+                        <p className="text-xl font-bold text-blue-600">{formatPrice(order.total_amount)} ₽</p>
                       </div>
                     </div>
 
