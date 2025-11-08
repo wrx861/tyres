@@ -1152,7 +1152,7 @@ agent_communication:
          - Backend тестирование не применимо
       
       🔧 ТЕХНИЧЕСКАЯ ПРОВЕРКА:
-      - Backend URL: https://izuchi-nash.preview.emergentagent.com/api ✅
+      - Backend URL: https://wheelstore.preview.emergentagent.com/api ✅
       - Admin Telegram ID: 508352361 ✅
       - Все endpoints требуют admin права ✅
       - HTTP статусы корректные (200 OK, 403 Forbidden) ✅

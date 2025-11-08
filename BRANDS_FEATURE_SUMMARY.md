@@ -58,22 +58,22 @@ Windforce, Yokohama, Zeta, Алтайшина, Кировский Ш3
 ### Backend API
 ```bash
 # Получить бренды шин
-curl "https://izuchi-nash.preview.emergentagent.com/api/products/brands/tires"
+curl "https://wheelstore.preview.emergentagent.com/api/products/brands/tires"
 
 # Получить бренды дисков
-curl "https://izuchi-nash.preview.emergentagent.com/api/products/brands/disks"
+curl "https://wheelstore.preview.emergentagent.com/api/products/brands/disks"
 ```
 
 ### Примеры использования в поиске
 
 **Поиск шин с фильтром по бренду:**
 ```bash
-curl "https://izuchi-nash.preview.emergentagent.com/api/products/tires/search?diameter=15&brand=Michelin"
+curl "https://wheelstore.preview.emergentagent.com/api/products/tires/search?diameter=15&brand=Michelin"
 ```
 
 **Поиск дисков с фильтром по бренду:**
 ```bash
-curl "https://izuchi-nash.preview.emergentagent.com/api/products/disks/search?diameter=16&brand=Replay"
+curl "https://wheelstore.preview.emergentagent.com/api/products/disks/search?diameter=16&brand=Replay"
 ```
 
 ## 📁 Измененные файлы
