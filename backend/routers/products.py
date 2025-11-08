@@ -569,7 +569,7 @@ async def get_product_info(
                     "code": code,
                     "brand": "Michelin",
                     "model": "X-Ice North 4",
-                    "price": apply_markup(8500, markup),
+                    "price": apply_markup(8500, markup_settings),
                     "price_original": 8500,
                     "rest": 12,
                 },
