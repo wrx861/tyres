@@ -69,15 +69,15 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 text-left relative overflow-hidden group"
+                className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 text-left relative overflow-hidden group border border-transparent dark:border-gray-700"
               >
                 <div className="flex items-start space-x-4">
                   <div className={`${item.color} p-3 rounded-xl text-white group-hover:scale-110 transition-transform`}>
                     <Icon size={24} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-lg">{item.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-lg">{item.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{item.description}</p>
                   </div>
                   {item.badge > 0 && (
                     <span className="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
