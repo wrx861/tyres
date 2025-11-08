@@ -156,8 +156,8 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-blue-600">{(item.price * item.quantity).toLocaleString()} ₽</p>
-                    <p className="text-xs text-gray-500">{item.price.toLocaleString()} ₽ / шт</p>
+                    <p className="font-bold text-blue-600">{formatPrice(item.price * item.quantity)} ₽</p>
+                    <p className="text-xs text-gray-500">{formatPrice(item.price)} ₽ / шт</p>
                   </div>
                 </div>
               </div>
