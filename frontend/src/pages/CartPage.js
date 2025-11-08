@@ -195,13 +195,16 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Город *</label>
-              <input
-                type="text"
+              <select
                 value={deliveryAddress.city}
                 onChange={(e) => setDeliveryAddress({ ...deliveryAddress, city: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Москва"
-              />
+              >
+                <option value="">Выберите город</option>
+                <option value="Тюмень">Тюмень</option>
+                <option value="Лянтор">Лянтор</option>
+                <option value="Сургут">Сургут</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Улица *</label>
