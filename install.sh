@@ -486,10 +486,82 @@ if [ "$USE_HTTPS" = true ]; then
     fi
     
     if [ "$USE_HTTPS" = true ]; then
-        # Получаем сертификат
-        certbot --nginx -d $DOMAIN_NAME --non-interactive --agree-tos --email $LETSENCRYPT_EMAIL --redirect
+        # Получаем сертификат через standalone метод (более надёжный)
+        echo "Остановка nginx для получения сертификата..."
+        systemctl stop nginx
         
-        if [ $? -eq 0 ]; then
+        certbot certonly --standalone -d $DOMAIN_NAME --non-interactive --agree-tos --email $LETSENCRYPT_EMAIL --preferred-challenges http
+        
+        CERTBOT_EXIT=$?
+        
+        # Запускаем nginx обратно
+        systemctl start nginx
+        
+        if [ $CERTBOT_EXIT -eq 0 ] && [ -f "/etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem" ]; then
+            echo -e "${GREEN}✓ SSL сертификат получен${NC}"
+            
+            # Обновляем nginx конфигурацию с SSL
+            cat > /etc/nginx/sites-available/tyres-app << NGINX_SSL_EOF
+# HTTP -> HTTPS redirect
+server {
+    listen 80;
+    server_name $DOMAIN_NAME;
+    
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+    
+    location / {
+        return 301 https://\\\$server_name\\\$request_uri;
+    }
+}
+
+# HTTPS server
+server {
+    listen 443 ssl http2;
+    server_name $DOMAIN_NAME;
+    
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem;
+    
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers off;
+    
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    
+    location / {
+        root /opt/tyres-app/frontend/build;
+        try_files \\\$uri \\\$uri/ /index.html;
+        add_header Cache-Control "no-cache, must-revalidate";
+    }
+    
+    location /api {
+        proxy_pass http://127.0.0.1:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \\\$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \\\$host;
+        proxy_cache_bypass \\\$http_upgrade;
+        proxy_set_header X-Real-IP \\\$remote_addr;
+        proxy_set_header X-Forwarded-For \\\$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \\\$scheme;
+    }
+}
+NGINX_SSL_EOF
+            
+            # Проверяем и перезагружаем nginx
+            if nginx -t > /dev/null 2>&1; then
+                systemctl reload nginx
+                echo -e "${GREEN}✓ Nginx конфигурация с SSL применена${NC}"
+            else
+                echo -e "${RED}✗ Ошибка в конфигурации nginx${NC}"
+                nginx -t
+            fi
+            
+            # Обновляем frontend .env на https
+            sed -i "s|REACT_APP_BACKEND_URL=.*|REACT_APP_BACKEND_URL=https://$DOMAIN_NAME|g" /opt/tyres-app/frontend/.env
+            
             check_status "SSL сертификат установлен"
             
             # Настраиваем автообновление SSL
