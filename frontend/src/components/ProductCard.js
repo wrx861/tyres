@@ -164,9 +164,10 @@ const ProductCard = ({ product, onAddToCart, cart = [], type = 'tires' }) => {
         </div>
         
         {/* Quantity Selector */}
-        <div className="flex items-center space-x-3 mb-3">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Количество:</span>
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-3">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Количество:</span>
+            <div className="flex items-center space-x-2">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-900 dark:text-white font-bold"
