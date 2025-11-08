@@ -91,9 +91,9 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
         </div>
 
         {/* Info Banner */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <h3 className="font-medium text-blue-900 mb-2">ℹ️ Информация</h3>
-          <p className="text-sm text-blue-800">
+        <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+          <h3 className="font-medium text-blue-900 dark:text-blue-300 mb-2">ℹ️ Информация</h3>
+          <p className="text-sm text-blue-800 dark:text-blue-200">
             Выберите товары и оформите заказ. Все заказы проверяются администратором перед отправкой поставщику.
           </p>
         </div>
