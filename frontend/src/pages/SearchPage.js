@@ -204,7 +204,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
             <select
               value={filters.city}
               onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {cities.map(city => (
                 <option key={city.name} value={city.name}>
@@ -223,7 +223,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
             <select
               value={filters.sort_by}
               onChange={(e) => setFilters({ ...filters, sort_by: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">➡️ Без сортировки</option>
               <option value="price_asc">💵 Сначала дешевые</option>
@@ -242,7 +242,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 onChange={(e) => setFilters({ ...filters, width: e.target.value })}
                 placeholder={searchType === 'tires' ? '185' : '6.5'}
                 step={searchType === 'tires' ? '5' : '0.5'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -256,7 +256,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                   value={filters.height}
                   onChange={(e) => setFilters({ ...filters, height: e.target.value })}
                   placeholder="60"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             )}
@@ -270,7 +270,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 value={filters.diameter}
                 onChange={(e) => setFilters({ ...filters, diameter: e.target.value })}
                 placeholder="15"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -283,7 +283,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                   <select
                     value={filters.season}
                     onChange={(e) => setFilters({ ...filters, season: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">🔄 Любой</option>
                     <option value="summer">☀️ Лето</option>
@@ -304,7 +304,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 value={filters.brand}
                 onChange={(e) => setFilters({ ...filters, brand: e.target.value })}
                 disabled={brandsLoading}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {brandsLoading ? (
                   <option value="">Загрузка...</option>
@@ -340,7 +340,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                     value={filters.pcd}
                     onChange={(e) => setFilters({ ...filters, pcd: e.target.value })}
                     placeholder="5x114.3"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -353,7 +353,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                     value={filters.et_min}
                     onChange={(e) => setFilters({ ...filters, et_min: e.target.value })}
                     placeholder="35"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -366,7 +366,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                     value={filters.et_max}
                     onChange={(e) => setFilters({ ...filters, et_max: e.target.value })}
                     placeholder="45"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -380,7 +380,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                     onChange={(e) => setFilters({ ...filters, dia_min: e.target.value })}
                     placeholder="60.1"
                     step="0.1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -394,7 +394,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                     onChange={(e) => setFilters({ ...filters, dia_max: e.target.value })}
                     placeholder="73.1"
                     step="0.1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -407,7 +407,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                     value={filters.color}
                     onChange={(e) => setFilters({ ...filters, color: e.target.value })}
                     placeholder="Серебристый"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -418,7 +418,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                   <select
                     value={filters.disk_type}
                     onChange={(e) => setFilters({ ...filters, disk_type: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Все</option>
                     <option value="0">Литой</option>
