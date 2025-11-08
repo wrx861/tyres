@@ -356,7 +356,7 @@ const AdminPage = ({ user, onBack }) => {
                               </div>
                               <div className="text-right">
                                 <p className="font-medium">{item.quantity} шт</p>
-                                <p className="text-xs text-gray-600">{item.price_final.toLocaleString()} ₽/шт</p>
+                                <p className="text-xs text-gray-600">{formatPrice(item.price_final)} ₽/шт</p>
                               </div>
                             </div>
                           ))}
