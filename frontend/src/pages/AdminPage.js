@@ -47,8 +47,12 @@ const AdminPage = ({ user, onBack }) => {
         const activeOrders = response.filter(order => order.status !== 'cancelled');
         setOrders(activeOrders);
       } else if (tab === 'settings') {
-        const response = await getMarkup(user.telegram_id);
-        setMarkup(response.markup_percentage);
+        const response = await getMarkupSettings(user.telegram_id);
+        setMarkupSettings(response);
+        // Для обратной совместимости
+        if (response.type === 'fixed') {
+          setMarkup(response.markup_percentage);
+        }
       } else if (tab === 'stats') {
         const response = await getAdminStats(user.telegram_id);
         setStats(response.stats);
