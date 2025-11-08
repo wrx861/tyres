@@ -95,7 +95,7 @@ async def search_tires(
     Поиск шин по параметрам
     """
     try:
-        markup = await get_markup_percentage(db)
+        markup_settings = await get_markup_settings(db)
         
         season_map = {
             'summer': 's',
@@ -322,7 +322,7 @@ async def search_disks(
     Поиск дисков по параметрам
     """
     try:
-        markup = await get_markup_percentage(db)
+        markup_settings = await get_markup_settings(db)
         
         if use_mock_data():
             logger.info("Using MOCK data for disks search")
@@ -559,7 +559,7 @@ async def get_product_info(
     Получить подробную информацию о товаре по коду
     """
     try:
-        markup = await get_markup_percentage(db)
+        markup_settings = await get_markup_settings(db)
         
         if use_mock_data():
             # В mock режиме возвращаем фейковую информацию
