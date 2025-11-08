@@ -216,8 +216,8 @@ else
 fi
 echo ""
 
-# Обновление nginx конфигурации
-echo -e "${YELLOW}[3/11] Обновление nginx конфигурации...${NC}"
+# Подготовка nginx конфигурации
+echo -e "${YELLOW}[3/11] Подготовка nginx...${NC}"
 
 # Определяем имя конфигурационного файла
 if [ -f "/etc/nginx/sites-available/tyres-app" ]; then
@@ -231,87 +231,16 @@ fi
 
 NGINX_CONFIG="/etc/nginx/sites-available/$NGINX_CONFIG_NAME"
 
-if [ "$USE_SSL" = true ]; then
-    # Сначала создаем конфигурацию для HTTP (для получения SSL)
-    cat > $NGINX_CONFIG << EOF
-server {
-    listen 80;
-    server_name $NEW_DOMAIN;
-    
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-    }
-    
-    location /api {
-        proxy_pass http://localhost:8001;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-    }
-}
-EOF
-else
-    # Конфигурация без SSL
-    cat > $NGINX_CONFIG << EOF
-server {
-    listen 80;
-    server_name $NEW_DOMAIN;
-    
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-    }
-    
-    location /api {
-        proxy_pass http://localhost:8001;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-    }
-}
-EOF
-fi
-
-check_status "Nginx конфигурация обновлена"
-
 # Создаем symlink если нужно
 if [ ! -L "/etc/nginx/sites-enabled/$NGINX_CONFIG_NAME" ]; then
-    ln -s $NGINX_CONFIG /etc/nginx/sites-enabled/$NGINX_CONFIG_NAME
-    echo -e "${GREEN}✓ Symlink создан${NC}"
+    ln -s $NGINX_CONFIG /etc/nginx/sites-enabled/$NGINX_CONFIG_NAME 2>/dev/null || true
+    echo -e "${GREEN}✓ Symlink для nginx создан${NC}"
 fi
 
-# Проверка конфигурации nginx
-echo -e "${YELLOW}Проверка конфигурации nginx...${NC}"
-nginx -t
-if [ $? -ne 0 ]; then
-    echo -e "${RED}✗ Ошибка в конфигурации nginx${NC}"
-    echo -e "${YELLOW}Откат к backup...${NC}"
-    if [ -f "$BACKUP_DIR/nginx-$NGINX_CONFIG_NAME" ]; then
-        cp $BACKUP_DIR/nginx-$NGINX_CONFIG_NAME $NGINX_CONFIG
-    fi
-    nginx -t
-    exit 1
-fi
-echo -e "${GREEN}✓ Конфигурация nginx валидна${NC}"
+echo -e "${GREEN}✓ Nginx готов к настройке${NC}"
 echo ""
 
-# Перезапуск nginx
-echo -e "${YELLOW}[4/11] Перезапуск nginx...${NC}"
-systemctl reload nginx
-check_status "Nginx перезапущен"
+echo -e "${YELLOW}[4/11] Конфигурация nginx будет создана на шаге SSL${NC}"
 echo ""
 
 # Получение SSL сертификата
