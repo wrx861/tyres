@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Truck } from 'lucide-react';
 import { getMyOrders } from '../api/api';
 
+// Хелпер для форматирования цены без копеек
+const formatPrice = (price) => {
+  return Math.round(price).toLocaleString('ru-RU');
+};
+
 const OrdersPage = ({ user, onBack }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
