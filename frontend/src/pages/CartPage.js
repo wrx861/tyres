@@ -199,7 +199,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                 type="text"
                 value={deliveryAddress.city}
                 onChange={(e) => setDeliveryAddress({ ...deliveryAddress, city: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Москва"
               />
             </div>
@@ -209,7 +209,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                 type="text"
                 value={deliveryAddress.street}
                 onChange={(e) => setDeliveryAddress({ ...deliveryAddress, street: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Ленинский проспект"
               />
             </div>
@@ -219,7 +219,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                 type="text"
                 value={deliveryAddress.house}
                 onChange={(e) => setDeliveryAddress({ ...deliveryAddress, house: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="15"
               />
             </div>
@@ -229,7 +229,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                 type="tel"
                 value={deliveryAddress.phone}
                 onChange={(e) => setDeliveryAddress({ ...deliveryAddress, phone: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="+7 (999) 123-45-67"
               />
               <p className="text-xs text-gray-500 mt-1">Для связи по заказу</p>
@@ -239,7 +239,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
               <textarea
                 value={deliveryAddress.comment}
                 onChange={(e) => setDeliveryAddress({ ...deliveryAddress, comment: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows="3"
                 placeholder="Комментарий к заказу"
               />
