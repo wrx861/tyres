@@ -321,12 +321,77 @@ if [ "$USE_SSL" = true ]; then
     echo -e "${BLUE}Email:${NC} $LETSENCRYPT_EMAIL"
     echo ""
     
-    # Останавливаем nginx для certbot standalone (на случай если нужно)
-    certbot --nginx -d $NEW_DOMAIN --email $LETSENCRYPT_EMAIL --agree-tos --non-interactive --redirect
+    # Пробуем автоматическую установку
+    certbot --nginx -d $NEW_DOMAIN --email $LETSENCRYPT_EMAIL --agree-tos --non-interactive --redirect 2>&1 | tee /tmp/certbot_output.log
     
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✓ SSL сертификат получен и установлен${NC}"
-        NEW_BACKEND_URL="https://$NEW_DOMAIN"
+    # Проверяем результат
+    if grep -q "Successfully received certificate" /tmp/certbot_output.log; then
+        echo -e "${GREEN}✓ SSL сертификат получен${NC}"
+        
+        # Проверяем установлен ли он в nginx
+        if grep -q "Deploying certificate" /tmp/certbot_output.log && ! grep -q "Could not install certificate" /tmp/certbot_output.log; then
+            echo -e "${GREEN}✓ SSL сертификат установлен в nginx${NC}"
+            NEW_BACKEND_URL="https://$NEW_DOMAIN"
+        else
+            echo -e "${YELLOW}⚠ SSL сертификат получен, но не установлен автоматически${NC}"
+            echo -e "${YELLOW}→ Устанавливаем вручную...${NC}"
+            
+            # Ручная установка SSL в nginx конфигурацию
+            cat > $NGINX_CONFIG << EOF
+server {
+    listen 80;
+    server_name $NEW_DOMAIN;
+    return 301 https://\$server_name\$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name $NEW_DOMAIN;
+    
+    ssl_certificate /etc/letsencrypt/live/$NEW_DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$NEW_DOMAIN/privkey.pem;
+    
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+    
+    location /api {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF
+            
+            # Проверяем конфигурацию
+            if nginx -t > /dev/null 2>&1; then
+                systemctl reload nginx
+                echo -e "${GREEN}✓ SSL сертификат установлен вручную${NC}"
+                NEW_BACKEND_URL="https://$NEW_DOMAIN"
+            else
+                echo -e "${RED}✗ Ошибка конфигурации nginx${NC}"
+                USE_SSL=false
+                NEW_BACKEND_URL="http://$NEW_DOMAIN"
+            fi
+        fi
     else
         echo -e "${RED}✗ Ошибка получения SSL сертификата${NC}"
         echo -e "${YELLOW}Продолжаем без SSL...${NC}"
