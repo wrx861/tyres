@@ -21,6 +21,25 @@ class MarkupResponse(BaseModel):
     updated_at: str
     updated_by_admin: str
 
+# Новые модели для гибкой наценки
+class MarkupTier(BaseModel):
+    min_price: float
+    max_price: float
+    markup_percentage: float
+    label: str  # Название диапазона (например, "Бюджетные")
+
+class MarkupSettingsUpdate(BaseModel):
+    type: str  # "fixed" или "tiered"
+    markup_percentage: Optional[float] = None  # Для fixed
+    tiers: Optional[List[MarkupTier]] = None  # Для tiered
+
+class MarkupSettingsResponse(BaseModel):
+    type: str
+    markup_percentage: Optional[float] = None
+    tiers: Optional[List[MarkupTier]] = None
+    updated_at: str
+    updated_by_admin: str
+
 @router.get("/markup", response_model=MarkupResponse)
 async def get_markup(
     telegram_id: str = Query(..., description="Telegram ID админа"),
