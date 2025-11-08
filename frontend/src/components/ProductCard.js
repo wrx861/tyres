@@ -51,7 +51,15 @@ const ProductCard = ({ product, onAddToCart, cart = [], type = 'tires' }) => {
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow border border-transparent dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow border border-transparent dark:border-gray-700 relative">
+        {/* Индикатор количества в корзине */}
+        {inCartQuantity > 0 && (
+          <div className="absolute top-3 right-3 bg-orange-500 text-white rounded-full px-2.5 py-1 flex items-center space-x-1 shadow-lg z-10">
+            <ShoppingCart size={14} />
+            <span className="text-xs font-bold">{inCartQuantity}</span>
+          </div>
+        )}
+        
         <div className="flex items-start space-x-4 mb-3">
           {/* Product Image */}
           {product.img_small && (
