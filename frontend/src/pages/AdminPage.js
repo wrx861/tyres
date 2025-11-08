@@ -131,6 +131,39 @@ const AdminPage = ({ user, onBack }) => {
     }
   };
 
+  const handleUpdateMarkupSettings = async () => {
+    try {
+      await updateMarkupSettings(user.telegram_id, markupSettings);
+      alert('Настройки наценки обновлены');
+      loadData();
+    } catch (error) {
+      console.error('Error updating markup settings:', error);
+      alert('Ошибка обновления настроек наценки');
+    }
+  };
+
+  const handleAddTier = () => {
+    if (!newTier.label || newTier.min_price < 0 || newTier.max_price <= newTier.min_price) {
+      alert('Пожалуйста, заполните все поля корректно');
+      return;
+    }
+    setMarkupSettings({
+      ...markupSettings,
+      tiers: [...(markupSettings.tiers || []), { ...newTier }]
+    });
+    setNewTier({
+      min_price: newTier.max_price + 1,
+      max_price: newTier.max_price + 5000,
+      markup_percentage: 15,
+      label: ''
+    });
+  };
+
+  const handleRemoveTier = (index) => {
+    const newTiers = markupSettings.tiers.filter((_, i) => i !== index);
+    setMarkupSettings({ ...markupSettings, tiers: newTiers });
+  };
+
   const handleBlockUser = async (userTelegramId) => {
     if (window.confirm('Заблокировать этого пользователя?')) {
       try {
