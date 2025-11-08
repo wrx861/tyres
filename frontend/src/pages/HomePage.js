@@ -18,12 +18,11 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
       color: 'bg-green-500'
     },
     {
-      id: 'cart',
-      title: 'Корзина',
-      description: `${cartCount} товаров`,
-      icon: ShoppingCart,
-      color: 'bg-orange-500',
-      badge: cartCount
+      id: 'orders',
+      title: 'Мои заказы',
+      description: 'История заказов',
+      icon: Package,
+      color: 'bg-purple-500'
     },
     {
       id: 'tire-service',
@@ -34,11 +33,12 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
       onClick: handleServiceClick
     },
     {
-      id: 'orders',
-      title: 'Мои заказы',
-      description: 'История заказов',
-      icon: Package,
-      color: 'bg-purple-500'
+      id: 'cart',
+      title: 'Корзина',
+      description: `${cartCount} товаров`,
+      icon: ShoppingCart,
+      color: 'bg-orange-500',
+      badge: cartCount
     }
   ];
 
