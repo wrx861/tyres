@@ -64,8 +64,8 @@ const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
           
           {/* Product Info */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-xl text-gray-900">{product.brand}</h3>
-            <p className="text-gray-600 text-base">{product.model}</p>
+            <h3 className="font-bold text-xl text-gray-900 dark:text-white">{product.brand}</h3>
+            <p className="text-gray-600 dark:text-gray-300 text-base">{product.model}</p>
           </div>
           
           {/* Price */}
