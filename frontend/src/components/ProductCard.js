@@ -187,7 +187,16 @@ const ProductCard = ({ product, onAddToCart, cart = [], type = 'tires' }) => {
             >
               +
             </button>
+            </div>
           </div>
+          
+          {/* Индикатор количества в корзине (справа на уровне строки "Количество") */}
+          {inCartQuantity > 0 && (
+            <div className="bg-orange-500 text-white rounded-full px-2.5 py-1 flex items-center space-x-1 shadow-md">
+              <ShoppingCart size={14} />
+              <span className="text-xs font-bold">{inCartQuantity}</span>
+            </div>
+          )}
         </div>
 
         <button
