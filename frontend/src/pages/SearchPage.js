@@ -67,7 +67,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
     try {
       const params = {
         page: 0,
-        page_size: 20
+        page_size: 2000  // Максимальный размер для получения всех товаров
       };
 
       // Добавляем сортировку если выбрана
