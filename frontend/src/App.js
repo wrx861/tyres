@@ -24,6 +24,12 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [warehouses, setWarehouses] = useState({});
   
+  // Темная тема
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('darkMode');
+    return savedTheme === 'true';
+  });
+  
   // Защита от повторных вызовов инициализации (React.StrictMode вызывает useEffect дважды)
   const isInitializing = useRef(false);
   const isInitialized = useRef(false);
