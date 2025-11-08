@@ -57,7 +57,7 @@ const OrdersPage = ({ user, onBack }) => {
             <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-lg">
               <ArrowLeft size={24} />
             </button>
-            <h1 className="text-xl font-bold">Мои заказы</h1>
+            <h1 className="text-xl font-bold dark:text-white">Мои заказы</h1>
           </div>
         </div>
       </div>
