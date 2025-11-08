@@ -12,7 +12,7 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
   const menuItems = [
     {
       id: 'tire-service',
-      title: '🔧 Шиномонтаж',
+      title: 'Шиномонтаж',
       description: 'Услуги шиномонтажа',
       icon: Wrench,
       color: 'bg-blue-500',
