@@ -176,8 +176,8 @@ function App() {
         {renderPage()}
       </div>
       
-      {/* Debug Info Component */}
-      <DebugInfo user={user} />
+      {/* Support Button */}
+      <SupportButton />
     </WarehousesContext.Provider>
   );
 }
