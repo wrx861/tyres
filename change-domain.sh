@@ -251,7 +251,7 @@ server {
 EOF
 else
     # Конфигурация без SSL
-    cat > /etc/nginx/sites-available/tyres << EOF
+    cat > $NGINX_CONFIG << EOF
 server {
     listen 80;
     server_name $NEW_DOMAIN;
