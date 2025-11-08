@@ -316,45 +316,83 @@ echo ""
 
 # Получение SSL сертификата
 if [ "$USE_SSL" = true ]; then
-    echo -e "${YELLOW}[5/11] Получение SSL сертификата...${NC}"
+    echo -e "${YELLOW}[5/11] Получение и установка SSL сертификата...${NC}"
     echo -e "${BLUE}Домен:${NC} $NEW_DOMAIN"
     echo -e "${BLUE}Email:${NC} $LETSENCRYPT_EMAIL"
     echo ""
     
-    # Пробуем автоматическую установку
-    certbot --nginx -d $NEW_DOMAIN --email $LETSENCRYPT_EMAIL --agree-tos --non-interactive --redirect 2>&1 | tee /tmp/certbot_output.log
+    # Проверяем существующий сертификат
+    if [ -d "/etc/letsencrypt/live/$NEW_DOMAIN" ]; then
+        echo -e "${YELLOW}⚠ Найден существующий сертификат для $NEW_DOMAIN${NC}"
+        echo -e "${YELLOW}→ Удаляем старый сертификат...${NC}"
+        certbot delete --cert-name $NEW_DOMAIN --non-interactive
+        echo -e "${GREEN}✓ Старый сертификат удален${NC}"
+    fi
     
-    # Проверяем результат
-    if grep -q "Successfully received certificate" /tmp/certbot_output.log; then
-        echo -e "${GREEN}✓ SSL сертификат получен${NC}"
+    # Шаг 1: Получаем сертификат через certonly (без установки в nginx)
+    echo -e "${YELLOW}→ Шаг 1/3: Получение SSL сертификата...${NC}"
+    
+    # Временно останавливаем nginx для standalone режима
+    systemctl stop nginx
+    
+    certbot certonly --standalone \
+        -d $NEW_DOMAIN \
+        --email $LETSENCRYPT_EMAIL \
+        --agree-tos \
+        --non-interactive \
+        --preferred-challenges http \
+        2>&1 | tee /tmp/certbot_output.log
+    
+    CERTBOT_EXIT_CODE=$?
+    
+    # Запускаем nginx обратно
+    systemctl start nginx
+    
+    if [ $CERTBOT_EXIT_CODE -eq 0 ] && [ -f "/etc/letsencrypt/live/$NEW_DOMAIN/fullchain.pem" ]; then
+        echo -e "${GREEN}✓ SSL сертификат успешно получен${NC}"
         
-        # Проверяем установлен ли он в nginx
-        if grep -q "Deploying certificate" /tmp/certbot_output.log && ! grep -q "Could not install certificate" /tmp/certbot_output.log; then
-            echo -e "${GREEN}✓ SSL сертификат установлен в nginx${NC}"
-            NEW_BACKEND_URL="https://$NEW_DOMAIN"
-        else
-            echo -e "${YELLOW}⚠ SSL сертификат получен, но не установлен автоматически${NC}"
-            echo -e "${YELLOW}→ Устанавливаем вручную...${NC}"
-            
-            # Ручная установка SSL в nginx конфигурацию
-            cat > $NGINX_CONFIG << EOF
+        # Шаг 2: Создаем nginx конфигурацию с SSL
+        echo -e "${YELLOW}→ Шаг 2/3: Установка сертификата в nginx...${NC}"
+        
+        cat > $NGINX_CONFIG << EOF
+# HTTP → HTTPS redirect
 server {
     listen 80;
     server_name $NEW_DOMAIN;
-    return 301 https://\$server_name\$request_uri;
+    
+    # Let's Encrypt validation
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+    
+    # Redirect all other traffic to HTTPS
+    location / {
+        return 301 https://\$server_name\$request_uri;
+    }
 }
 
+# HTTPS server
 server {
     listen 443 ssl http2;
     server_name $NEW_DOMAIN;
     
+    # SSL certificates
     ssl_certificate /etc/letsencrypt/live/$NEW_DOMAIN/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/$NEW_DOMAIN/privkey.pem;
     
+    # SSL configuration
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-    ssl_prefer_server_ciphers on;
+    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384';
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
     
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    
+    # Frontend (React)
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
@@ -367,6 +405,7 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
     
+    # Backend API (FastAPI)
     location /api {
         proxy_pass http://localhost:8001;
         proxy_http_version 1.1;
@@ -380,27 +419,105 @@ server {
     }
 }
 EOF
+        
+        # Проверяем конфигурацию nginx
+        if nginx -t > /dev/null 2>&1; then
+            echo -e "${GREEN}✓ Nginx конфигурация с SSL валидна${NC}"
             
-            # Проверяем конфигурацию
-            if nginx -t > /dev/null 2>&1; then
-                systemctl reload nginx
-                echo -e "${GREEN}✓ SSL сертификат установлен вручную${NC}"
+            # Шаг 3: Перезагружаем nginx
+            echo -e "${YELLOW}→ Шаг 3/3: Перезагрузка nginx...${NC}"
+            systemctl reload nginx
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✓ SSL сертификат успешно установлен${NC}"
                 NEW_BACKEND_URL="https://$NEW_DOMAIN"
+                
+                # Проверяем что HTTPS работает
+                sleep 2
+                if curl -s -k https://$NEW_DOMAIN > /dev/null 2>&1; then
+                    echo -e "${GREEN}✓ HTTPS работает корректно${NC}"
+                else
+                    echo -e "${YELLOW}⚠ HTTPS не отвечает (возможно нужно время на инициализацию)${NC}"
+                fi
             else
-                echo -e "${RED}✗ Ошибка конфигурации nginx${NC}"
+                echo -e "${RED}✗ Ошибка перезагрузки nginx${NC}"
                 USE_SSL=false
                 NEW_BACKEND_URL="http://$NEW_DOMAIN"
             fi
+        else
+            echo -e "${RED}✗ Ошибка конфигурации nginx${NC}"
+            nginx -t
+            USE_SSL=false
+            NEW_BACKEND_URL="http://$NEW_DOMAIN"
         fi
     else
-        echo -e "${RED}✗ Ошибка получения SSL сертификата${NC}"
+        echo -e "${RED}✗ Не удалось получить SSL сертификат${NC}"
+        echo ""
+        echo -e "${YELLOW}Возможные причины:${NC}"
+        echo "  1. Порт 80 недоступен извне"
+        echo "  2. DNS еще не обновился"
+        echo "  3. Превышен лимит Let's Encrypt (5 сертификатов в неделю)"
+        echo ""
         echo -e "${YELLOW}Продолжаем без SSL...${NC}"
         USE_SSL=false
         NEW_BACKEND_URL="http://$NEW_DOMAIN"
+        
+        # Создаем простую HTTP конфигурацию
+        cat > $NGINX_CONFIG << EOF
+server {
+    listen 80;
+    server_name $NEW_DOMAIN;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    
+    location /api {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+}
+EOF
+        nginx -t && systemctl reload nginx
     fi
 else
     echo -e "${YELLOW}[5/11] Получение SSL пропущено${NC}"
     NEW_BACKEND_URL="http://$NEW_DOMAIN"
+    
+    # Создаем простую HTTP конфигурацию
+    cat > $NGINX_CONFIG << EOF
+server {
+    listen 80;
+    server_name $NEW_DOMAIN;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    
+    location /api {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+}
+EOF
 fi
 echo ""
 
