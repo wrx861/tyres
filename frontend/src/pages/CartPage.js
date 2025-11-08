@@ -131,7 +131,7 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
         {/* Cart Items */}
         <div className="space-y-4 mb-6">
           {cart.map((item) => (
-            <div key={item.code} className="bg-white rounded-xl p-4 shadow-sm">
+            <div key={item.code} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-transparent dark:border-gray-700">
               <div className="flex items-start space-x-4 mb-3">
                 {/* Product Image */}
                 {item.img_small && (
@@ -147,22 +147,22 @@ const CartPage = ({ cart, user, onUpdateQuantity, onRemove, onClear, onBack }) =
                 
                 <div className="flex-1 flex justify-between items-start">
                   <div>
-                    <h3 className="font-semibold text-gray-900">{item.brand}</h3>
-                    <p className="text-sm text-gray-600">{item.model}</p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">{item.brand}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{item.model}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {item.width && item.height && item.diameter
                         ? `${item.width}/${item.height} R${item.diameter}`
                         : `${item.width}x${item.diameter}`}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-blue-600">{formatPrice(item.price * item.quantity)} ₽</p>
-                    <p className="text-xs text-gray-500">{formatPrice(item.price)} ₽ / шт</p>
+                    <p className="font-bold text-blue-600 dark:text-blue-400">{formatPrice(item.price * item.quantity)} ₽</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatPrice(item.price)} ₽ / шт</p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => onUpdateQuantity(item.code, item.quantity - 1)}
