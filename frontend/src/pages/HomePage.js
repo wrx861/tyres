@@ -106,6 +106,19 @@ const HomePage = ({ user, onNavigate, cartCount }) => {
           </p>
         </div>
       </div>
+
+      {/* Service Modal */}
+      {showServiceModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl animate-fade-in border border-transparent dark:border-gray-700">
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Wrench className="text-blue-600 dark:text-blue-400" size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Раздел в разработке</h3>
+            <p className="text-gray-600 dark:text-gray-300">Услуги шиномонтажа скоро будут доступны!</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
