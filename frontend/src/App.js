@@ -163,6 +163,9 @@ function App() {
       <div className="min-h-screen bg-gray-50">
         {renderPage()}
       </div>
+      
+      {/* Debug Info Component */}
+      <DebugInfo user={user} />
     </WarehousesContext.Provider>
   );
 }
