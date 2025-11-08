@@ -745,32 +745,160 @@ const AdminPage = ({ user, onBack }) => {
             )}
 
             {tab === 'settings' && (
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h3 className="font-semibold text-lg mb-4">Наценка на товары</h3>
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Процент наценки (%)
-                  </label>
-                  <input
-                    type="number"
-                    value={markup}
-                    onChange={(e) => setMarkup(parseFloat(e.target.value))}
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                  />
-                  <p className="text-sm text-gray-600 mt-2">
-                    Текущая наценка: {markup}%
-                  </p>
+              <div className="space-y-6">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-transparent dark:border-gray-700">
+                  <h3 className="font-semibold text-lg mb-4 dark:text-white">Система наценки</h3>
+                  
+                  {/* Выбор типа наценки */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Тип наценки
+                    </label>
+                    <div className="flex space-x-4">
+                      <button
+                        onClick={() => setMarkupSettings({ ...markupSettings, type: 'fixed' })}
+                        className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${
+                          markupSettings.type === 'fixed'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="font-medium">Фиксированная</div>
+                        <div className="text-xs mt-1">Один процент для всех</div>
+                      </button>
+                      <button
+                        onClick={() => setMarkupSettings({ ...markupSettings, type: 'tiered' })}
+                        className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${
+                          markupSettings.type === 'tiered'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="font-medium">Ступенчатая</div>
+                        <div className="text-xs mt-1">Зависит от цены</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Фиксированная наценка */}
+                  {markupSettings.type === 'fixed' && (
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Процент наценки (%)
+                      </label>
+                      <input
+                        type="number"
+                        value={markupSettings.markup_percentage || 15}
+                        onChange={(e) => setMarkupSettings({ ...markupSettings, markup_percentage: parseFloat(e.target.value) })}
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                      />
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                        Пример: товар за 5000 ₽ → {formatPrice(5000 * (1 + (markupSettings.markup_percentage || 15) / 100))} ₽
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Ступенчатая наценка */}
+                  {markupSettings.type === 'tiered' && (
+                    <div className="space-y-4">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                          💡 Ступенчатая наценка позволяет устанавливать разные проценты для разных ценовых диапазонов. 
+                          Например: 15% для бюджетных шин (до 5000₽), 10% для среднего сегмента (5000-10000₽), 5% для премиум (10000+₽).
+                        </p>
+                      </div>
+
+                      {/* Список ступеней */}
+                      {markupSettings.tiers && markupSettings.tiers.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">Текущие ценовые диапазоны:</h4>
+                          {markupSettings.tiers.map((tier, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900 dark:text-white">{tier.label}</div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                  {tier.min_price.toLocaleString()} - {tier.max_price.toLocaleString()} ₽ → {tier.markup_percentage}%
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleRemoveTier(index)}
+                                className="ml-3 text-red-500 hover:text-red-700"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Добавление новой ступени */}
+                      <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4">
+                        <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300 mb-3">Добавить ценовой диапазон:</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Название</label>
+                            <input
+                              type="text"
+                              placeholder="Бюджетные"
+                              value={newTier.label}
+                              onChange={(e) => setNewTier({ ...newTier, label: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Наценка %</label>
+                            <input
+                              type="number"
+                              value={newTier.markup_percentage}
+                              onChange={(e) => setNewTier({ ...newTier, markup_percentage: parseFloat(e.target.value) })}
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Мин. цена ₽</label>
+                            <input
+                              type="number"
+                              value={newTier.min_price}
+                              onChange={(e) => setNewTier({ ...newTier, min_price: parseFloat(e.target.value) })}
+                              min="0"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Макс. цена ₽</label>
+                            <input
+                              type="number"
+                              value={newTier.max_price}
+                              onChange={(e) => setNewTier({ ...newTier, max_price: parseFloat(e.target.value) })}
+                              min="0"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleAddTier}
+                          className="mt-3 w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium"
+                        >
+                          + Добавить диапазон
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleUpdateMarkupSettings}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors mt-6"
+                  >
+                    <Settings size={20} />
+                    <span>Сохранить настройки</span>
+                  </button>
                 </div>
-                <button
-                  onClick={handleUpdateMarkup}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
-                >
-                  <Settings size={20} />
-                  <span>Сохранить</span>
-                </button>
               </div>
             )}
           </>
