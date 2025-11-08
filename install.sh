@@ -388,14 +388,13 @@ stderr_logfile=/var/log/tyres-backend.err.log
 stdout_logfile=/var/log/tyres-backend.out.log
 
 [program:tyres-frontend]
-command=yarn start
+command=/usr/bin/npx serve -s build -l 3000
 directory=/opt/tyres-app/frontend
 user=root
-autostart=false
-autorestart=false
+autostart=true
+autorestart=true
 stderr_logfile=/var/log/tyres-frontend.err.log
 stdout_logfile=/var/log/tyres-frontend.out.log
-environment=PORT="3000"
 EOF
 
 # Примечание: Telegram бот интегрирован в backend и запускается автоматически
