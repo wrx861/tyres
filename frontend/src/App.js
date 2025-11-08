@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useRef } from 'react';
 import './App.css';
 import { authenticateUser, getWarehouses } from './api/api';
 import { initTelegramWebApp, getTelegramUser } from './utils/telegram';
@@ -23,6 +23,10 @@ function App() {
   });
   const [loading, setLoading] = useState(true);
   const [warehouses, setWarehouses] = useState({});
+  
+  // Защита от повторных вызовов инициализации (React.StrictMode вызывает useEffect дважды)
+  const isInitializing = useRef(false);
+  const isInitialized = useRef(false);
 
   // Сохраняем корзину в localStorage при каждом изменении
   useEffect(() => {
@@ -30,6 +34,12 @@ function App() {
   }, [cart]);
 
   useEffect(() => {
+    // Предотвращаем повторные вызовы
+    if (isInitializing.current || isInitialized.current) {
+      return;
+    }
+    
+    isInitializing.current = true;
     initializeApp();
   }, []);
 
