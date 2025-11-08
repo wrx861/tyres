@@ -3,7 +3,7 @@ import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { getCarBrands, getCarModels, getCarYears, getCarModifications, getGoodsByCar } from '../api/api';
 import ProductCard from '../components/ProductCard';
 
-const CarSelectionPage = ({ onAddToCart, onBack, user }) => {
+const CarSelectionPage = ({ onAddToCart, onBack, user, cart }) => {
   const [step, setStep] = useState(1);
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
