@@ -217,7 +217,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
 
           {/* Сортировка по цене */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               💰 Сортировка по цене
             </label>
             <select
@@ -233,7 +233,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Ширина {searchType === 'tires' ? '(мм)' : '(дюймы)'}
               </label>
               <input
@@ -248,7 +248,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
 
             {searchType === 'tires' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Высота (профиль)
                 </label>
                 <input
@@ -262,7 +262,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Диаметр (R)
               </label>
               <input
@@ -277,7 +277,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
             {searchType === 'tires' && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Сезон
                   </label>
                   <select
@@ -297,7 +297,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Бренд
               </label>
               <select
@@ -332,7 +332,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
             {searchType === 'disks' && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     PCD (сверловка)
                   </label>
                   <input
@@ -345,7 +345,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Вылет ET (мин)
                   </label>
                   <input
@@ -358,7 +358,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Вылет ET (макс)
                   </label>
                   <input
@@ -371,7 +371,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     DIA (мин)
                   </label>
                   <input
@@ -385,7 +385,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     DIA (макс)
                   </label>
                   <input
@@ -399,7 +399,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Цвет
                   </label>
                   <input
@@ -412,7 +412,7 @@ const SearchPage = ({ onAddToCart, onBack, user }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Тип диска
                   </label>
                   <select
