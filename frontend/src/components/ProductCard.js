@@ -3,6 +3,11 @@ import { Plus, MapPin, Package } from 'lucide-react';
 import { WarehousesContext } from '../App';
 import ProductImageModal from './ProductImageModal';
 
+// Хелпер для форматирования цены без копеек
+const formatPrice = (price) => {
+  return Math.round(price).toLocaleString('ru-RU');
+};
+
 const ProductCard = ({ product, onAddToCart, type = 'tires' }) => {
   const warehouses = useContext(WarehousesContext);
   const [showImageModal, setShowImageModal] = useState(false);
