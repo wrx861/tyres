@@ -402,7 +402,21 @@ echo -e "${GREEN}ℹ️  Telegram бот интегрирован в backend (н
 
 supervisorctl reread
 supervisorctl update
-supervisorctl start tyres-backend
+supervisorctl start tyres-backend tyres-frontend
+
+# Проверка что процессы запустились
+sleep 3
+if supervisorctl status tyres-backend | grep -q "RUNNING"; then
+    echo -e "${GREEN}✓ Backend запущен${NC}"
+else
+    echo -e "${RED}✗ Backend не запустился. Проверьте логи: tail -f /var/log/tyres-backend.err.log${NC}"
+fi
+
+if supervisorctl status tyres-frontend | grep -q "RUNNING"; then
+    echo -e "${GREEN}✓ Frontend запущен${NC}"
+else
+    echo -e "${RED}✗ Frontend не запустился. Проверьте логи: tail -f /var/log/tyres-frontend.err.log${NC}"
+fi
 
 # Включаем автозапуск supervisor после перезагрузки
 systemctl enable supervisor
